@@ -1,9 +1,14 @@
 //YES
 
+let map = 1;
+
+//end of VARIABLES
+
 function setup() {
-    reateCanvas(width,height);
-    
+    createCanvas(1920, 1080);
+    background(0);
     //initialize player
+    player = new Player(0,0);
 }
 
 function drawMap() {
@@ -20,6 +25,9 @@ function draw() {
 
     
     //draw player
+    player.show();
+    player.move();
+    player.process();
     
     //move player
     
@@ -27,16 +35,5 @@ function draw() {
 }
 
 function keyPressed() {
-    
-    if(keyCode == 65) {
-        player.x -= player.speed;
-    } 
-    if (keyCode == 68) {
-        player.x += player.speed;
-    }
-    
-    if (keyCode == 32) {
-        player.jump(player.jumpLevel); 
-    }
 
 }
