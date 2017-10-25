@@ -1,7 +1,9 @@
 //YES
 
 function setup() {
+    reateCanvas(width,height);
     
+    //initialize player
 }
 
 function drawMap() {
@@ -15,7 +17,7 @@ function drawEnemies() {
 }
 
 function draw() {
-    
+
     
     //draw player
     
@@ -26,4 +28,15 @@ function draw() {
 
 function keyPressed() {
     
+    if(keyCode == 65) {
+        player.x -= player.speed;
+    } 
+    if (keyCode == 68) {
+        player.x += player.speed;
+    }
+    
+    if (keyCode == 32) {
+        player.jump(player.jumpLevel); 
+    }
+
 }
