@@ -1,1 +1,1 @@
-# duskzhang.github.io  -- the address for playing the game yo
+# working on this game right now, memedefence is sort of done
