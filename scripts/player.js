@@ -6,32 +6,53 @@ class Player {
         this.position = createVector(this.x, this.y);
         this.attack = 1;
         this.speed = 4.5;
-        this.jumpLevel = 1;
-        this.width = 60;
-        this.height = 100;
+        this.width = 120;
+        this.height = 250;
+        this.jumpStart = false;
+        this.grounded = true;
+        this.jumpSpeed = 0;
+        this.gravityMultiplier = 1;
+        this.feetY= this.height - this.height;
         //perhaps this.hat / this.armor
     }
 
     show() {
-        fill(0);
-        rect(this.position.x - this.width / 2, this.position.y + this.width / 2, this.width, this.height )
+        fill(255);
+        rect(this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
     process() {
-    
-    //movement
-        if (keyIsDown(65)) {
-            player.x -= player.speed;
-        }
-        if (keyIsDown(68)) {
-            player.x += player.speed;
+        this.feetY = this.position.y + this.height / 2;
+        //gravity
+        if (this.grounded == false) {
+            this.y -= gravity * this.gravityMultiplier;
+            this.gravityMultiplier += 0.15;
+        } else if(this.gravityMultiplier != 1) {
+            this.gravityMultiplier = 1;
         }
 
-        if (keyIsDown(32)) {
-            player.jump(player.jumpLevel);
+        //movement
+        if (keyIsDown(65)) {
+            this.position.x -= this.speed;
+        }
+        if (keyIsDown(68)) {
+            this.position.x += this.speed;
+        }
+
+        if (keyIsDown(32) && this.jumpStart == false) {
+            this.jumpStart = true;
+            this.jumpSpeed = 0;
+
         }
     }
+
+    jump() {
+
+    }
+    
+//    isGrounded() {
+//        if(if)
+//    }
     //attack
 
 }
-

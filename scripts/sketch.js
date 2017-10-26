@@ -5,14 +5,16 @@ let map = 1;
 //end of VARIABLES
 
 function setup() {
-    createCanvas(1920, 1080);
+    let width = window.outerWidth;
+    let height = window.outerHeight - 4.20;
+    createCanvas(width, height);
     background(0);
     //initialize player
-    var player = new Player(0,0);
+    player = new Player(0,800);
 }
 
 function drawMap() {
-    
+    d
     //draw prebuilt maps
     
 }
@@ -22,11 +24,12 @@ function drawEnemies() {
 }
 
 function draw() {
-
-    
+      background(0);
+    controlCamera(player.position.x, player.position.y);
     //draw player
     player.show();
     player.process();
+    player.jump();
     
     //move player
     
