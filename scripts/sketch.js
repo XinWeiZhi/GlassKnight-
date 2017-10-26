@@ -1,7 +1,7 @@
 //YES
 
 let map = 1;
-
+let tiles = [];
 //end of VARIABLES
 
 function setup() {
@@ -14,7 +14,9 @@ function setup() {
 }
 
 function drawMap() {
-    d
+    if(map == 1) {
+        tiles.push
+    }
     //draw prebuilt maps
     
 }
