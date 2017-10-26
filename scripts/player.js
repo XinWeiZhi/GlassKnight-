@@ -12,15 +12,14 @@ class Player {
         //perhaps this.hat / this.armor
     }
 
-    move() {
-
-    }
-
     show() {
+        fill(0);
         rect(this.position.x - this.width / 2, this.position.y + this.width / 2, this.width, this.height )
     }
 
     process() {
+    
+    //movement
         if (keyIsDown(65)) {
             player.x -= player.speed;
         }
@@ -32,5 +31,7 @@ class Player {
             player.jump(player.jumpLevel);
         }
     }
+    //attack
 
 }
+
