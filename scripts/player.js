@@ -14,7 +14,7 @@ class Player {
         this.grounded = true;
         this.jumpSpeed = 0;
         this.gravityMultiplier = 1;
-        this.terminal = 10;
+        this.terminal = 25;
         this.feetY = this.height - this.height;
         this.floorY = 800;
         //perhaps this.hat / this.armor
@@ -31,9 +31,9 @@ class Player {
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier += 0.15;
+                this.gravityMultiplier += 0.35;
             }
-
+            console.log("down")
         } else if (this.gravityMultiplier != 1) {
             this.gravityMultiplier = 1;
         }
@@ -55,12 +55,14 @@ class Player {
 
         if (keyIsDown(32) && this.jumpStart == false) {
             this.jumpStart = true;
-            this.jumpSpeed = 10;
-
+            this.grounded = false;
+            this.jumpSpeed = 20;
+            this.jump();
         }
     }
 
     jump() {
+        console.log(this.jumpStart)
         if (this.jumpStart) {
             this.position.y -= this.jumpSpeed;
         }
@@ -68,11 +70,13 @@ class Player {
 
     //solid code
     isGrounded() {
-        if (this.floorY <= this.feetY) {
+        if (this.floorY < this.feetY) {
             this.grounded = true;
             this.jumpStart = false;
             this.jumpSpeed = 0;
             this.position.y = this.floorY - this.height / 2;
+        } else {
+            this.grounded = false;
         }
         //and if this is true, then ur feetY will equal the floorY
 
