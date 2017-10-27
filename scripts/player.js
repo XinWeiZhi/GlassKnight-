@@ -31,7 +31,7 @@ class Player {
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier += 0.35;
+                this.gravityMultiplier ++;
             }
             console.log("down")
         } else if (this.gravityMultiplier != 1) {
@@ -56,7 +56,7 @@ class Player {
         if (keyIsDown(32) && this.jumpStart == false) {
             this.jumpStart = true;
             this.grounded = false;
-            this.jumpSpeed = 20;
+            this.jumpSpeed = 32;
             this.jump();
         }
     }
