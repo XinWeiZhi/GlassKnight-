@@ -8,16 +8,16 @@ class Player {
         this.hp = 10;
         this.mhp = 10;
         this.canJump = true;
-        this.grounded = true;
+        this.grounded = false;
         this.jumpSpeed = 0;
         this.terminal = 80;
         this.gravityMultiplier = 1;
-        this.feetY = this.position.y+ this.height/2;
+        this.feetY = this.position.y + this.height / 2;
         this.floorY = 800;
         this.canAttack = true;
         this.direction = 1;
         this.physicalAttack = false;
-        this.weapon = new Sword(this,position.x, this.position.y);
+        this.weapon = new Sword(this.position.x, this.position.y);
         //perhaps this.hat / this.armor
     }
 
@@ -33,44 +33,43 @@ class Player {
                 this.gravityMultiplier++;
             }
         }
-        
+
         //if using a spell or item or weapon, this.canAttack will become false
-        if(this.canAttack == false) {
-            if(this.physicalAttack) {
+        if (this.canAttack == false) {
+            if (this.physicalAttack) {
                 this.weapon.attack(this.direction);
             }
         }
-//        } else {
-//            if(this.direction == "right") {
-//                image(this.weapon)
-//                ellipse(this.position.x + this.width, this.position.y, 50 );
-//            }else if(this.direction == "left") {
-//                ellipse(this.position.x - this.width, this.position.y, 50 );
-//            }
-//        }
-
-        else if(this.canAttack == true) {
+        //        } else {
+        //            if(this.direction == "right") {
+        //                image(this.weapon)
+        //                ellipse(this.position.x + this.width, this.position.y, 50 );
+        //            }else if(this.direction == "left") {
+        //                ellipse(this.position.x - this.width, this.position.y, 50 );
+        //            }
+        //        }
+        else if (this.canAttack == true) {
             if (keyIsDown(65)) {
-            this.position.x -= this.speed;
-            if (keyIsDown(16)) {
                 this.position.x -= this.speed;
+                if (keyIsDown(16)) {
+                    this.position.x -= this.speed;
+                }
+                this.direction = -1;
             }
-            this.direction = -1;
-        }
-        if (keyIsDown(68)) {
-            this.position.x += this.speed;
-            if (keyIsDown(16)) {
+            if (keyIsDown(68)) {
                 this.position.x += this.speed;
+                if (keyIsDown(16)) {
+                    this.position.x += this.speed;
+                }
+                this.direction = 1;
             }
-            this.direction = 1;
-        }
 
-        if (keyIsDown(32) && this.canJump || this.canJump == false) {
-            this.canJump = false;
-            this.grounded = false;
-            this.jumpSpeed = 32;
-            this.position.y -= this.jumpSpeed;
-        }
+            if (keyIsDown(32) && this.canJump || this.canJump == false) {
+                this.canJump = false;
+                this.grounded = false;
+                this.jumpSpeed = 32;
+                this.position.y -= this.jumpSpeed;
+            }
         }
 
     }
@@ -99,16 +98,16 @@ class Player {
         }
     }
 
-//    attack(direction) {
-//            if(this.direction == "right") {
-//                
-//            }
-//            if(this.direction == "left") {
-//               
-//            }
-//            
-//    }
-    
+    //    attack(direction) {
+    //            if(this.direction == "right") {
+    //                
+    //            }
+    //            if(this.direction == "left") {
+    //               
+    //            }
+    //            
+    //    }
+
     //attack
 
 }
