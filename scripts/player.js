@@ -5,16 +5,16 @@ class Player {
 
         this.position = createVector(this.x, this.y);
         this.attack = 1;
-        this.speed = 4.5;
+        this.speed = 6.75;
         this.width = 100;
         this.height = 180;
         this.hp = 10;
         this.mhp = 10;
-        this.jumpStart = false;
+        this.canJump = true;
         this.grounded = true;
         this.jumpSpeed = 0;
+        this.terminal = 80;
         this.gravityMultiplier = 1;
-        this.terminal = 25;
         this.feetY = this.height - this.height;
         this.floorY = 800;
         //perhaps this.hat / this.armor
@@ -26,20 +26,16 @@ class Player {
     }
 
     process() {
-        this.feetY = this.position.y + this.height / 2;
+
 
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier ++;
+                this.gravityMultiplier++;
             }
-            console.log("down")
-        } else if (this.gravityMultiplier != 1) {
-            this.gravityMultiplier = 1;
         }
 
-
-        //movement
+        //movementS
         if (keyIsDown(65)) {
             this.position.x -= this.speed;
             if (keyIsDown(16)) {
@@ -53,26 +49,23 @@ class Player {
             }
         }
 
-        if (keyIsDown(32) && this.jumpStart == false) {
-            this.jumpStart = true;
+        if (keyIsDown(32) && this.canJump || this.canJump == false) {
+            this.canJump = false;
             this.grounded = false;
             this.jumpSpeed = 32;
-            this.jump();
-        }
-    }
-
-    jump() {
-        console.log(this.jumpStart)
-        if (this.jumpStart) {
             this.position.y -= this.jumpSpeed;
         }
+
     }
+
 
     //solid code
     isGrounded() {
-        if (this.floorY < this.feetY) {
+        this.feetY = this.position.y + this.height / 2;
+        if (this.floorY <= this.feetY) {
             this.grounded = true;
-            this.jumpStart = false;
+            this.canJump = true;
+            this.gravityMultiplier = 1;
             this.jumpSpeed = 0;
             this.position.y = this.floorY - this.height / 2;
         } else {

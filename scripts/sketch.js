@@ -48,7 +48,6 @@ function draw() {
     //draw player
     player.show();
     player.process();
-    player.jump();
     player.isGrounded();
 
     //move player
