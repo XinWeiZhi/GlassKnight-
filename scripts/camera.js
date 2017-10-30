@@ -1,3 +1,3 @@
-function controlCamera() {
-    camera(0, 0, 0);
+function controlCamera(x,y) {
+    camera(x, y, 0);
     }
