@@ -15,9 +15,16 @@ class Player {
         this.feetY = this.position.y + this.height / 2;
         this.floorY = 800;
         this.canAttack = true;
+        this.canSpell = true;
+        this.canMove = true;
         this.direction = 1;
-        this.physicalAttack = false;
         this.weapon = new Sword(this.position.x, this.position.y);
+        this.animationWalk = [];
+        this.isAttackingFor;
+        this.attackFrame = [sword,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton];
+        this.frame = 0;
+        this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
+
         //perhaps this.hat / this.armor
     }
 
@@ -32,29 +39,24 @@ class Player {
             if (this.gravityMultiplier <= this.terminal) {
                 this.gravityMultiplier++;
             }
+          
         }
 
         //if using a spell or item or weapon, this.canAttack will become false
-        if (this.canAttack == false) {
-            if (this.physicalAttack) {
-                this.weapon.attack(this.direction);
-            }
-        }
-        //        } else {
-        //            if(this.direction == "right") {
-        //                image(this.weapon)
-        //                ellipse(this.position.x + this.width, this.position.y, 50 );
-        //            }else if(this.direction == "left") {
-        //                ellipse(this.position.x - this.width, this.position.y, 50 );
-        //            }
-        //        }
-        else if (this.canAttack == true) {
+        if (this.canAttack == false && this.state != 3) { //mustve clicked with mouse or keyboard shortcut then
+            this.state = 3;
+            this.frame = 0;
+            this.isAttackingFor = 10; //change to animation length
+        } else if (this.canAttack && this.canSpell && this.canMove) { //canMove
+            this.state = 0;
             if (keyIsDown(65)) {
                 this.position.x -= this.speed;
                 if (keyIsDown(16)) {
                     this.position.x -= this.speed;
                 }
                 this.direction = -1;
+                this.state = 2;
+                this.frame++
             }
             if (keyIsDown(68)) {
                 this.position.x += this.speed;
@@ -62,6 +64,8 @@ class Player {
                     this.position.x += this.speed;
                 }
                 this.direction = 1;
+                this.frame++
+                this.state = 1;
             }
 
             if (keyIsDown(32) && this.canJump || this.canJump == false) {
@@ -69,6 +73,25 @@ class Player {
                 this.grounded = false;
                 this.jumpSpeed = 32;
                 this.position.y -= this.jumpSpeed;
+                this.state = 5;
+                this.frame++;
+            }
+            
+            if(this.frame == this.animationWalk.length - 1) {
+                this.frame = 0;
+            }
+        } else if (this.state == 3) {
+
+            if (this.isAttackingFor != 0) {
+                this.isAttackingFor--;
+                this.frame++;
+                this.image = this.attackFrame[this.frame];
+                if (this.isAttackingFor == 0) {
+                    this.checkCollision();
+                }
+            } else {
+                this.frame = 0;
+                this.canAttack = true;
             }
         }
 
@@ -98,16 +121,14 @@ class Player {
         }
     }
 
-    //    attack(direction) {
-    //            if(this.direction == "right") {
-    //                
-    //            }
-    //            if(this.direction == "left") {
-    //               
-    //            }
-    //            
-    //    }
 
-    //attack
+    checkCollision() {
+        for (let target = 0; target < enemies.length; target++)
+            if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX) {
+                enemies[target].hp -= this.damage;
+                enemies[target].receivedHit();
+            }
+
+    }
 
 }

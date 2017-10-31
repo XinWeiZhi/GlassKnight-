@@ -50,13 +50,22 @@ class Weapon {
 class Sword extends Weapon {
     constructor(x, y) {
         super(x, y)
+        this.animation = [sword];
         this.image = sword;
+        this.damage = 1;
     }
 
 
 }
 
 class Katana extends Weapon {
+    constructor(x, y) {
+        super(x, y)
+
+    }
+}
+
+class Duelies extends Weapon {
     constructor(x, y) {
         super(x, y)
 

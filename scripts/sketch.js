@@ -11,7 +11,8 @@ let enemies = [];
 function preload() {
     //make sure to manually flip sprite sheet
     grass = loadImage("scripts/assets/weed.jpg");
-    sword = loadImage("scripts/assets/sword.png")
+    sword = loadImage("scripts/assets/sword.png");
+    skeleton = loadImage("scripts/assets/skeleton.jpg");
 }
 
 function drawMap() {
@@ -34,6 +35,7 @@ function setup() {
     background(0);
     //initialize player
     player = new Player(0, 800);
+    enemies.push(new Enemy(800,800));
     drawMap();
 }
 
@@ -49,7 +51,7 @@ function draw() {
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
-    controlCamera(player.position.x, player.position.y);
+//    controlCamera(player.position.x, player.position.y);
     //draw player
     player.show();
     player.process();
@@ -58,9 +60,9 @@ function draw() {
     //draw enemies
 
     for (let e = 0; e < enemies.length; e++) {
-        enemies.show();
-        enemies.process();
-        enemies.isGrounded();
+        enemies[e].show();
+        enemies[e].process();
+        enemies[e].isGrounded();
     }
 
 
@@ -74,7 +76,6 @@ function keyPressed() {
 
 function mouseClicked() {
     if (player.canAttack) {
-        player.physicalAttack = true;
         player.canAttack = false;
     }
 
