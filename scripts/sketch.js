@@ -53,7 +53,7 @@ function draw() {
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
-//    controlCamera(player.position.x, player.position.y);
+    controlCamera();
     //draw player
     player.show();
     player.process();
