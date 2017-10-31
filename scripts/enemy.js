@@ -16,10 +16,12 @@ class Enemy {
         this.floorY = 800;
         this.canAttack = true;
         this.image = skeleton;
+        this.iam;
         //perhaps this.hat / this.armor
     }
     
-    show() {
+    show(k) {
+        this.iam = k;
         fill(255);
         image(this.image,this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
@@ -86,6 +88,12 @@ class Enemy {
                 break;
             }
         }
+    }
+    
+    receivedHit() {
+        if(this.hp <= 0) {
+            enemies.splice(this.iam);
+           }
     }
     
 }

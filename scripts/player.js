@@ -19,10 +19,13 @@ class Player {
         this.canMove = true;
         this.direction = 1;
         this.weapon = new Sword(this.position.x, this.position.y);
-        this.animationWalk = [];
+        this.animationWalk = [walk,walk,walk,walk,walk,walk,walk,walk];
         this.isAttackingFor;
-        this.attackFrame = [sword,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton];
+        this.attackFrame =[sword,sword,sword,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton];
+        this.image = pepe;
         this.frame = 0;
+        this.hitboxX = 300;
+        this.damage = 2;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
 
         //perhaps this.hat / this.armor
@@ -30,7 +33,7 @@ class Player {
 
     show() {
         fill(255);
-        rect(this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+        image(this.image,this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
     process() {
@@ -49,6 +52,7 @@ class Player {
             this.isAttackingFor = 10; //change to animation length
         } else if (this.canAttack && this.canSpell && this.canMove) { //canMove
             this.state = 0;
+            this.image = this.animationWalk[this.frame];
             if (keyIsDown(65)) {
                 this.position.x -= this.speed;
                 if (keyIsDown(16)) {
@@ -79,6 +83,7 @@ class Player {
             
             if(this.frame == this.animationWalk.length - 1) {
                 this.frame = 0;
+                this.image = pepe;
             }
         } else if (this.state == 3) {
 
@@ -125,6 +130,7 @@ class Player {
     checkCollision() {
         for (let target = 0; target < enemies.length; target++)
             if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX) {
+                console.log("dsajknkdas")
                 enemies[target].hp -= this.damage;
                 enemies[target].receivedHit();
             }

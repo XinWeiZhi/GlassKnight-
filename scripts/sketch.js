@@ -13,6 +13,8 @@ function preload() {
     grass = loadImage("scripts/assets/weed.jpg");
     sword = loadImage("scripts/assets/sword.png");
     skeleton = loadImage("scripts/assets/skeleton.jpg");
+    pepe = loadImage("scripts/assets/pepe.png");
+    walk = loadImage("scripts/assets/download.jpg");
 }
 
 function drawMap() {
@@ -60,7 +62,7 @@ function draw() {
     //draw enemies
 
     for (let e = 0; e < enemies.length; e++) {
-        enemies[e].show();
+        enemies[e].show(e);
         enemies[e].process();
         enemies[e].isGrounded();
     }
@@ -77,6 +79,7 @@ function keyPressed() {
 function mouseClicked() {
     if (player.canAttack) {
         player.canAttack = false;
+        console.log("asdjknjknasd")
     }
 
 }
