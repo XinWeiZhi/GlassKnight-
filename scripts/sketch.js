@@ -5,6 +5,11 @@ let tiles = [];
 let gravity = 1.5;
 let numTiles = 0;
 let enemies = [];
+let initialize = true;
+let camX = 0;
+
+let camY = 0;
+let camZ = 0;
 //end of VARIABLES
 
 
@@ -38,7 +43,7 @@ function setup() {
     //initialize player
     player = new Player(0, 800);
     enemies.push(new Enemy(800,800));
-    drawMap();
+    specialgrass = new Tile(500,500);
 }
 
 
@@ -49,11 +54,22 @@ function drawEnemies() {
 
 function draw() {
     background(30);
-    //draw tiles
+    cameraControl();
+    //draw tilesdaa
+    if(initialize) {
+        drawMap();
+        initialize = false;
+    }
+    
+   specialgrass.show();
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
+        tiles[t].x -= 1;
     }
-    camera(player.position.x,0,0,0,0,0)
+    
+   
+   
+// camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
     player.show();
     player.process();
@@ -67,8 +83,27 @@ function draw() {
         enemies[e].isGrounded();
     }
 
-
-
+    rect(50,50,50,50);
+    //draw hud
+    noStroke();
+    //health
+    fill("gray")
+    rect(player.position.x - 110, player.position.y - 600, player.mhp * 20, 20);
+    fill("red")
+    rect(player.position.x - 110, player.position.y - 600, player.hp * 20, 20);
+    //stamina
+    fill("red")
+    rect(player.position.x - 130, player.position.y - 575, player.mhp * 20, 20);
+    fill("green")
+    rect(player.position.x - 130, player.position.y - 575, player.hp * 20, 20);
+    //mana
+    fill("white")
+    rect(player.position.x - 150, player.position.y - 550, player.mhp * 20, 20);
+    fill("blue")
+    rect(player.position.x - 150, player.position.y - 550, player.hp * 20, 20);
+    //picture
+    fill(30,30,30,80)
+    ellipse(player.position.x - 170, player.position.y - 575, 120,120)
 }
 
 function keyPressed() {

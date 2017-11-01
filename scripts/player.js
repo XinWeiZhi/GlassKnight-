@@ -24,7 +24,7 @@ class Player {
         this.attackFrame =[sword,sword,sword,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton];
         this.image = pepe;
         this.frame = 0;
-        this.hitboxX = 300;
+        this.hitboxX = 145;
         this.damage = 2;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
 
@@ -53,6 +53,7 @@ class Player {
         } else if (this.canAttack && this.canSpell && this.canMove) { //canMove
             this.state = 0;
             this.image = this.animationWalk[this.frame];
+            this.frame++;
             if (keyIsDown(65)) {
                 this.position.x -= this.speed;
                 if (keyIsDown(16)) {
@@ -60,7 +61,6 @@ class Player {
                 }
                 this.direction = -1;
                 this.state = 2;
-                this.frame++
             }
             if (keyIsDown(68)) {
                 this.position.x += this.speed;
@@ -68,7 +68,6 @@ class Player {
                     this.position.x += this.speed;
                 }
                 this.direction = 1;
-                this.frame++
                 this.state = 1;
             }
 
@@ -78,10 +77,10 @@ class Player {
                 this.jumpSpeed = 32;
                 this.position.y -= this.jumpSpeed;
                 this.state = 5;
-                this.frame++;
+                
             }
             
-            if(this.frame == this.animationWalk.length - 1) {
+            if(this.frame == this.animationWalk.length) {
                 this.frame = 0;
                 this.image = pepe;
             }
@@ -133,6 +132,7 @@ class Player {
                 console.log("dsajknkdas")
                 enemies[target].hp -= this.damage;
                 enemies[target].receivedHit();
+//                text(this.damage, enemies[target].position.x, enemies[target].position.y - 40);
             }
 
     }

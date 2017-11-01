@@ -14,16 +14,23 @@ class Enemy {
         this.gravityMultiplier = 1;
         this.feetY = this.height + this.height;
         this.floorY = 800;
-        this.canAttack = true;
         this.image = skeleton;
         this.iam;
+        this.factor = 20;
+        this.canAttack = true;
+        this.attackRange = 90;
+        this.inAttackFor = 0;
         //perhaps this.hat / this.armor
     }
-    
+
     show(k) {
         this.iam = k;
-        fill(255);
-        image(this.image,this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+        fill(231, 10, 40);
+        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
+        fill(100, 230, 40);
+        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
+
+        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
     process() {
@@ -35,12 +42,7 @@ class Enemy {
         }
 
         //if using a spell or item or weapon, this.canAttack will become false
-        if (this.canAttack == false) {
-            if (this.physicalAttack) {
-                this.weapon.attack(this.direction);
-            }
-        }
-        else if (this.canAttack == true) {
+        if (this.canAttack == true) {
             if (player.position.x < this.position.x) {
                 this.position.x -= this.speed;
                 if (keyIsDown(16)) {
@@ -56,15 +58,35 @@ class Enemy {
                 this.direction = 1;
             }
 
-//            if (keyIsDown(32) && this.canJump || this.canJump == false) {
-//                this.canJump = false;
-//                this.grounded = false;
-//                this.jumpSpeed = 32;
-//                this.position.y -= this.jumpSpeed;
-//            }
+            if (this.canAttack && dist(player.position.x, this.position.x, player.position.y, this.position.y) <= this.attackRange) {
+                this.canAttack = false;
+            }
+
+            if (this.canAttack == false) {
+                this.inAttackFor = 20
+                if (this.inAttackdFor != 0) {
+                    this.inAttackFor--;
+                    this.image
+                } else {
+                    this.checkCollision();
+                    this.canAttack = true;
+                }
+            }
         }
+    }
+
+    checkCollision() {
+        for (let target = 0; target < enemies.length; target++)
+            if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX) {
+                console.log("dsajknkdas")
+                enemies[target].hp -= this.damage;
+                enemies[target].receivedHit();
+
+            }
 
     }
+
+
 
 
     //solid code
@@ -89,11 +111,11 @@ class Enemy {
             }
         }
     }
-    
+
     receivedHit() {
-        if(this.hp <= 0) {
+        if (this.hp <= 0) {
             enemies.splice(this.iam);
-           }
+        }
     }
-    
+
 }
