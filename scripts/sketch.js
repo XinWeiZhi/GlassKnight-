@@ -58,7 +58,6 @@ function draw() {
  
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
-        tiles[t].x -= 1;
     }
     
    
