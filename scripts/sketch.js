@@ -5,7 +5,6 @@ let tiles = [];
 let gravity = 1.5;
 let numTiles = 0;
 let enemies = [];
-let initialize = true;
 let camX = 0;
 
 let camY = 0;
@@ -43,7 +42,7 @@ function setup() {
     //initialize player
     player = new Player(0, 800);
     enemies.push(new Enemy(800,800));
-    specialgrass = new Tile(500,500);
+    drawMap();
 }
 
 
@@ -55,13 +54,8 @@ function drawEnemies() {
 function draw() {
     background(30);
     cameraControl();
-    //draw tilesdaa
-    if(initialize) {
-        drawMap();
-        initialize = false;
-    }
     
-   specialgrass.show();
+ 
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
         tiles[t].x -= 1;
