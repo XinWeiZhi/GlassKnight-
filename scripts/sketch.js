@@ -41,7 +41,7 @@ function setup() {
     background(0);
     //initialize player
     player = new Player(0, 800);
-    enemies.push(new Enemy(800,800));
+    enemies.push(new Enemy(800, 800));
     drawMap();
 }
 
@@ -54,18 +54,19 @@ function drawEnemies() {
 function draw() {
     background(30);
     cameraControl();
-    
- 
+
+
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
-    
-   
-   
-// camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
+
+
+
+    // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
     player.show();
     player.process();
+    player.animate();
     player.isGrounded();
 
     //draw enemies
@@ -76,7 +77,7 @@ function draw() {
         enemies[e].isGrounded();
     }
 
-    rect(50,50,50,50);
+    rect(50, 50, 50, 50);
     //draw hud
     noStroke();
     //health
@@ -95,11 +96,23 @@ function draw() {
     fill("blue")
     rect(player.position.x - 150, player.position.y - 550, player.hp * 20, 20);
     //picture
-    fill(30,30,30,80)
-    ellipse(player.position.x - 170, player.position.y - 575, 120,120)
+    fill(30, 30, 30, 80)
+    ellipse(player.position.x - 170, player.position.y - 575, 120, 120)
 }
 
 function keyPressed() {
+
+    if (keyCode == 32 && player.jumps > 0) {
+        console.log("sdlnjklnasd")
+        player.jumps--
+        player.grounded = false;
+            player.state = 5;
+        player.jumpSpeed += 34;
+        player.stillGoingUp = true;
+
+
+
+    }
     //q for item possibly
     //e or r for spell
 }
