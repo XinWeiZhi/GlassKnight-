@@ -23,7 +23,7 @@ class Player {
         //make this.damage = to the weapon damage and such
 
         this.animationIdle = [pepe, pepe, walk, walk, walk, walk, walk, walk];
-        this.animationWalkLeft = [walk, pepe, walk, pepe, walk, walk, walk, walk];
+        this.animationWalkLeft = [walkLeft0, walkLeft0, walkLeft0, walkLeft0, walkLeft0, pepe, walk, pepe, walk, walk, walk, walk];
         this.animationWalkRight = [pepe, pepe, walk, walk, pepe, walk, walk, walk];
         this.animationJump = [walk, walk, walk, walk, walk, walk, walk, walk];
         this.animationAttack = [sword, sword, sword, sword, sword, sword, skeleton, skeleton, skeleton, skeleton];
@@ -72,17 +72,13 @@ class Player {
             }
 
         } else if (this.state == 1) { // move right
-            console.log("i am moving right" + this.frame)
             this.image = this.animationWalkRight[this.frame];
             if (this.frame < this.animationWalkRight.length - 1) {
                 this.frame++;
-                console.log("i mkmkmkpvionmg " + this.frame)
             } else {
                 this.frame = 0;
-                console.log("reset")
             }
         } else if (this.state == 2) { // move left
-            console.log("i am moving left")
             this.image = this.animationWalkLeft[this.frame];
             if (this.frame < this.animationWalkLeft.length - 1) {
                 this.frame++;
@@ -93,7 +89,7 @@ class Player {
 
 
         } else if (this.state == 3) { //attack
-            if (this.isAttackingFor != 0) {
+            if (this.isAttackingFor > 0) {
                 this.isAttackingFor--;
                 if (this.frame < this.animationAttack.length - 1) {
                     this.frame++;
@@ -101,9 +97,10 @@ class Player {
                 this.image = this.animationAttack[this.frame];
                 if (this.isAttackingFor == 0) {
                     this.checkCollision();
-                    this.canAttack = true;
+
                     this.frame = 0;
                     this.state = 0;
+                    this.canAttack = true;
                 }
 
             }
@@ -121,11 +118,18 @@ class Player {
     }
 
     process() {
-
+        if (player.state == 0) {
+            player.canAttack = true;
+            player.canSpell = true;
+        }
         if (this.mana < this.mMana) {
             this.mana += 0.5;
         }
-        this.jumpSpeed *= 0.8;
+        if (player.jumpSpeed > 0) {
+            this.jumpSpeed *= 0.8;
+        }
+
+
         if (this.grounded == false) {
             this.position.y += gravity + this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
@@ -154,6 +158,7 @@ class Player {
             } else {
                 if (keyIsDown(68) && keyIsDown(65)) {
                     if (this.state != 0 && this.state != 5 && this.state != 3) {
+                        this.frame = 0;
                         this.state = 0;
                     }
                 } else if (keyIsDown(68)) { // move right
@@ -165,10 +170,9 @@ class Player {
                         this.canDash = false;
                     }
                     if (this.state != 1 && this.state != 5) {
-                        console.log(this.state);
-                        this.state = 1;
                         this.frame = 0;
-                        console.log("i am changing here to 0")
+                        this.state = 1;
+                        
                     }
                 } else if (keyIsDown(65)) {
                     this.direction = -1;
@@ -180,19 +184,22 @@ class Player {
 
                     }
                     if (this.state != 2 && this.state != 5) {
-                        this.state = 2;
                         this.frame = 0;
-                        console.log("i am changing here to 0")
+                        this.state = 2;
+                        
                     }
 
 
                 } else if (this.state != 0 && this.state != 5 && this.state != 3) {
+                     this.frame = 0;
                     this.state = 0;
+                   
                 }
             }
 
             //attack if not already in state 3
             if (mouseIsPressed && mouseButton == LEFT && this.state != 3) { // attack
+                console.log("shoot")
                 this.frame = 0;
                 this.state = 3;
                 this.isAttackingFor = this.animationAttack.length - 1
@@ -214,6 +221,7 @@ class Player {
             this.position.y = this.floorY - this.height / 2;
             if (this.state == 5) {
                 this.state = 0;
+                this.frame = 0;
             }
 
         } else {
@@ -236,7 +244,7 @@ class Player {
     checkCollision() {
         for (let target = 0; target < enemies.length; target++)
             if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX) {
-                console.log("dsajknkdas")
+                console.log("sweep")
                 enemies[target].hp -= this.damage;
                 enemies[target].receivedHit();
                 //                text(this.damage, enemies[target].position.x, enemies[target].position.y - 40);

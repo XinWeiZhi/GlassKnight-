@@ -19,16 +19,22 @@ function preload() {
     skeleton = loadImage("scripts/assets/skeleton.jpg");
     pepe = loadImage("scripts/assets/pepe.png");
     walk = loadImage("scripts/assets/download.jpg");
+    walkLeft0 = loadImage("scripts/assets/trumpleft.jpg")
 }
 
 function drawMap() {
 
     //makes the tileA < x amount
     if (map == 1) {
-        numTiles = 3
+        numTiles = 6
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
         }
+         enemies.push(new Enemy(800, 800));
+        enemies.push(new Enemy(1200, 600));
+        enemies.push(new Enemy(1100, 800));
+        enemies.push(new Enemy(1000, 800));
+        enemies.push(new Enemy(900, 800));
     }
     //draw prebuilt maps
 
@@ -41,7 +47,7 @@ function setup() {
     background(0);
     //initialize player
     player = new Player(0, 800);
-    enemies.push(new Enemy(800, 800));
+   
     drawMap();
 }
 
@@ -99,6 +105,7 @@ function keyPressed() {
     if (keyCode == 32 && player.jumps > 0) {
         player.jumps--
         player.grounded = false;
+        player.frame = 0;
             player.state = 5;
         player.gravityMultiplier = 1;
         player.jumpSpeed = 120;
@@ -113,10 +120,13 @@ function keyPressed() {
 
 function mouseClicked() {
     if (player.canAttack) {
+        player.frame = 0;
         player.canAttack = false;
     }
 
 }
+
+
 
 function keyReleased() {
   if (keyCode === 16) {
