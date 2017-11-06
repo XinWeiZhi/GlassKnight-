@@ -2,7 +2,7 @@
 
 let map = 1;
 let tiles = [];
-let gravity = 1.5;
+let gravity = 0.8;
 let numTiles = 0;
 let enemies = [];
 let camX = 0;
@@ -77,7 +77,6 @@ function draw() {
         enemies[e].isGrounded();
     }
 
-    rect(50, 50, 50, 50);
     //draw hud
     noStroke();
     //health
@@ -85,16 +84,11 @@ function draw() {
     rect(player.position.x - 110, player.position.y - 600, player.mhp * 20, 20);
     fill("red")
     rect(player.position.x - 110, player.position.y - 600, player.hp * 20, 20);
-    //stamina
-    fill("red")
-    rect(player.position.x - 130, player.position.y - 575, player.mhp * 20, 20);
-    fill("green")
-    rect(player.position.x - 130, player.position.y - 575, player.hp * 20, 20);
     //mana
     fill("white")
-    rect(player.position.x - 150, player.position.y - 550, player.mhp * 20, 20);
+    rect(player.position.x - 150, player.position.y - 570, player.mMana , 20);
     fill("blue")
-    rect(player.position.x - 150, player.position.y - 550, player.hp * 20, 20);
+    rect(player.position.x - 150, player.position.y - 570, player.mana, 20);
     //picture
     fill(30, 30, 30, 80)
     ellipse(player.position.x - 170, player.position.y - 575, 120, 120)
@@ -103,11 +97,11 @@ function draw() {
 function keyPressed() {
 
     if (keyCode == 32 && player.jumps > 0) {
-        console.log("sdlnjklnasd")
         player.jumps--
         player.grounded = false;
             player.state = 5;
-        player.jumpSpeed += 34;
+        player.gravityMultiplier = 1;
+        player.jumpSpeed = 120;
         player.stillGoingUp = true;
 
 
@@ -120,7 +114,12 @@ function keyPressed() {
 function mouseClicked() {
     if (player.canAttack) {
         player.canAttack = false;
-        console.log("asdjknjknasd")
     }
 
+}
+
+function keyReleased() {
+  if (keyCode === 16) {
+    player.canDash = true;
+  }
 }

@@ -2,7 +2,7 @@ class Player {
     constructor(x, y) {
         this.position = createVector(this.x, this.y);
         this.attack = 1;
-        this.speed = 8.5;
+        this.speed = 9;
         this.width = 100;
         this.height = 180;
         this.hp = 10;
@@ -10,7 +10,7 @@ class Player {
         this.jumps = 2;
         this.grounded = false;
         this.jumpSpeed = 0;
-        this.terminal = 440;
+        this.terminal = 75;
         this.gravityMultiplier = 1;
         this.feetY = this.position.y + this.height / 2;
         this.floorY = 800;
@@ -23,13 +23,17 @@ class Player {
         //make this.damage = to the weapon damage and such
 
         this.animationIdle = [pepe, pepe, walk, walk, walk, walk, walk, walk];
-        this.animationWalkLeft = [walk, walk, walk, walk, walk, walk, walk, walk];
-        this.animationWalkRight = [walk, walk, walk, walk, walk, walk, walk, walk];
+        this.animationWalkLeft = [walk, pepe, walk, pepe, walk, walk, walk, walk];
+        this.animationWalkRight = [pepe, pepe, walk, walk, pepe, walk, walk, walk];
         this.animationJump = [walk, walk, walk, walk, walk, walk, walk, walk];
         this.animationAttack = [sword, sword, sword, sword, sword, sword, skeleton, skeleton, skeleton, skeleton];
         this.animationSpell = []
         this.isAttackingFor = 0;
         this.image = pepe;
+        this.canDash = true;
+        this.dashFor = 0;
+        this.mana = 250;
+        this.mMana = 250;
         this.frame = 0;
         this.hitboxX = 145;
         this.damage = 2;
@@ -44,24 +48,51 @@ class Player {
     }
 
     animate() {
-        if (this.state == 0) { // idle
+        if (this.state == 5) { //jump
+            this.image = this.animationJump[this.frame];
+            if (this.frame < this.animationJump.length - 1) {
+                this.frame++;
+            } else {
+                this.frame = 0;
+            }
+            //to do code the jump animations in 
+            if (keyIsDown(32) && this.stillGoingUp) {
+                this.position.y -= this.jumpSpeed;
+            } else if (this.stillGoingUp) {
+                this.stillGoingUp = false;
+            }
+            //possibly sdtate for falling
+        } else if (this.state == 0) { // idle
             this.image = this.animationIdle[this.frame];
             if (this.frame < this.animationIdle.length - 1) {
                 this.frame++;
+
+            } else {
+                this.frame = 0;
             }
 
         } else if (this.state == 1) { // move right
+            console.log("i am moving right" + this.frame)
             this.image = this.animationWalkRight[this.frame];
             if (this.frame < this.animationWalkRight.length - 1) {
                 this.frame++;
+                console.log("i mkmkmkpvionmg " + this.frame)
+            } else {
+                this.frame = 0;
+                console.log("reset")
             }
         } else if (this.state == 2) { // move left
+            console.log("i am moving left")
             this.image = this.animationWalkLeft[this.frame];
             if (this.frame < this.animationWalkLeft.length - 1) {
                 this.frame++;
+            } else {
+                this.frame = 0;
             }
-        } else if (this.state == 3) { //attack
 
+
+
+        } else if (this.state == 3) { //attack
             if (this.isAttackingFor != 0) {
                 this.isAttackingFor--;
                 if (this.frame < this.animationAttack.length - 1) {
@@ -72,6 +103,7 @@ class Player {
                     this.checkCollision();
                     this.canAttack = true;
                     this.frame = 0;
+                    this.state = 0;
                 }
 
             }
@@ -81,29 +113,23 @@ class Player {
             if (this.frame < this.animationWalkRight.length - 1) {
                 this.frame++;
             }
-        } else if (this.state == 5) { //jump
-            this.image = this.animationJump[this.frame];
-            if (this.frame < this.animationJump.length - 1) {
-                this.frame++;
+            if (this.frame == this.animationWalkRight.length - 1) {
+                this.frame = 0;
             }
-            //to do code the jump animations in 
-            if (keyIsDown(32) && this.stillGoingUp) {
-                this.position.y -= this.jumpSpeed;
-                console.log("going")
-            } else if (this.stillGoingUp) {
-                this.stillGoingUp = false;
-                console.log("cancel")
-            }
-            //possibly state for falling
         }
 
     }
 
     process() {
+
+        if (this.mana < this.mMana) {
+            this.mana += 0.5;
+        }
+        this.jumpSpeed *= 0.8;
         if (this.grounded == false) {
-            this.position.y += gravity * this.gravityMultiplier;
+            this.position.y += gravity + this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier += 1;
+                this.gravityMultiplier += 0.8;
             }
 
         }
@@ -112,35 +138,59 @@ class Player {
         //if using a spell or item or weapon, this.canAttack will become false
         if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
             //idle
-            if (this.state != 0 && this.state != 5) {
-                this.state = 0;
-            }
-            //move left
-            if (keyIsDown(65)) {
-                this.position.x -= this.speed;
-                if (keyIsDown(16)) {
-                    this.position.x -= this.speed;
-                }
-                if (this.state != 2 && this.state != 5) {
-                    this.direction = -1;
-                    this.state = 2;
-                    this.frame = 0;
+
+
+
+            if (this.dashFor > 0) {
+                this.dashFor--;
+                this.mana--;
+                if (this.direction == 1) {
+                    this.position.x += this.speed * 5;
+                } else {
+                    this.position.x -= this.speed * 5;
                 }
 
 
-            }
-            //move right
-            if (keyIsDown(68)) {
-                this.position.x += this.speed;
-                if (keyIsDown(16)) {
-                    this.position.x += this.speed;
-                }
-                if (this.state != 1 && this.state != 5) {
+            } else {
+                if (keyIsDown(68) && keyIsDown(65)) {
+                    if (this.state != 0 && this.state != 5 && this.state != 3) {
+                        this.state = 0;
+                    }
+                } else if (keyIsDown(68)) { // move right
                     this.direction = 1;
-                    this.state = 1;
-                    this.frame = 0;
+                    this.position.x += this.speed;
+                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
+                        this.dashFor = 20;
+                        this.mana -= 10;
+                        this.canDash = false;
+                    }
+                    if (this.state != 1 && this.state != 5) {
+                        console.log(this.state);
+                        this.state = 1;
+                        this.frame = 0;
+                        console.log("i am changing here to 0")
+                    }
+                } else if (keyIsDown(65)) {
+                    this.direction = -1;
+                    this.position.x -= this.speed;
+                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
+                        this.dashFor = 20;
+                        this.mana -= 10;
+                        this.canDash = false;
+
+                    }
+                    if (this.state != 2 && this.state != 5) {
+                        this.state = 2;
+                        this.frame = 0;
+                        console.log("i am changing here to 0")
+                    }
+
+
+                } else if (this.state != 0 && this.state != 5 && this.state != 3) {
+                    this.state = 0;
                 }
             }
+
             //attack if not already in state 3
             if (mouseIsPressed && mouseButton == LEFT && this.state != 3) { // attack
                 this.frame = 0;
@@ -162,6 +212,10 @@ class Player {
             this.gravityMultiplier = 1;
             this.jumpSpeed = 0;
             this.position.y = this.floorY - this.height / 2;
+            if (this.state == 5) {
+                this.state = 0;
+            }
+
         } else {
             this.grounded = false;
         }
@@ -172,6 +226,8 @@ class Player {
             if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
                 this.floorY = tiles[i].y;
                 break;
+            } else {
+                this.floorY = 10000
             }
         }
     }
