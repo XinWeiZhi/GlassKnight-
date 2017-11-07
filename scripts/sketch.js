@@ -27,14 +27,17 @@ function drawMap() {
     //makes the tileA < x amount
     if (map == 1) {
         numTiles = 6
+         enemies.push(new Enemy(800, 0));
+        enemies.push(new Enemy(900, 0));
+        enemies.push(new Enemy(700, 0));
+        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Enemy(1200, 0));
+        enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
         }
-         enemies.push(new Enemy(800, 800));
-        enemies.push(new Enemy(1200, 600));
-        enemies.push(new Enemy(1100, 800));
-        enemies.push(new Enemy(1000, 800));
-        enemies.push(new Enemy(900, 800));
+        
+       
     }
     //draw prebuilt maps
 
@@ -47,7 +50,7 @@ function setup() {
     background(0);
     //initialize player
     player = new Player(0, 800);
-   
+
     drawMap();
 }
 
@@ -65,7 +68,6 @@ function draw() {
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
-
 
 
     // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
@@ -92,7 +94,7 @@ function draw() {
     rect(player.position.x - 110, player.position.y - 600, player.hp * 20, 20);
     //mana
     fill("white")
-    rect(player.position.x - 150, player.position.y - 570, player.mMana , 20);
+    rect(player.position.x - 150, player.position.y - 570, player.mMana, 20);
     fill("blue")
     rect(player.position.x - 150, player.position.y - 570, player.mana, 20);
     //picture
@@ -104,9 +106,9 @@ function keyPressed() {
 
     if (keyCode == 32 && player.jumps > 0) {
         player.jumps--
-        player.grounded = false;
+            player.grounded = false;
         player.frame = 0;
-            player.state = 5;
+        player.state = 5;
         player.gravityMultiplier = 1;
         player.jumpSpeed = 120;
         player.stillGoingUp = true;
@@ -129,7 +131,7 @@ function mouseClicked() {
 
 
 function keyReleased() {
-  if (keyCode === 16) {
-    player.canDash = true;
-  }
+    if (keyCode === 16) {
+        player.canDash = true;
+    }
 }

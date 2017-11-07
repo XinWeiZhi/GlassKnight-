@@ -235,7 +235,7 @@ class Player {
                 this.floorY = tiles[i].y;
                 break;
             } else {
-                this.floorY = 10000
+                this.floorY = 10000;
             }
         }
     }
@@ -252,4 +252,9 @@ class Player {
 
     }
 
+    receivedHit() {
+        if (this.hp <= 0) {
+          console.log("cjknkn")
+        }
+    }
 }
