@@ -212,7 +212,11 @@ class Player {
                 this.isAttackingFor = this.animationAttack.length - 1
             }
 
-
+            if (keyIsDown(69) && this.state != 4) { // spell
+                this.frame = 0;
+                this.state = 3;
+                this.isAttackingFor = this.animationAttack.length - 1
+            }
         }
     }
 
