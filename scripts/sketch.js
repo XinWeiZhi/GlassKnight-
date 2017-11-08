@@ -2,7 +2,7 @@
 
 let map = 1;
 let tiles = [];
-let gravity = 0.8;
+let gravity = 0.7;
 let numTiles = 0;
 let enemies = [];
 let camX = 0;
@@ -89,17 +89,17 @@ function draw() {
     noStroke();
     //health
     fill("gray")
-    rect(player.position.x - 110, player.position.y - 600, player.mhp * 20, 20);
+    rect(camX + 190, camY + 50, player.mhp * 20, 20);
     fill("red")
-    rect(player.position.x - 110, player.position.y - 600, player.hp * 20, 20);
+    rect(camX + 190, camY + 50, player.hp * 20, 20);
     //mana
     fill("white")
-    rect(player.position.x - 150, player.position.y - 570, player.mMana, 20);
+     rect(camX + 160, camY +100, player.mMana, 20);
     fill("blue")
-    rect(player.position.x - 150, player.position.y - 570, player.mana, 20);
+     rect(camX + 160, camY + 100, player.mana, 20);
     //picture
-    fill(30, 30, 30, 80)
-    ellipse(player.position.x - 170, player.position.y - 575, 120, 120)
+    fill(30, 50, 30, 80)
+    ellipse(camX + 160, camY + 60, 120, 120)
 }
 
 function keyPressed() {
@@ -110,7 +110,7 @@ function keyPressed() {
         player.frame = 0;
         player.state = 5;
         player.gravityMultiplier = 1;
-        player.jumpSpeed = 120;
+        player.jumpSpeed = 90;
         player.stillGoingUp = true;
 
 

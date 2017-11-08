@@ -19,7 +19,7 @@ class Enemy {
         this.iam;
         this.factor = 20;
         this.canAttack = true;
-        this.attackRange = 490;
+        this.attackRange = 200;
         this.inAttackFor = 0;
         this.target;
         this.hitboxX = 250;
@@ -39,10 +39,10 @@ class Enemy {
     }
 
     process() {
-        if(this.attackCooldown > 0) {
-             this.attackCooldown--;
+        if (this.attackCooldown > 0) {
+            this.attackCooldown--;
         }
-       
+
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
@@ -63,9 +63,9 @@ class Enemy {
 
             if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
                 this.canAttack = false;
-                
-                this.attackPattern = floor(random(0, 4)); //0,1,2,3 - 4 patterns
-                
+
+                this.attackPattern = floor(random(0, 3)); //0,1,2,3 - 4 patterns
+
                 this.inAttackFor = (this.attackPattern + 1) * 20;
                 this.attackCooldown += (this.attackPattern + 1) * 80;
             }
@@ -77,66 +77,70 @@ class Enemy {
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
                 //add attack pattern coding here
-            //just a quick stab
+                //just a quick stab
 
             } else {
-                this.checkCollision();
-                this.canAttack = true;
-            }
-        } else if (this.canAttack == false && this.attackPattern == 1) {
-            //medium charged attack
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                if(this.direction == 1) {
-                    this.position.x += 3;
-                } else {
-                    this.position.x -= 3;
-                }
-
-                console.log("creap")
-            } else {
-                this.checkCollision();
+                this.checkCollision(120);
                 this.canAttack = true;
             }
         } else if (this.canAttack == false && this.attackPattern == 2) {
+            //medium charged attack jump
+            if (this.inAttackFor > 0) {
+                this.inAttackFor--;
+                //add attack pattern coding here
+                if (this.direction == 1) {
+                    this.position.x += 4;
+                } else {
+                    this.position.x -= 4;
+                }
+
+                this.jumpSpeed = 26;
+                this.position.y -= this.jumpSpeed;
+
+    
+            } else {
+                if(this.grounded) {
+                    this.checkCollision(100);
+                }
+                
+                this.canAttack = true;
+            }
+        } else if (this.canAttack == false && this.attackPattern == 1) {
             //long distance charge
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
                 //add attack pattern coding here
-                if(this.direction == 1) {
-                    this.position.x += 20;
+                if (this.direction == 1) {
+                    this.position.x += 10;
                 } else {
-                    this.position.x -= 20;
+                    this.position.x -= 10;
                 }
-
-                console.log("creap")
+                this.checkCollision(10);
             } else {
-                this.checkCollision();
-                this.canAttack = true;
-            }
-        } else if (this.canAttack == false && this.attackPattern == 3) {
-            // support move
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                this.position.x -= 10;
-
-                console.log("creap")
-            } else {
-                this.checkCollision();
                 this.canAttack = true;
             }
         }
     }
 
-    checkCollision() {
-        this.target = player;
-        if (this.position.x >= player.position.x && this.position.x <= player.position.x + this.hitboxX) {
 
+
+    checkCollision(hitbox) {
+        this.hitboxX = hitbox
+        this.target = player;
+        if (this.direction == -1) {
+            if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
+                console.log("sweep left")
+                this.target.hp -= this.damage;
+                this.target.receivedHit();
+                this.inAttackFor = 0;
+            }
+        } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
+            console.log("sweep")
             this.target.hp -= this.damage;
             this.target.receivedHit();
-
+            this.inAttackFor = 0;
+            
+            //                text(this.damage, this.target.position.x, this.target.position.y - 40);
         }
 
     }
