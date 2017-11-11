@@ -10,7 +10,7 @@ class Player {
         this.jumps = 2;
         this.grounded = false;
         this.jumpSpeed = 0;
-        this.terminal = 25;
+        this.terminal = 45;
         this.gravityMultiplier = 1;
         this.feetY = this.position.y + this.height / 2;
         this.floorY = 800;
@@ -122,7 +122,7 @@ class Player {
         }
 
     }
-
+    //jumps etc
     process() {
         
         if (player.state == 0) {
@@ -132,15 +132,12 @@ class Player {
         if (this.mana < this.mMana) {
             this.mana += 0.5;
         }
-        if (player.jumpSpeed > 0) {
-            this.jumpSpeed *= 0.8;
-        }
 
 
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
             if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier += 0.5;
+                this.gravityMultiplier *= 1.08;
             }
 
         }

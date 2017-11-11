@@ -2,7 +2,7 @@
 
 let map = 1;
 let tiles = [];
-let gravity = 0.7;
+let gravity = 0.6;
 let numTiles = 0;
 let enemies = [];
 let camX = 0;
@@ -110,7 +110,7 @@ function keyPressed() {
         player.frame = 0;
         player.state = 5;
         player.gravityMultiplier = 1;
-        player.jumpSpeed = 90;
+        player.jumpSpeed = 15;
         player.stillGoingUp = true;
 
 
