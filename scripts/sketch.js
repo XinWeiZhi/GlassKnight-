@@ -1,5 +1,6 @@
 //YES
-
+let interactables = [];
+let effects = [];
 let map = 1;
 let tiles = [];
 let gravity = 0.6;
@@ -19,7 +20,8 @@ function preload() {
     skeleton = loadImage("scripts/assets/skeleton.jpg");
     pepe = loadImage("scripts/assets/pepe.png");
     walk = loadImage("scripts/assets/download.jpg");
-    walkLeft0 = loadImage("scripts/assets/trumpleft.jpg")
+    walkLeft0 = loadImage("scripts/assets/trumpleft.jpg");
+    door = loadImage("scripts/assets/door.jpg");
 }
 
 function drawMap() {
@@ -27,7 +29,7 @@ function drawMap() {
     //makes the tileA < x amount
     if (map == 1) {
         numTiles = 6
-         enemies.push(new Enemy(800, 0));
+        enemies.push(new Enemy(800, 0));
         enemies.push(new Enemy(900, 0));
         enemies.push(new Enemy(700, 0));
         enemies.push(new Enemy(1000, 0));
@@ -36,8 +38,10 @@ function drawMap() {
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
         }
-        
-       
+
+        interactables.push(new Door(300, 400));
+
+
     }
     //draw prebuilt maps
 
@@ -69,6 +73,9 @@ function draw() {
         tiles[t].show();
     }
 
+    if (frameCount % 100 == 0)[
+        effects.push(new GlowingDust(random(0, width), random(0, height)))
+        ]
 
     // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
@@ -85,6 +92,16 @@ function draw() {
         enemies[e].isGrounded();
     }
 
+    for (let d = 0; d < effects.length; d++) {
+        effects[d].show();
+        effects[d].move(d);
+    }
+
+    for (let i = 0; i < interactables.length; i++) {
+        interactables[i].show();
+
+    }
+
     //draw hud
     noStroke();
     //health
@@ -94,9 +111,9 @@ function draw() {
     rect(camX + 190, camY + 50, player.hp * 20, 20);
     //mana
     fill("white")
-     rect(camX + 160, camY +100, player.mMana, 20);
+    rect(camX + 160, camY + 100, player.mMana, 20);
     fill("blue")
-     rect(camX + 160, camY + 100, player.mana, 20);
+    rect(camX + 160, camY + 100, player.mana, 20);
     //picture
     fill(30, 50, 30, 80)
     ellipse(camX + 160, camY + 60, 120, 120)
@@ -115,6 +132,13 @@ function keyPressed() {
 
 
 
+    }
+
+    if (keycode == 70) {
+        for (let i = 0; i < interactables.length; i++) {
+            interactables[i].use(i);
+            break;
+        }
     }
     //q for item possibly
     //e or r for spell

@@ -125,6 +125,10 @@ class Player {
     //jumps etc
     process() {
         
+        if(this.grounded == false && this.jumps == 2 ) {
+            this.jumps = 1;
+        }
+        
         if (player.state == 0) {
             player.canAttack = true;
             player.canSpell = true;
@@ -146,7 +150,6 @@ class Player {
         //if using a spell or item or weapon, this.canAttack will become false
         if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
             //idle
-
 
 
             if (this.dashFor > 0) {
@@ -180,6 +183,7 @@ class Player {
                         this.speed = 7;
                     }
                 } else if (keyIsDown(65)) {
+                  
                     this.direction = -1;
                     this.position.x -= this.speed;
                     if (keyIsDown(16) && this.canDash && this.mana >= 10) {
@@ -206,9 +210,15 @@ class Player {
             if (mouseIsPressed && mouseButton == LEFT && this.state != 3) { // attack
                 this.frame = 0;
                 this.state = 3;
+                if(mouseX + camX >= this.position.x) {
+                    this.direction = 1;
+                   
+                } else {
+                    this.direction = -1;
+                }
                 this.isAttackingFor = this.animationAttack.length - 1
             }
-
+            console.log(this.direction)
             if (keyIsDown(69) && this.state != 4) { // spell
                 this.frame = 0;
                 this.state = 3;

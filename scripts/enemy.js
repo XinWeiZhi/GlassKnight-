@@ -39,6 +39,7 @@ class Enemy {
     }
 
     process() {
+        
         if (this.attackCooldown > 0) {
             this.attackCooldown--;
         }
@@ -80,7 +81,7 @@ class Enemy {
                 //just a quick stab
 
             } else {
-                this.checkCollision(120);
+                this.checkCollision(120,this.height);
                 this.canAttack = true;
             }
         } else if (this.canAttack == false && this.attackPattern == 2) {
@@ -100,7 +101,7 @@ class Enemy {
     
             } else {
                 if(this.grounded) {
-                    this.checkCollision(100);
+                    this.checkCollision(100,this.height);
                 }
                 
                 this.canAttack = true;
@@ -124,8 +125,9 @@ class Enemy {
 
 
 
-    checkCollision(hitbox) {
-        this.hitboxX = hitbox
+    checkCollision(hitboxx,hitboxy) {
+        this.hitboxX = hitboxx;
+        this.hitboxY = hitboxy;
         this.target = player;
         if (this.direction == -1) {
             if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
