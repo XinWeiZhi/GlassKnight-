@@ -43,8 +43,17 @@ class Player {
     }
 
     show() {
+        
+        
         fill(255);
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+        
+        //shield 
+        
+        fill(190,130,30, 90); 
+        stroke("yellow");
+        rect(this.position.x + this.direction * 50 - 15,this.position.y - 30, 30, 130 );
+        
     }
 
     animate() {
@@ -156,9 +165,10 @@ class Player {
                 this.dashFor--;
                 this.mana--;
                 if (this.direction == 1) {
-                    this.position.x += this.speed * 5;
-                } else {
-                    this.position.x -= this.speed * 5;
+                    this.position.x += this.speed * 7;
+                } else if (this.direction == -1) {
+                    this.dashFor--;
+                    this.position.x -= this.speed * 7;
                 }
 
 
@@ -172,7 +182,7 @@ class Player {
                     this.direction = 1;
                     this.position.x += this.speed;
                     if (keyIsDown(16) && this.canDash && this.mana >= 10) {
-                        this.dashFor = 20;
+                        this.dashFor = 8;
                         this.mana -= 10;
                         this.canDash = false;
                         

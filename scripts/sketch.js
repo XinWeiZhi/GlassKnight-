@@ -27,7 +27,7 @@ function preload() {
 function drawMap() {
 
     //makes the tileA < x amount
-    if (map == 1) {
+    if (map === 1) {
         numTiles = 6
         enemies.push(new Enemy(800, 0));
         enemies.push(new Enemy(900, 0));
@@ -39,9 +39,14 @@ function drawMap() {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
         }
 
-        interactables.push(new Door(300, 400));
+        interactables.push(new Door(300, 530));
 
 
+    } else if (map === 2) {
+        numTiles = 11
+        for (let tileA = 0; tileA < numTiles; tileA++) {
+            tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
+        }
     }
     //draw prebuilt maps
 
@@ -73,7 +78,7 @@ function draw() {
         tiles[t].show();
     }
 
-    if (frameCount % 100 == 0)[
+    if (frameCount % 100 == 0 && effects.length < 20)[
         effects.push(new GlowingDust(random(0, width), random(0, height)))
         ]
 
@@ -134,7 +139,7 @@ function keyPressed() {
 
     }
 
-    if (keycode == 70) {
+    if (keyCode == 70) {
         for (let i = 0; i < interactables.length; i++) {
             interactables[i].use(i);
             break;

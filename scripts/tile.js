@@ -30,7 +30,7 @@ class Interactable {
     }
     
     show() {
-        this.image(this.position.x, this.position.x, this.width,this.height);
+        image(this.image,this.position.x, this.position.y, this.width,this.height);
     }
     
     inRange() {
@@ -50,16 +50,17 @@ class Interactable {
 class Door extends Interactable {
     constructor(x, y) {
         super(x, y)
-        this.width = 100;
-        this.height = 165;
+        this.width = 130;
+        this.height = 250;
         this.image = door;
+        this.interactRange = 130;
     }
     
     use(i) {
         this.iam = i;
         if(this.inRange()) {
-            this.canUse = false;
-            player.position.x += 340;
+//            this.canUse = false;
+            player.position.x += 640;
         }
     }
 }
@@ -84,10 +85,10 @@ class GlowingDust {
 
     //called 60fps
     move(i) {
-        if (frameCount % 10 == 0) {
+        if (frameCount % 1 == 0) {
             this.target = createVector(mouseX  + camX  + random(-30,30) , mouseY  + camY + random(-30,30) );
              this.movementVector = p5.Vector.sub(this.target,this.position)
-0        }
+       }
         this.iam = i;
        
 
