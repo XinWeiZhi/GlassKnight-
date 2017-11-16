@@ -230,7 +230,7 @@ class Player {
                 }
                 this.isAttackingFor = this.animationAttack.length - 1
             }
-            console.log(this.direction)
+            
             if (keyIsDown(69) && this.state != 4) { // spell
                 this.frame = 0;
                 this.state = 3;
@@ -263,6 +263,7 @@ class Player {
         for (let i = 0; i < tiles.length; i++) {
             if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
                 this.floorY = tiles[i].y;
+                console.log(i);
                 break;
             } else {
                 this.floorY = 10000;
@@ -290,7 +291,7 @@ class Player {
 
     receivedHit() {
         if (this.hp <= 0) {
-          console.log("cjknkn")
+          
         }
         
         

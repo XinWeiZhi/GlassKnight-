@@ -168,6 +168,7 @@ class Enemy {
         for (let i = 0; i < tiles.length; i++) {
             if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
                 this.floorY = tiles[i].y;
+                
                 break;
             }
         }

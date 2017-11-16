@@ -41,6 +41,7 @@ function drawMap() {
         enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
+            tiles[tileA].width = 1200
         }
 
         interactables.push(new Door(300, 530));
@@ -59,9 +60,10 @@ function drawMap() {
         enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 35));
+            tiles[tileA].width = 120
         }
 
-       
+       interactables.push(new Door(300, 530));
     }
     //draw prebuilt maps
 
