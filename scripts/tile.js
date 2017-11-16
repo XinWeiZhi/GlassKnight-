@@ -80,7 +80,7 @@ class GlowingDust {
         this.width = 23;
         this.height = 21;
         this.distFrame;
-        this.target = createVector(mouseX, mouseY);
+        this.target;
         this.movementVector = this.target - this.position;
     }
 

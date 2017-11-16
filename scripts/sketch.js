@@ -58,7 +58,7 @@ function drawMap() {
         enemies.push(new Enemy(1200, 0));
         enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
-            tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 5));
+            tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 35));
         }
 
        
