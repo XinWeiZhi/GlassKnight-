@@ -24,6 +24,7 @@ function preload() {
     walkLeft0 = loadImage("scripts/assets/trumpleft.jpg");
     door = loadImage("scripts/assets/door.jpg");
     rockies = loadImage("scripts/assets/stone.jpg");
+    fire = loadImage("scripts/assets/hollow.jpg");
 }
 
 function drawMap() {
