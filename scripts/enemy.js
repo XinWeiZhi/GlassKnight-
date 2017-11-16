@@ -175,7 +175,9 @@ class Enemy {
 
     receivedHit() {
         if (this.hp <= 0) {
+            effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
             enemies.splice(this.iam, 1);
+            
         }
     }
 

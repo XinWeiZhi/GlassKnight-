@@ -7,9 +7,10 @@ let gravity = 0.6;
 let numTiles = 0;
 let enemies = [];
 let camX = 0;
-
+let hudDesired = false;
 let camY = 0;
 let camZ = 0;
+let silvercoins = 0;
 //end of VARIABLES
 
 
@@ -22,12 +23,15 @@ function preload() {
     walk = loadImage("scripts/assets/download.jpg");
     walkLeft0 = loadImage("scripts/assets/trumpleft.jpg");
     door = loadImage("scripts/assets/door.jpg");
+    rockies = loadImage("scripts/assets/stone.jpg");
 }
 
 function drawMap() {
 
     //makes the tileA < x amount
     if (map === 1) {
+        tiles = [];
+        interactables = [];
         numTiles = 6
         enemies.push(new Enemy(800, 0));
         enemies.push(new Enemy(900, 0));
@@ -43,10 +47,21 @@ function drawMap() {
 
 
     } else if (map === 2) {
-        numTiles = 11
+        tiles = [];
+        interactables = [];
+        
+        numTiles = 18
+        enemies.push(new Enemy(800, 0));
+        enemies.push(new Enemy(900, 0));
+        enemies.push(new Enemy(700, 0));
+        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Enemy(1200, 0));
+        enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
-            tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
+            tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 5));
         }
+
+       
     }
     //draw prebuilt maps
 
@@ -72,15 +87,13 @@ function drawEnemies() {
 function draw() {
     background(30);
     cameraControl();
-
+    
 
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
 
-    if (frameCount % 100 == 0 && effects.length < 20)[
-        effects.push(new GlowingDust(random(0, width), random(0, height)))
-        ]
+
 
     // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
@@ -122,6 +135,18 @@ function draw() {
     //picture
     fill(30, 50, 30, 80)
     ellipse(camX + 160, camY + 60, 120, 120)
+    //exp bar
+     fill("gray")
+    rect(camX + 160, camY + 120, player.experienceToLevel * 10, 20);
+    fill("green")
+    rect(camX + 160, camY + 120, player.experience * 10, 20);
+    
+    
+    
+    
+    
+    
+    drawHud();
 }
 
 function keyPressed() {
@@ -137,6 +162,11 @@ function keyPressed() {
 
 
 
+    }
+    
+    if (keyCode == 27) {
+        hudDesired = !hudDesired; // likely the inventory
+        
     }
 
     if (keyCode == 70) {
@@ -162,5 +192,11 @@ function mouseClicked() {
 function keyReleased() {
     if (keyCode === 16) {
         player.canDash = true;
+    }
+}
+
+function drawHud() {
+    if(hudDesired) {
+        rect(camX + 100,camY + 100, 900, 600);
     }
 }

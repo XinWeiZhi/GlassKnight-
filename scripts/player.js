@@ -37,6 +37,8 @@ class Player {
         this.frame = 0;
         this.hitboxX = 215;
         this.damage = 2;
+        this.experience = 0;
+        this.experienceToLevel = 30;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
 
         //perhaps this.hat / this.armor
