@@ -25,6 +25,7 @@ function preload() {
     door = loadImage("scripts/assets/door.jpg");
     rockies = loadImage("scripts/assets/stone.jpg");
     fire = loadImage("scripts/assets/hollow.jpg");
+    gravewatcher = loadImage("scripts/assets/abyss.jpg");
 }
 
 function drawMap() {
@@ -40,6 +41,7 @@ function drawMap() {
         enemies.push(new Enemy(1000, 0));
         enemies.push(new Enemy(1200, 0));
         enemies.push(new Enemy(1100, 0));
+        enemies.push(new GraveMaster(300,30));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
@@ -111,6 +113,7 @@ function draw() {
         enemies[e].show(e);
         enemies[e].process();
         enemies[e].isGrounded();
+        
     }
 
     for (let d = 0; d < effects.length; d++) {

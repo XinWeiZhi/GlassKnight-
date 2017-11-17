@@ -174,10 +174,10 @@ class Enemy {
         }
     }
 
-    receivedHit() {
+    receivedHit(i) {
         if (this.hp <= 0) {
             effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
-            enemies.splice(this.iam, 1);
+            enemies.splice(i, 1);
             
         }
     }
@@ -349,6 +349,11 @@ class Harpy extends Enemy {
 class GraveMaster extends Enemy {
     constructor(x, y) {
         super(x,y);
+        this.image = gravewatcher;
+        this.hp = 150;
+        this.mhp = 150;
+        this.standoff = false;
+        this.attackRange = 400;
         //perhaps this.hat / this.armor
     }
 
@@ -378,18 +383,33 @@ class GraveMaster extends Enemy {
         //if using a spell or item or weapon, this.canAttack will become false
         if (this.canAttack) {
             if (player.position.x < this.position.x) {
-                this.position.x -= this.speed;
+                if(player.position.x < this.position.x - 200) {
+                    this.position.x -= this.speed;
+                } else {
+                    this.position.x -= this.speed / 8
+                }
+                
                 this.direction = -1;
+            } else {
+                this.standoff = true;
             }
             if (player.position.x > this.position.x) {
-                this.position.x += this.speed;
+                if(player.position.x > this.position.x + 200) {
+                    this.position.x += this.speed;
+                } else {
+                    this.position.x += this.speed / 8
+                }
                 this.direction = 1;
+            } else {
+                this.standoff = true;
             }
+            
+            
 
             if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
                 this.canAttack = false;
 
-                this.attackPattern = floor(random(0, 3)); //0,1,2,3 - 4 patterns
+                this.attackPattern = floor(random(0, 3)); //0,1,2, -3 patterns
 
                 this.inAttackFor = (this.attackPattern + 1) * 20;
                 this.attackCooldown += (this.attackPattern + 1) * 80;
@@ -403,6 +423,11 @@ class GraveMaster extends Enemy {
                 this.inAttackFor--;
                 //add attack pattern coding here
                 //just a quick stab
+                if (this.direction == 1) {
+                    this.position.x += 2;
+                } else {
+                    this.position.x -= 2;
+                }
 
             } else {
                 this.checkCollision(120,this.height);
@@ -410,7 +435,7 @@ class GraveMaster extends Enemy {
             }
         } else if (this.canAttack == false && this.attackPattern == 2) {
             //medium charged attack jump
-            if (this.inAttackFor > 0) {
+            if (this.inAttackFor > 0 || this.grounded == false) {
                 this.inAttackFor--;
                 //add attack pattern coding here
                 if (this.direction == 1) {
@@ -418,14 +443,16 @@ class GraveMaster extends Enemy {
                 } else {
                     this.position.x -= 4;
                 }
+                console.log(this.grounded);
 
                 this.jumpSpeed = 26;
                 this.position.y -= this.jumpSpeed;
 
     
             } else {
+                ellipse(this.position.x,this.position.y,500,500);
                 if(this.grounded) {
-                    this.checkCollision(100,this.height);
+                    this.checkCollision(300);
                 }
                 
                 this.canAttack = true;
@@ -436,11 +463,12 @@ class GraveMaster extends Enemy {
                 this.inAttackFor--;
                 //add attack pattern coding here
                 if (this.direction == 1) {
-                    this.position.x += 10;
+                    this.position.x += 20;
                 } else {
-                    this.position.x -= 10;
+                    this.position.x -= 20;
                 }
-                this.checkCollision(10);
+                this.damage = 0.5;
+                this.checkCollision(21);
             } else {
                 this.canAttack = true;
             }
@@ -458,13 +486,13 @@ class GraveMaster extends Enemy {
                 console.log("sweep left")
                 this.target.hp -= this.damage;
                 this.target.receivedHit();
-                this.inAttackFor = 0;
+                
             }
         } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
             console.log("sweep")
             this.target.hp -= this.damage;
             this.target.receivedHit();
-            this.inAttackFor = 0;
+            
             
             //                text(this.damage, this.target.position.x, this.target.position.y - 40);
         }

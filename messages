@@ -1,0 +1,7 @@
+class RedText {
+
+}
+
+class BlueText extends r {
+
+}

@@ -113,7 +113,7 @@ class Player {
                 }
                 this.image = this.animationAttack[this.frame];
                 if (this.isAttackingFor == 0) {
-                    this.checkCollision();
+                    this.checkCollision(222);
 
                     this.frame = 0;
                     this.state = 0;
@@ -135,7 +135,7 @@ class Player {
 
                     this.frame = 0;
                     this.state = 0;
-                    this.canAttack = true;
+                    this.canSpell = true;
                 }
 
             }
@@ -288,12 +288,13 @@ class Player {
                 if (enemies[target].position.x <= player.position.x && enemies[target].position.x >= player.position.x - this.hitboxX) {
                     console.log("sweep left")
                     enemies[target].hp -= this.damage;
-                    enemies[target].receivedHit();
+                    enemies[target].receivedHit(target);
                 }
             } else if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX && enemies[target].position.y >= this.position.y - this.height / 2 && enemies[target].position.y <= this.position.y + this.height / 2) {
             console.log("sweep")
             enemies[target].hp -= this.damage;
-            enemies[target].receivedHit();
+            enemies[target].receivedHit(target);
+            giveHitText(this.damage, enemies[target]);
             //                text(this.damage, enemies[target].position.x, enemies[target].position.y - 40);
         }
 
@@ -305,6 +306,14 @@ class Player {
         }
 
 
+    }
+    
+    amHitText(amount) {
+        messages.push(new RedText(amount, this.position.x, this.position.y));
+    }
+    
+    giveHitText(amount, target) {
+        messages.push(new BlueText(amount, target.position.x, target.position.y));
     }
 
     //    playTextHits(damage) {
