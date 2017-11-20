@@ -95,14 +95,14 @@ class Enemy {
                     this.position.x -= 4;
                 }
 
-                this.jumpSpeed = 26;
+                this.jumpSpeed = 15;
                 this.position.y -= this.jumpSpeed;
 
     
             } else {
-                if(this.grounded) {
+              
                     this.checkCollision(100,this.height);
-                }
+                
                 
                 this.canAttack = true;
             }
@@ -135,13 +135,14 @@ class Enemy {
                 this.target.hp -= this.damage;
                 this.target.receivedHit();
                 this.inAttackFor = 0;
+                player.amHitText(this.damage);
             }
         } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
             console.log("sweep")
             this.target.hp -= this.damage;
             this.target.receivedHit();
             this.inAttackFor = 0;
-            
+            player.amHitText(this.damage);
             //                text(this.damage, this.target.position.x, this.target.position.y - 40);
         }
 
@@ -184,9 +185,17 @@ class Enemy {
 
 }
 
+
 class Harpy extends Enemy {
     constructor(x, y) {
         super(x,y);
+        this.image = bird;
+        this.height = 100;
+        this.width = 180;
+        this.speed = 1;
+        this.grounded = false;
+        this.hover = true;
+        this.hoverY;
         //perhaps this.hat / this.armor
     }
 
@@ -205,12 +214,13 @@ class Harpy extends Enemy {
         if (this.attackCooldown > 0) {
             this.attackCooldown--;
         }
-
-        if (this.grounded == false) {
-            this.position.y += gravity * this.gravityMultiplier;
+            if(this.position.y > 0 ) {
+                console.log("sjknjknjk")
+                 this.position.y -= gravity * this.gravityMultiplier;
+            }
+           
             if (this.gravityMultiplier <= this.terminal) {
                 this.gravityMultiplier++;
-            }
         }
 
         //if using a spell or item or weapon, this.canAttack will become false
@@ -247,7 +257,7 @@ class Harpy extends Enemy {
                 this.canAttack = true;
             }
         } else if (this.canAttack == false && this.attackPattern == 2) {
-            //medium charged attack jump
+            //medium charged attack dive
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
                 //add attack pattern coding here
@@ -257,8 +267,8 @@ class Harpy extends Enemy {
                     this.position.x -= 4;
                 }
 
-                this.jumpSpeed = 26;
-                this.position.y -= this.jumpSpeed;
+                this.jumpSpeed = 12;
+                this.position.y += this.jumpSpeed;
 
     
             } else {
@@ -291,7 +301,16 @@ class Harpy extends Enemy {
         this.hitboxX = hitboxx;
         this.hitboxY = hitboxy;
         this.target = player;
-        if (this.direction == -1) {
+        
+        if(this.attackPattern == 2) {
+            if(dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 130) {
+                console.log("jumpattack")
+                this.target.hp -= this.damage;
+                this.target.receivedHit();
+                this.inAttackFor = 0;
+            }
+        }  else {
+            if (this.direction == -1) {
             if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
                 console.log("sweep left")
                 this.target.hp -= this.damage;
@@ -304,8 +323,10 @@ class Harpy extends Enemy {
             this.target.receivedHit();
             this.inAttackFor = 0;
             
-            //                text(this.damage, this.target.position.x, this.target.position.y - 40);
         }
+        }  
+        
+        
 
     }
 
@@ -314,17 +335,17 @@ class Harpy extends Enemy {
 
     //solid code
     isGrounded() {
-        this.feetY = this.position.y + this.height / 2;
-        if (this.floorY <= this.feetY) {
-            this.grounded = true;
-            this.canJump = true;
-            this.gravityMultiplier = 1;
-            this.jumpSpeed = 0;
-            this.position.y = this.floorY - this.height / 2;
-        } else {
-            this.grounded = false;
-        }
-        //and if this is true, then ur feetY will equal the floorY
+        this.hoverY = this.floorY - 600;
+//        if (this.floorY <= this.feetY) {
+//            this.grounded = true;
+//            this.canJump = true;
+//            this.gravityMultiplier = 1;
+//            this.jumpSpeed = 0;
+//            this.position.y = this.floorY - this.height / 2;
+//        } else {
+//            this.grounded = false;
+//        }
+//        //and if this is true, then ur feetY will equal the floorY
 
         //find this.floorY
         for (let i = 0; i < tiles.length; i++) {
@@ -430,6 +451,7 @@ class GraveMaster extends Enemy {
                 }
 
             } else {
+                this.damage = 0.5;
                 this.checkCollision(120,this.height);
                 this.canAttack = true;
             }
@@ -443,7 +465,6 @@ class GraveMaster extends Enemy {
                 } else {
                     this.position.x -= 4;
                 }
-                console.log(this.grounded);
 
                 this.jumpSpeed = 26;
                 this.position.y -= this.jumpSpeed;
@@ -452,6 +473,7 @@ class GraveMaster extends Enemy {
             } else {
                 ellipse(this.position.x,this.position.y,500,500);
                 if(this.grounded) {
+                    this.damage = 2;
                     this.checkCollision(300);
                 }
                 
@@ -481,21 +503,33 @@ class GraveMaster extends Enemy {
         this.hitboxX = hitboxx;
         this.hitboxY = hitboxy;
         this.target = player;
-        if (this.direction == -1) {
+        
+         if(this.attackPattern == 2) {
+            if(dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 190) {
+                console.log("jumpattack")
+                this.target.hp -= this.damage;
+                this.target.receivedHit();
+                this.inAttackFor = 0;
+                player.amHitText(this.damage);
+            }
+        } else {
+           if (this.direction == -1) {
             if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
                 console.log("sweep left")
                 this.target.hp -= this.damage;
                 this.target.receivedHit();
-                
+                player.amHitText(this.damage);
             }
         } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
             console.log("sweep")
             this.target.hp -= this.damage;
             this.target.receivedHit();
+            player.amHitText(this.damage);
             
             
-            //                text(this.damage, this.target.position.x, this.target.position.y - 40);
+        }  
         }
+       
 
     }
 

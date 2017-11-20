@@ -1,7 +1,6 @@
 class Player {
     constructor(x, y) {
         this.position = createVector(this.x, this.y);
-        this.attack = 1;
         this.speed = 9;
         this.width = 100;
         this.height = 180;
@@ -36,9 +35,11 @@ class Player {
         this.mMana = 250;
         this.frame = 0;
         this.hitboxX = 215;
+        this.spellDamage = 2;
         this.damage = 2;
         this.experience = 0;
         this.experienceToLevel = 30;
+        this.atkCooldown = 0;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
 
         //perhaps this.hat / this.armor
@@ -105,7 +106,8 @@ class Player {
 
 
 
-        } else if (this.state == 3) { //attack
+        } else if (this.state == 3) { //attack atk timer --
+
             if (this.isAttackingFor > 0) {
                 this.isAttackingFor--;
                 if (this.frame < this.animationAttack.length - 1) {
@@ -118,6 +120,7 @@ class Player {
                     this.frame = 0;
                     this.state = 0;
                     this.canAttack = true;
+                    
                 }
 
             }
@@ -144,6 +147,11 @@ class Player {
     }
     //jumps etc
     process() {
+        if (this.atkCooldown > 0) {
+            this.atkCooldown--;
+        }
+
+
 
         if (this.grounded == false && this.jumps == 2) {
             this.jumps = 1;
@@ -227,18 +235,7 @@ class Player {
                 }
             }
 
-            //attack if not already in state 3
-            if (mouseIsPressed && mouseButton == LEFT && this.state != 3) { // attack
-                this.frame = 0;
-                this.state = 3;
-                if (mouseX + camX >= this.position.x) {
-                    this.direction = 1;
 
-                } else {
-                    this.direction = -1;
-                }
-                this.isAttackingFor = this.animationAttack.length - 1
-            }
 
             if (keyIsDown(69) && this.state != 4) { // spell
                 this.frame = 0;
@@ -248,6 +245,8 @@ class Player {
             }
         }
     }
+
+   
 
 
     //solid code
@@ -288,15 +287,32 @@ class Player {
                 if (enemies[target].position.x <= player.position.x && enemies[target].position.x >= player.position.x - this.hitboxX) {
                     console.log("sweep left")
                     enemies[target].hp -= this.damage;
+                    this.giveHitText(this.damage, enemies[target]);
                     enemies[target].receivedHit(target);
+
                 }
             } else if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX && enemies[target].position.y >= this.position.y - this.height / 2 && enemies[target].position.y <= this.position.y + this.height / 2) {
             console.log("sweep")
             enemies[target].hp -= this.damage;
+            this.giveHitText(this.damage, enemies[target]);
             enemies[target].receivedHit(target);
-            giveHitText(this.damage, enemies[target]);
+
             //                text(this.damage, enemies[target].position.x, enemies[target].position.y - 40);
         }
+
+    }
+    
+     attack() {
+        //attack if not already in state 3 / all the code will be in animation
+         console.log("shi")
+            this.frame = 0;
+            this.state = 3;
+            if (mouseX + camX >= this.position.x) {
+                this.direction = 1;
+            } else {
+                this.direction = -1;
+            }
+            this.isAttackingFor = this.animationAttack.length - 1
 
     }
 
@@ -307,13 +323,15 @@ class Player {
 
 
     }
-    
+
     amHitText(amount) {
         messages.push(new RedText(amount, this.position.x, this.position.y));
+        console.log("yes");
     }
-    
+
     giveHitText(amount, target) {
         messages.push(new BlueText(amount, target.position.x, target.position.y));
+        console.log("no")
     }
 
     //    playTextHits(damage) {

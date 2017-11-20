@@ -11,6 +11,7 @@ let hudDesired = false;
 let camY = 0;
 let camZ = 0;
 let silvercoins = 0;
+let messages = []
 //end of VARIABLES
 
 
@@ -26,6 +27,7 @@ function preload() {
     rockies = loadImage("scripts/assets/stone.jpg");
     fire = loadImage("scripts/assets/hollow.jpg");
     gravewatcher = loadImage("scripts/assets/abyss.jpg");
+    bird = loadImage("scripts/assets/bird.jpg");
 }
 
 function drawMap() {
@@ -39,9 +41,9 @@ function drawMap() {
         enemies.push(new Enemy(900, 0));
         enemies.push(new Enemy(700, 0));
         enemies.push(new Enemy(1000, 0));
-        enemies.push(new Enemy(1200, 0));
-        enemies.push(new Enemy(1100, 0));
-        enemies.push(new GraveMaster(300,30));
+        enemies.push(new Harpy(1200, 0));
+        enemies.push(new Harpy(1100, 0));
+        enemies.push(new GraveMaster(300, 30));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
@@ -53,7 +55,7 @@ function drawMap() {
     } else if (map === 2) {
         tiles = [];
         interactables = [];
-        
+
         numTiles = 18
         enemies.push(new Enemy(800, 0));
         enemies.push(new Enemy(900, 0));
@@ -66,7 +68,7 @@ function drawMap() {
             tiles[tileA].width = 120
         }
 
-       interactables.push(new Door(300, 530));
+        interactables.push(new Door(300, 530));
     }
     //draw prebuilt maps
 
@@ -92,7 +94,7 @@ function drawEnemies() {
 function draw() {
     background(30);
     cameraControl();
-    
+
 
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
@@ -113,7 +115,7 @@ function draw() {
         enemies[e].show(e);
         enemies[e].process();
         enemies[e].isGrounded();
-        
+
     }
 
     for (let d = 0; d < effects.length; d++) {
@@ -123,6 +125,11 @@ function draw() {
 
     for (let i = 0; i < interactables.length; i++) {
         interactables[i].show();
+
+    }
+
+    for (let m = 0; m < messages.length; m++) {
+        messages[m].show(m);
 
     }
 
@@ -142,16 +149,16 @@ function draw() {
     fill(30, 50, 30, 80)
     ellipse(camX + 160, camY + 60, 120, 120)
     //exp bar
-     fill("gray")
+    fill("gray")
     rect(camX + 160, camY + 120, player.experienceToLevel * 10, 20);
     fill("green")
     rect(camX + 160, camY + 120, player.experience * 10, 20);
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     drawHud();
 }
 
@@ -169,10 +176,21 @@ function keyPressed() {
 
 
     }
-    
+
     if (keyCode == 27) {
         hudDesired = !hudDesired; // likely the inventory
-        
+
+    }
+    //1 for attack or mouseleft
+    if (keyCode == 49) {
+        if (player.canAttack && player.atkCooldown == 0) {
+            if (player.state != 3) {
+                player.atkCooldown = 15;
+                player.attack();
+                player.canAttack = false;
+            }
+        }
+
     }
 
     if (keyCode == 70) {
@@ -186,10 +204,18 @@ function keyPressed() {
 }
 
 function mouseClicked() {
-    if (player.canAttack) {
-        player.frame = 0;
-        player.canAttack = false;
+    if (mouseButton == LEFT) {
+        if (player.canAttack && player.atkCooldown == 0) {
+            if (player.state != 3) {
+                player.atkCooldown = 15;
+                player.attack();
+                player.canAttack = false;
+            }
+        }
     }
+
+
+
 
 }
 
@@ -202,7 +228,7 @@ function keyReleased() {
 }
 
 function drawHud() {
-    if(hudDesired) {
-        rect(camX + 100,camY + 100, 900, 600);
+    if (hudDesired) {
+        rect(camX + 100, camY + 100, 900, 600);
     }
 }
