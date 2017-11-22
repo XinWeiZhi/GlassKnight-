@@ -232,3 +232,15 @@ function drawHud() {
         rect(camX + 100, camY + 100, 900, 600);
     }
 }
+
+function dealDamage(target, damage) {
+    target.hp -= this.damage;
+    target.receivedHit();
+    if(target instanceof Player) {
+       messages.push(new RedText(damage,target.position.x, target.position.y)) ;
+    } else {
+       messages.push(new BlueText(damage,target.position.x, target.position.y)) ;
+    }
+    target.receivedHit();
+    
+}

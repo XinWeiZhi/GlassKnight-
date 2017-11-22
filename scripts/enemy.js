@@ -194,8 +194,11 @@ class Harpy extends Enemy {
         this.width = 180;
         this.speed = 1;
         this.grounded = false;
-        this.hover = true;
+        this.isHovering = true;
         this.hoverY;
+        this.speed = 4;
+        this.terminal = 80;
+        this.canStillDamage = true;
         //perhaps this.hat / this.armor
     }
 
@@ -210,18 +213,29 @@ class Harpy extends Enemy {
     }
 
     process() {
+        if(this.canAttack == true) {
+          this.reposition();  
+        }
+        
 
         if (this.attackCooldown > 0) {
             this.attackCooldown--;
         }
-        if (this.position.y > 0 && this.istrying to hover ok ) {
+        if (this.hoverY < this.position.y) {
+            if (this.gravityMultiplier <= this.terminal) {
+            this.gravityMultiplier ++;
+            }
+
+            console.log(this.hoverY)
             
-            this.position.y -= gravity * this.gravityMultiplier;
+            this.position.y -= gravity * this.gravityMultiplier ;
+        } else if(this.position.y <= this.hoverY) {
+            
+            this.isHovering = true;
+            this.gravityMultiplier = 1;
         }
 
-        if (this.gravityMultiplier <= this.terminal) {
-            this.gravityMultiplier++;
-        }
+        
 
         //if using a spell or item or weapon, this.canAttack will become false
         if (this.canAttack) {
@@ -234,13 +248,23 @@ class Harpy extends Enemy {
                 this.direction = 1;
             }
 
-            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
+            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0 && this.isHovering) {
                 this.canAttack = false;
 
                 this.attackPattern = floor(random(0, 2)); //0,1,2,3 - 4 patterns
-
-                this.inAttackFor = (this.attackPattern + 1) * 20;
-                this.attackCooldown += (this.attackPattern + 1) * 80;
+                this.canStillDamage = true;
+                this.jumpSpeed = 0;
+                this.gravityMultiplier = 1;
+                
+                if(this.attackPattern == 1) {
+                    this.inAttackFor = 300;
+                    this.attackCooldown = 500;
+                } else {
+                    this.inAttackFor = 30;
+                    this.attackCooldown = 100;
+                }
+                
+                
             }
 
 
@@ -256,27 +280,35 @@ class Harpy extends Enemy {
             }
         } else if (this.canAttack == false && this.attackPattern == 1) {
             //medium charged attack dive
-            if (this.inAttackFor > 0) {
+            if (this.isHovering == false || this.inAttackFor > 0) {
                 this.inAttackFor--;
+                this.isHovering = false; // remove this line if u know how to program
+                if(this.isHovering) {
+                    this.inAttackFor = 0;
+                    this.canAttack = true;
+                      this.attackCooldown = 200;
+                }
+                
                 //add attack pattern coding here
                 if (this.direction == 1) {
-                    this.position.x += 4;
+                    this.position.x += 8;
                 } else {
-                    this.position.x -= 4;
+                    this.position.x -= 8;
                 }
-
-                this.jumpSpeed = 12;
+                  
+            
+                this.jumpSpeed = 25;
                 this.position.y += this.jumpSpeed;
-
-
-            } else {
-                if (this.grounded) {
+                
+                if(this.canStillDamage) {
                     this.checkCollision(100, this.height);
                 }
-
-                this.canAttack = true;
-            }
+                
+              
+        } else {
+            this.canAttack = true;
         }
+    }
     }
 
 
@@ -286,12 +318,15 @@ class Harpy extends Enemy {
         this.hitboxY = hitboxy;
         this.target = player;
 
-        if (this.attackPattern == 2) {
+        if (this.attackPattern == 1) {
             if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 130) {
-                console.log("jumpattack")
-                this.target.hp -= this.damage;
-                this.target.receivedHit();
-                this.inAttackFor = 0;
+                console.log("diveatk")
+                this.damage = 1;
+                dealDamage(player, this.damage);
+                this.canStillDamage = false;
+                
+                
+                
             }
         } else {
             if (this.direction == -1) {
@@ -313,6 +348,16 @@ class Harpy extends Enemy {
 
 
     }
+    
+    reposition() {
+        if( player.canAttack && dist(player.position.x, player.position.y, this.position.x, this.position.y) <= 320 ) {
+            if(player.position.x > this.position.x) {
+               this.position.x -= 5;
+               } else {
+               this.position.x += 5;
+               }
+        }
+    }
 
 
 
@@ -320,16 +365,7 @@ class Harpy extends Enemy {
     //solid code
     isGrounded() {
         this.hoverY = this.floorY - 600;
-        //        if (this.floorY <= this.feetY) {
-        //            this.grounded = true;
-        //            this.canJump = true;
-        //            this.gravityMultiplier = 1;
-        //            this.jumpSpeed = 0;
-        //            this.position.y = this.floorY - this.height / 2;
-        //        } else {
-        //            this.grounded = false;
-        //        }
-        //        //and if this is true, then ur feetY will equal the floorY
+     
 
         //find this.floorY
         for (let i = 0; i < tiles.length; i++) {
