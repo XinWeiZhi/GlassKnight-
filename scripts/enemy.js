@@ -273,7 +273,7 @@ class Harpy extends Enemy {
             //hyper beam
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
-                
+                projectiles.push(new Projectile(this.position.x, this.position.y))
             } else {
                 this.checkCollision(120, this.height);
                 this.canAttack = true;
