@@ -3,6 +3,7 @@ let interactables = [];
 let effects = [];
 let map = 1;
 let tiles = [];
+let projectiles = [];
 let gravity = 0.6;
 let numTiles = 0;
 let enemies = [];
@@ -125,6 +126,12 @@ function draw() {
 
     for (let i = 0; i < interactables.length; i++) {
         interactables[i].show();
+
+    }
+    
+    for (let p = 0; p < projectiles.length; p++) {
+        projectiles[p].show();
+        projectiles[p].move(p);
 
     }
 

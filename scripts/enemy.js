@@ -273,7 +273,7 @@ class Harpy extends Enemy {
             //hyper beam
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
-
+                
             } else {
                 this.checkCollision(120, this.height);
                 this.canAttack = true;
@@ -329,18 +329,17 @@ class Harpy extends Enemy {
                 
             }
         } else {
+            //hyper beam attack shoots line at player
             if (this.direction == -1) {
                 if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
                     console.log("sweep left")
                     this.target.hp -= this.damage;
                     this.target.receivedHit();
-                    this.inAttackFor = 0;
                 }
             } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
                 console.log("sweep")
                 this.target.hp -= this.damage;
                 this.target.receivedHit();
-                this.inAttackFor = 0;
 
             }
         }
