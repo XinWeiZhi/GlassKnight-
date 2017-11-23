@@ -35,7 +35,7 @@ class Player {
         this.mMana = 250;
         this.frame = 0;
         this.hitboxX = 215;
-        this.spellDamage = 2;
+        this.spellDamage = 5;
         this.damage = 2;
         this.experience = 0;
         this.experienceToLevel = 30;
@@ -134,8 +134,8 @@ class Player {
                 }
                 this.image = this.animationSpell[this.frame];
                 if (this.isAttackingFor == 0) {
-                    this.checkCollision(1000);
-
+//                    this.checkCollision(1000);
+                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800,  50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
                     this.frame = 0;
                     this.state = 0;
                     this.canSpell = true;

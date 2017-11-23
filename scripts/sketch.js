@@ -50,7 +50,7 @@ function drawMap() {
             tiles[tileA].width = 1200
         }
 
-        interactables.push(new Door(300, 530));
+        interactables.push(new Door(300, 530, 2));
 
 
     } else if (map === 2) {
@@ -69,7 +69,23 @@ function drawMap() {
             tiles[tileA].width = 120
         }
 
-        interactables.push(new Door(300, 530));
+        interactables.push(new Door(300, 330, 3));
+    } else if (map === 3) {
+        tiles = [];
+        interactables = [];
+        
+        numTiles = 11
+        enemies.push(new Enemy(800, 0));
+        enemies.push(new Enemy(900, 0));
+        enemies.push(new Enemy(700, 0));
+        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Enemy(1200, 0));
+        enemies.push(new Enemy(1100, 0));
+        for (let tileA = 0; tileA < numTiles; tileA++) {
+            tiles.push(new Grass(-400 + tileA * 5000, 700 - tileA * 35));
+            tiles[tileA].width = 5000
+        }
+        interactables.push(new Door(300, 530, 1));
     }
     //draw prebuilt maps
 
@@ -240,7 +256,7 @@ function drawHud() {
 }
 
 function dealDamage(target, damage) {
-    target.hp -= this.damage;
+    target.hp -= damage;
     target.receivedHit();
     if(target instanceof Player) {
        messages.push(new RedText(damage,target.position.x, target.position.y)) ;

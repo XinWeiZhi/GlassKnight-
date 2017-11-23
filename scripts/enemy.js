@@ -200,6 +200,8 @@ class Harpy extends Enemy {
         this.terminal = 80;
         this.canStillDamage = true;
         this.hp = 30;
+        this.spellDamage = 1;
+        this.shockWaveSpeed = 3;
         //perhaps this.hat / this.armor
     }
 
@@ -275,7 +277,7 @@ class Harpy extends Enemy {
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
                 if(this.inAttackFor % 5 == 0) {
-                    projectiles.push(new ShockWave(this.position.x, this.position.y, player));
+                    projectiles.push(new ShockWave(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
                 }
                 
             } else {

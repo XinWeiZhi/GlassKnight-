@@ -28,10 +28,11 @@ class Stone extends Tile {
 }
 
 class Interactable {
-    constructor(x, y) {
+    constructor(x, y, img,width,height) {
         this.position = createVector(x, y);
-        this.width;
-        this.height;
+        this.width = width;
+        this.height = height;
+        this.image = img; 
         this.canUse = true;
         this.interactRange = 70;
     }
@@ -55,23 +56,22 @@ class Interactable {
 }
 
 class Door extends Interactable {
-    constructor(x, y) {
-        super(x, y)
-        this.width = 130;
-        this.height = 250;
-        this.image = door;
+    constructor(x, y, goMap) {
+        super(x, y, door, 130, 250)
         this.interactRange = 130;
+        this.goMap = goMap;
     }
     
     use(i) {
         this.iam = i;
         if(this.inRange()) {
 //            this.canUse = false;
-            map = 2;
+            map = this.goMap;
             drawMap();
         }
     }
 }
+
 
 class GlowingDust {
     constructor(x, y) {
