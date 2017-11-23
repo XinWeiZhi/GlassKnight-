@@ -26,7 +26,6 @@ class TargetedProjectile { // things that go after people
             this.target = createVector(player.position.x, player.position.y);
             this.movementVector = p5.Vector.sub(this.target, this.position)
         }
-        this.iam = i;
 
 
         if (this.target != null) {
@@ -34,10 +33,7 @@ class TargetedProjectile { // things that go after people
             this.distFrame = this.speed / 60;
             //todo improve this checking dist
             if (dist(this.position.x, this.position.y, this.target.x, this.target.y) <= 15) {
-                //do nothing
-                silvercoins += 2;
-                player.experience += 1;
-                effects.splice(this.iam, 1);
+                projectiles.splice(i, 1);
             } else {
                 this.position.x += this.movementVector.x * this.distFrame;
                 this.position.y += this.movementVector.y * this.distFrame;
