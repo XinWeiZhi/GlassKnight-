@@ -199,6 +199,7 @@ class Harpy extends Enemy {
         this.speed = 4;
         this.terminal = 80;
         this.canStillDamage = true;
+        this.hp = 30;
         //perhaps this.hat / this.armor
     }
 
@@ -257,7 +258,7 @@ class Harpy extends Enemy {
                 this.gravityMultiplier = 1;
                 
                 if(this.attackPattern == 1) {
-                    this.inAttackFor = 300;
+                    this.inAttackFor = 100;
                     this.attackCooldown = 500;
                 } else {
                     this.inAttackFor = 30;
@@ -273,7 +274,10 @@ class Harpy extends Enemy {
             //hyper beam
             if (this.inAttackFor > 0) {
                 this.inAttackFor--;
-                projectiles.push(new Projectile(this.position.x, this.position.y))
+                if(this.inAttackFor % 5 == 0) {
+                    projectiles.push(new ShockWave(this.position.x, this.position.y, player));
+                }
+                
             } else {
                 this.checkCollision(120, this.height);
                 this.canAttack = true;

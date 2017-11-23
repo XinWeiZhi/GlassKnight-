@@ -4,8 +4,8 @@ class Player {
         this.speed = 9;
         this.width = 100;
         this.height = 180;
-        this.hp = 10;
-        this.mhp = 10;
+        this.hp = 20;
+        this.mhp = 20;
         this.jumps = 2;
         this.grounded = false;
         this.jumpSpeed = 0;

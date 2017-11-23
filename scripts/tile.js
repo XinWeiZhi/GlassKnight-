@@ -104,7 +104,7 @@ class GlowingDust {
             //getting the x and y values of the target 
             this.distFrame = this.speed / 60;
             //todo improve this checking dist
-            if (dist(this.position.x, this.position.y, this.target.x, this.target.y) <= 15) {
+            if (dist(this.position.x, this.position.y, this.target.x, this.target.y) <= 25) {
                 //do nothing
                 silvercoins += 2;
                 player.experience += 1;
