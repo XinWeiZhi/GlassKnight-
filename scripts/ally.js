@@ -11,7 +11,6 @@ class Ally {
         this.jumpSpeed = 0;
         this.terminal = 45;
         this.gravityMultiplier = 1;
-        this.feetY = this.position.y + this.height / 2;
         this.floorY = 800;
         this.canAttack = true;
         this.canSpell = true;
@@ -170,6 +169,18 @@ class Ally {
         }
 
 
+        for(e = 0; e < enemies.length; e++) {
+                this.target = enemies[e];
+                if (this.target.position.x < this.position.x) {
+                this.position.x -= this.speed;
+                this.direction = -1;
+            }
+            if (player.position.x > this.position.x) {
+                this.position.x += this.speed;
+                this.direction = 1;
+            }
+            }
+        
         //if using a spell or item or weapon, this.canAttack will become false
         if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
             //idle
@@ -246,8 +257,7 @@ class Ally {
 
     //solid code
     isGrounded() {
-        this.feetY = this.position.y + this.height / 2;
-        if (this.floorY <= this.feetY) {
+        if (this.floorY <= this.position.y + this.height/ 2) {
             this.grounded = true;
             this.jumps = 2;
             this.gravityMultiplier = 1;
