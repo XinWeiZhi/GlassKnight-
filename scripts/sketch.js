@@ -256,7 +256,7 @@ function drawHud() {
     }
 }
 
-function dealDamage(target, damage, slot) {
+function dealDamage(target, damage, slot, sender) {
     damage *= target.takenDamageMultiplier
     target.hp -= damage;
     if (target instanceof Player) {
