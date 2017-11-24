@@ -156,15 +156,18 @@ function draw() {
 
     }
 
+            player.takenDamageMultiplier = 1;
+ 
     if (mouseIsPressed) {
         if (mouseButton == RIGHT) {
             fill(190, 130, 30, 90);
             stroke("yellow");
             rect(player.position.x + player.direction * 50 - 15, player.position.y - 30, 30, 130);
-        }
+            player.takenDamageMultiplier = 0.25;
+        } 
 
     }
-
+    
 
     //draw hud
     noStroke();
@@ -256,14 +259,14 @@ function drawHud() {
     }
 }
 
-function dealDamage(target, damage, slot, sender) {
+function dealDamage(target, damage, slot) { // , sender
     damage *= target.takenDamageMultiplier
     target.hp -= damage;
     if (target instanceof Player) {
-        messages.push(new RedText(damage, target.position.x, target.position.y));
+        messages.push(new RedText(damage * 10000, target.position.x, target.position.y));
         target.receivedHit();
     } else if (target instanceof Enemy) {
-        messages.push(new BlueText(damage, target.position.x, target.position.y));
+        messages.push(new BlueText(damage * 10000, target.position.x, target.position.y));
         target.receivedHit(slot);
     }
 

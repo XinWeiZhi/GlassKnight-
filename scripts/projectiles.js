@@ -55,7 +55,7 @@ class FireBall extends PresetProjectile {
     move(i) {
         for (let e = 0; e < enemies.length; e++) {
             if (this.position.x >= enemies[e].position.x - enemies[e].width / 2 && this.position.x <= enemies[e].position.x + enemies[e].width / 2 && this.position.y <= enemies[e].position.y + enemies[e].height / 2 && this.position.y >= enemies[e].position.y - enemies[e].height / 2) {
-                dealDamage(enemies[e], this.damage);
+                dealDamage(enemies[e], this.damage, e);
                 projectiles.splice(i, 1);
             }
         }

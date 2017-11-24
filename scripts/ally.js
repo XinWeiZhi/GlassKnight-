@@ -181,74 +181,73 @@ class Ally {
             }
             }
         
-        //if using a spell or item or weapon, this.canAttack will become false
-        if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
-            //idle
+        
+if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0 && this.isHovering) {
+                this.canAttack = false;
+
+                this.attackPattern = floor(random(0, 2)); //0,1,2,3 - 4 patterns
+                this.canStillDamage = true;
+                this.jumpSpeed = 0;
+                this.gravityMultiplier = 1;
+
+                if (this.attackPattern == 1) {
+                    this.inAttackFor = 100;
+                    this.attackCooldown = 500;
+                } else {
+                    this.inAttackFor = 30;
+                    this.attackCooldown = 100;
+                }
 
 
-            if (this.dashFor > 0) {
-                this.dashFor--;
-                this.mana--;
+            }
+
+
+        }
+        if (this.canAttack == false && this.attackPattern == 0) {
+            //hyper beam
+            if (this.inAttackFor > 0) {
+                this.inAttackFor--;
+                if (this.inAttackFor % 5 == 0) {
+                    projectiles.push(new ShockWave(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
+                }
+
+            } else {
+                this.checkCollision(120, this.height);
+                this.canAttack = true;
+            }
+        } else if (this.canAttack == false && this.attackPattern == 1) {
+            //medium charged attack dive
+            if (this.isHovering == false || this.inAttackFor > 0) {
+                this.inAttackFor--;
+                this.isHovering = false; // remove this line if u know how to program
+                if (this.isHovering) {
+                    this.inAttackFor = 0;
+                    this.canAttack = true;
+                    this.attackCooldown = 200;
+                }
+
+                //add attack pattern coding here
                 if (this.direction == 1) {
-                    this.position.x += this.speed * 7;
-                } else if (this.direction == -1) {
-                    this.dashFor--;
-                    this.position.x -= this.speed * 7;
+                    this.position.x += 8;
+                } else {
+                    this.position.x -= 8;
+                }
+
+
+                this.jumpSpeed = 25;
+                this.position.y += this.jumpSpeed;
+
+                if (this.canStillDamage) {
+                    this.checkCollision(100, this.height);
                 }
 
 
             } else {
-                if (keyIsDown(68) && keyIsDown(65)) {
-                    if (this.state != 0 && this.state != 5 && this.state != 3) {
-                        this.frame = 0;
-                        this.state = 0;
-                    }
-                } else if (keyIsDown(68)) { // move right
-                    this.direction = 1;
-                    this.position.x += this.speed;
-                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
-                        this.dashFor = 8;
-                        this.mana -= 10;
-                        this.canDash = false;
-
-                    }
-                    if (this.state != 1 && this.state != 5) {
-                        this.frame = 0;
-                        this.state = 1;
-                        this.speed = 7;
-                    }
-                } else if (keyIsDown(65)) {
-
-                    this.direction = -1;
-                    this.position.x -= this.speed;
-                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
-                        this.dashFor = 20;
-                        this.mana -= 10;
-                        this.canDash = false;
-
-                    }
-                    if (this.state != 2 && this.state != 5) {
-                        this.frame = 0;
-                        this.state = 2;
-                        this.speed = 7;
-                    }
-
-
-                } else if (this.state != 0 && this.state != 5 && this.state != 3) {
-                    this.frame = 0;
-                    this.state = 0;
-
-                }
+                this.canAttack = true;
             }
-
-
-
-            if (keyIsDown(69) && this.state != 4) { // spell
-                this.frame = 0;
-                this.state = 4;
-                this.canSpell = false;
-                this.isAttackingFor = this.animationSpell.length - 1
-            }
+        }
+    }
+            
         }
     }
 
