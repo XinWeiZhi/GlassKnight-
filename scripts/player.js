@@ -41,7 +41,7 @@ class Player {
         this.experienceToLevel = 30;
         this.atkCooldown = 0;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
-
+        this.takenDamageMultiplier = 1;
         //perhaps this.hat / this.armor
     }
 
@@ -51,11 +51,7 @@ class Player {
         fill(255);
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
 
-        //shield 
 
-        fill(190, 130, 30, 90);
-        stroke("yellow");
-        rect(this.position.x + this.direction * 50 - 15, this.position.y - 30, 30, 130);
 
     }
 
@@ -115,12 +111,12 @@ class Player {
                 }
                 this.image = this.animationAttack[this.frame];
                 if (this.isAttackingFor == 0) {
-                    this.checkCollision(222);
+                    this.checkCollision(250, this.height);
 
                     this.frame = 0;
                     this.state = 0;
                     this.canAttack = true;
-                    
+
                 }
 
             }
@@ -134,8 +130,7 @@ class Player {
                 }
                 this.image = this.animationSpell[this.frame];
                 if (this.isAttackingFor == 0) {
-//                    this.checkCollision(1000);
-                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800,  50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
+                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800, 50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
                     this.frame = 0;
                     this.state = 0;
                     this.canSpell = true;
@@ -246,7 +241,7 @@ class Player {
         }
     }
 
-   
+
 
 
     //solid code
@@ -280,39 +275,38 @@ class Player {
     }
 
 
-    checkCollision(a) {
+    checkCollision(a, b) { // planning on adding 3rd intake damage and just using that for the hit
         this.hitboxX = a;
-        for (let target = 0; target < enemies.length; target++)
+        this.hitboxX = b;
+        for (let target = 0; target < enemies.length; target++) {
             if (this.direction == -1) {
-                if (enemies[target].position.x <= player.position.x && enemies[target].position.x >= player.position.x - this.hitboxX) {
-                    console.log("sweep left")
-                    enemies[target].hp -= this.damage;
-                    this.giveHitText(this.damage, enemies[target]);
-                    enemies[target].receivedHit(target);
-
+                if (enemies[target].position.x >= this.position.x - this.hitboxX && enemies[target].position.x <= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
+                    dealDamage(enemies[target], this.damage, target);
                 }
-            } else if (enemies[target].position.x >= player.position.x && enemies[target].position.x <= player.position.x + this.hitboxX && enemies[target].position.y >= this.position.y - this.height / 2 && enemies[target].position.y <= this.position.y + this.height / 2) {
-            console.log("sweep")
-            enemies[target].hp -= this.damage;
-            this.giveHitText(this.damage, enemies[target]);
-            enemies[target].receivedHit(target);
+            } else  if (this.direction == 1) {
+                if (enemies[target].position.x <= this.position.x + this.hitboxX && enemies[target].position.x >= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
+                    dealDamage(enemies[target], this.damage, target);
+                }
+            }
 
-            //                text(this.damage, enemies[target].position.x, enemies[target].position.y - 40);
+
         }
 
+
     }
-    
-     attack() {
+
+
+    attack() {
         //attack if not already in state 3 / all the code will be in animation
-         console.log("shi")
-            this.frame = 0;
-            this.state = 3;
-            if (mouseX + camX >= this.position.x) {
-                this.direction = 1;
-            } else {
-                this.direction = -1;
-            }
-            this.isAttackingFor = this.animationAttack.length - 1
+        console.log("shi")
+        this.frame = 0;
+        this.state = 3;
+        if (mouseX + camX >= this.position.x) {
+            this.direction = 1;
+        } else {
+            this.direction = -1;
+        }
+        this.isAttackingFor = this.animationAttack.length - 1
 
     }
 
@@ -324,19 +318,5 @@ class Player {
 
     }
 
-    amHitText(amount) {
-        messages.push(new RedText(amount, this.position.x, this.position.y));
-        console.log("yes");
-    }
 
-    giveHitText(amount, target) {
-        messages.push(new BlueText(amount, target.position.x, target.position.y));
-        console.log("no")
-    }
-
-    //    playTextHits(damage) {
-    //        let timer = 10;
-    //        
-    //        text(damage, player.position.x, player.position.y);
-    //    }
 }

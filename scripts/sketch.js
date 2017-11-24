@@ -73,7 +73,7 @@ function drawMap() {
     } else if (map === 3) {
         tiles = [];
         interactables = [];
-        
+
         numTiles = 11
         enemies.push(new Enemy(800, 0));
         enemies.push(new Enemy(900, 0));
@@ -93,7 +93,7 @@ function drawMap() {
 
 function setup() {
     let width = window.outerWidth;
-    let height = window.outerHeight - 4.20;
+    let height = window.outerHeight;
     createCanvas(width, height);
     background(0);
     //initialize player
@@ -112,7 +112,7 @@ function draw() {
     background(30);
     cameraControl();
 
-
+    stroke(220, 160, 70);
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
@@ -144,7 +144,7 @@ function draw() {
         interactables[i].show();
 
     }
-    
+
     for (let p = 0; p < projectiles.length; p++) {
         projectiles[p].show();
         projectiles[p].move(p);
@@ -155,6 +155,16 @@ function draw() {
         messages[m].show(m);
 
     }
+
+    if (mouseIsPressed) {
+        if (mouseButton == RIGHT) {
+            fill(190, 130, 30, 90);
+            stroke("yellow");
+            rect(player.position.x + player.direction * 50 - 15, player.position.y - 30, 30, 130);
+        }
+
+    }
+
 
     //draw hud
     noStroke();
@@ -193,7 +203,7 @@ function keyPressed() {
         player.frame = 0;
         player.state = 5;
         player.gravityMultiplier = 1;
-        player.jumpSpeed = 15;
+        player.jumpSpeed = 12;
         player.stillGoingUp = true;
 
 
@@ -204,17 +214,11 @@ function keyPressed() {
         hudDesired = !hudDesired; // likely the inventory
 
     }
-    //1 for attack or mouseleft
-    if (keyCode == 49) {
-        if (player.canAttack && player.atkCooldown == 0) {
-            if (player.state != 3) {
-                player.atkCooldown = 15;
-                player.attack();
-                player.canAttack = false;
-            }
-        }
 
-    }
+
+
+    //1 for attack or mouseleft
+
 
     if (keyCode == 70) {
         for (let i = 0; i < interactables.length; i++) {
@@ -237,10 +241,7 @@ function mouseClicked() {
         }
     }
 
-
-
 }
-
 
 
 function keyReleased() {
@@ -255,14 +256,16 @@ function drawHud() {
     }
 }
 
-function dealDamage(target, damage) {
+function dealDamage(target, damage, slot) {
+    damage *= target.takenDamageMultiplier
     target.hp -= damage;
-    target.receivedHit();
-    if(target instanceof Player) {
-       messages.push(new RedText(damage,target.position.x, target.position.y)) ;
-    } else {
-       messages.push(new BlueText(damage,target.position.x, target.position.y)) ;
+    if (target instanceof Player) {
+        messages.push(new RedText(damage, target.position.x, target.position.y));
+        target.receivedHit();
+    } else if (target instanceof Enemy) {
+        messages.push(new BlueText(damage, target.position.x, target.position.y));
+        target.receivedHit(slot);
     }
-    target.receivedHit();
-    
+
+
 }
