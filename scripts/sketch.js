@@ -29,6 +29,7 @@ function preload() {
     fire = loadImage("scripts/assets/hollow.jpg");
     gravewatcher = loadImage("scripts/assets/abyss.jpg");
     bird = loadImage("scripts/assets/bird.jpg");
+    worm = loadImage("scripts/assets/worm.jpg");
 }
 
 function drawMap() {
@@ -45,6 +46,7 @@ function drawMap() {
         enemies.push(new Harpy(1200, 0));
         enemies.push(new Harpy(1100, 0));
         enemies.push(new GraveMaster(300, 30));
+        enemies.push(new Worm(300, 900));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
@@ -263,10 +265,10 @@ function dealDamage(target, damage, slot) { // , sender
     damage *= target.takenDamageMultiplier
     target.hp -= damage;
     if (target instanceof Player) {
-        messages.push(new RedText(damage * 10000, target.position.x, target.position.y));
+        messages.push(new RedText(damage * 100, target.position.x, target.position.y));
         target.receivedHit();
     } else if (target instanceof Enemy) {
-        messages.push(new BlueText(damage * 10000, target.position.x, target.position.y));
+        messages.push(new BlueText(damage * 100, target.position.x, target.position.y));
         target.receivedHit(slot);
     }
 

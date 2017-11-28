@@ -25,6 +25,7 @@ class Enemy {
         this.hitboxX = 250;
         this.attackCooldown = 0;
         this.takenDamageMultiplier = 1;
+        this.hoverY = 800;
         //perhaps this.hat / this.armor
     }
 
@@ -364,23 +365,12 @@ class Harpy extends Enemy {
         //solid code
         isGrounded() {
             this.hoverY = this.floorY - 600;
-
-
             //find this.floorY
             for (let i = 0; i < tiles.length; i++) {
                 if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
                     this.floorY = tiles[i].y;
-
                     break;
                 }
-            }
-        }
-
-        receivedHit() {
-            if (this.hp <= 0) {
-                effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
-                enemies.splice(this.iam, 1);
-
             }
         }
 
@@ -572,12 +562,197 @@ class Harpy extends Enemy {
             }
         }
 
-        receivedHit() {
-            if (this.hp <= 0) {
-                effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
-                enemies.splice(this.iam, 1);
+    }
 
+class Worm extends Enemy {
+        constructor(x, y) {
+            super(x, y);
+            this.image = worm;
+            this.hp = 25;
+            this.mhp = 25;
+            this.standoff = false;
+            this.attackRange = 700;
+            this.hoverY = this.floorY + 300;
+            this.jumpSpeed = 5;
+            //perhaps this.hat / this.armor
+        }
+
+        show() {
+            fill(231, 10, 40);
+            rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
+            fill(100, 230, 40);
+            rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
+
+            image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+        }
+
+        attack() {
+            
+        }
+    
+        reposition() {
+            
+        }
+    
+        decideMove() {
+            
+        }
+    
+        interactWith(object) {
+            
+        }
+    
+        process() {
+
+            if (this.attackCooldown > 0) {
+                this.attackCooldown--;
+            }
+
+            //if using a spell or item or weapon, this.canAttack will become false
+            if (this.canAttack) {
+                if (player.position.x < this.position.x) {
+                    if (player.position.x < this.position.x - 200) {
+                        this.position.x -= this.speed;
+                    } else {
+                        this.position.x -= this.speed / 8
+                    }
+
+                    this.direction = -1;
+                } else {
+                    this.standoff = true;
+                }
+                if (player.position.x > this.position.x) {
+                    if (player.position.x > this.position.x + 200) {
+                        this.position.x += this.speed;
+                    } else {
+                        this.position.x += this.speed / 8
+                    }
+                    this.direction = 1;
+                } else {
+                    this.standoff = true;
+                }
+
+
+
+                if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
+                    this.canAttack = false;
+
+                    this.attackPattern = floor(random(3,4)); //0,1,2, -3 patterns
+
+                    this.inAttackFor = (this.attackPattern + 1) * 20;
+                    this.attackCooldown += (this.attackPattern + 1) * 50;
+                }
+
+
+            }
+            
+            
+            if (this.canAttack == false && this.attackPattern == 3) {
+                //quick tunnel
+                if (this.inAttackFor > 0) {
+                    this.inAttackFor--;
+                    this.jumpSpeed = 5;
+                    this.position.y -= this.jumpSpeed;
+                    this.position.y += this.jumpSpeed / 2;
+                    
+
+                } else {
+                    this.damage = 0.5;
+                    this.checkCollision(120, this.height);
+                    this.canAttack = true;
+                }
+            } else if (this.canAttack == false && this.attackPattern == 2) {
+                //medium charged attack jump
+                if (this.inAttackFor > 0 || this.grounded == false) {
+                    this.inAttackFor--;
+                    //add attack pattern coding here
+                    if (this.direction == 1) {
+                        this.position.x += 4;
+                    } else {
+                        this.position.x -= 4;
+                    }
+
+                    this.jumpSpeed = 26;
+                    this.position.y -= this.jumpSpeed;
+
+
+                } else {
+                    ellipse(this.position.x, this.position.y, 500, 500);
+                    if (this.grounded) {
+                        this.damage = 2;
+                        this.checkCollision(300);
+                    }
+
+                    this.canAttack = true;
+                }
+            } else if (this.canAttack == false && this.attackPattern == 1) {
+                //long distance charge
+                if (this.inAttackFor > 0) {
+                    this.inAttackFor--;
+                    //add attack pattern coding here
+                    if (this.direction == 1) {
+                        this.position.x += 20;
+                    } else {
+                        this.position.x -= 20;
+                    }
+                    this.damage = 0.5;
+                    this.checkCollision(21);
+                } else {
+                    this.canAttack = true;
+                }
             }
         }
 
+
+
+        checkCollision(hitboxx, hitboxy) {
+            this.hitboxX = hitboxx;
+            this.hitboxY = hitboxy;
+            this.target = player;
+
+            if (this.attackPattern == 2) {
+                if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 190) {
+                    dealDamage(player, this.damage, 0)
+                    this.inAttackFor = 0;
+                }
+            } else {
+                if (this.direction == -1) {
+                    if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
+                        dealDamage(player, this.damage, 0)
+                    this.inAttackFor = 0;
+                    }
+                } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
+                    dealDamage(player, this.damage, 0)
+                    this.inAttackFor = 0;
+
+
+                }
+            }
+
+
+        }
+
+
+
+
+        //solid code
+        isGrounded() {
+            //is Submerged
+            if(this.position.y + this.height / 2 > this.floorY) {
+                this.grounded = true;
+                this.canExplode = true;
+                this.gravityMultiplier = 1;
+            }
+
+
+            //find this.floorY
+            for (let i = 0; i < tiles.length; i++) {
+                if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+                    this.floorY = tiles[i].y;
+                    break;
+                }
+            }
+        }
+
+    
     }
