@@ -574,6 +574,10 @@ class Worm extends Enemy {
             this.attackRange = 700;
             this.hoverY = this.floorY + 300;
             this.jumpSpeed = 5;
+            
+            //if it is this close to the player it will stop repositioning and start going into attack mode
+            this.attackRange = 60; // close range attack emerge
+            
             //perhaps this.hat / this.armor
         }
 
@@ -590,12 +594,30 @@ class Worm extends Enemy {
             
         }
     
-        reposition() {
+        reposition(x,y) {
+            this.position.add(x,y);
             
         }
     
         decideMove() {
-            
+         if (player.position.x < this.position.x) {
+                    if (player.position.x < this.position.x - 200) {
+                        this.position.x -= this.speed;
+                        this.reposition(-this.speed);
+                    } else {
+                        this.position.x -= this.speed / 8
+                    }
+
+                    this.direction = -1;
+                } 
+                if (player.position.x > this.position.x) {
+                    if (player.position.x > this.position.x + 200) {
+                        this.position.x += this.speed;
+                    } else {
+                        this.position.x += this.speed / 8
+                    }
+                    this.direction = 1;
+                }
         }
     
         interactWith(object) {
