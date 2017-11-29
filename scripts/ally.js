@@ -151,10 +151,7 @@ class Ally {
             this.jumps = 1;
         }
 
-        if (player.state == 0) {
-            player.canAttack = true;
-            player.canSpell = true;
-        }
+    
         if (this.mana < this.mMana) {
             this.mana += 0.5;
         }
@@ -169,17 +166,17 @@ class Ally {
         }
 
 
-        for(e = 0; e < enemies.length; e++) {
-                this.target = enemies[e];
-                if (this.target.position.x < this.position.x) {
-                this.position.x -= this.speed;
-                this.direction = -1;
-            }
-            if (player.position.x > this.position.x) {
-                this.position.x += this.speed;
-                this.direction = 1;
-            }
-            }
+//        for(let e = 0; e < enemies.length; e++) {
+//                this.target = enemies[e];
+//                if (this.target.position.x < this.position.x) {
+//                this.position.x -= this.speed;
+//                this.direction = -1;
+//            }
+//            if (player.position.x > this.position.x) {
+//                this.position.x += this.speed;
+//                this.direction = 1;
+//            }
+//            }
         
         
 if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0 && this.isHovering) {
@@ -203,53 +200,6 @@ if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.atta
 
 
         }
-        if (this.canAttack == false && this.attackPattern == 0) {
-            //hyper beam
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                if (this.inAttackFor % 5 == 0) {
-                    projectiles.push(new ShockWave(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
-                }
-
-            } else {
-                this.checkCollision(120, this.height);
-                this.canAttack = true;
-            }
-        } else if (this.canAttack == false && this.attackPattern == 1) {
-            //medium charged attack dive
-            if (this.isHovering == false || this.inAttackFor > 0) {
-                this.inAttackFor--;
-                this.isHovering = false; // remove this line if u know how to program
-                if (this.isHovering) {
-                    this.inAttackFor = 0;
-                    this.canAttack = true;
-                    this.attackCooldown = 200;
-                }
-
-                //add attack pattern coding here
-                if (this.direction == 1) {
-                    this.position.x += 8;
-                } else {
-                    this.position.x -= 8;
-                }
-
-
-                this.jumpSpeed = 25;
-                this.position.y += this.jumpSpeed;
-
-                if (this.canStillDamage) {
-                    this.checkCollision(100, this.height);
-                }
-
-
-            } else {
-                this.canAttack = true;
-            }
-        }
-    }
-            
-        }
-    }
 
 
 
@@ -329,3 +279,13 @@ if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.atta
 
 
 }
+
+class Jim extends Ally {
+    constructor(x,y) {
+        super(x,y);
+    }
+    
+    
+    
+    
+ }

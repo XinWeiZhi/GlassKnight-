@@ -13,6 +13,7 @@ let camY = 0;
 let camZ = 0;
 let silvercoins = 0;
 let messages = []
+let allies = [];
 //end of VARIABLES
 
 
@@ -46,7 +47,8 @@ function drawMap() {
         enemies.push(new Harpy(1200, 0));
         enemies.push(new Harpy(1100, 0));
         enemies.push(new GraveMaster(300, 30));
-        enemies.push(new Worm(300, 900));
+        enemies.push(new Worm(300, 800));
+//        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
@@ -65,6 +67,7 @@ function drawMap() {
         enemies.push(new Enemy(700, 0));
         enemies.push(new Enemy(1000, 0));
         enemies.push(new Enemy(1200, 0));
+        enemies.push(new Enemy(1100, 0));
         enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 35));
@@ -100,7 +103,7 @@ function setup() {
     background(0);
     //initialize player
     player = new Player(0, 800);
-
+    allies.push(player);
     drawMap();
 }
 
@@ -123,10 +126,10 @@ function draw() {
 
     // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
-    player.show();
-    player.process();
-    player.animate();
-    player.isGrounded();
+//    player.show();
+//    player.process();
+//    player.animate();
+//    player.isGrounded();
 
     //draw enemies
 
@@ -134,6 +137,14 @@ function draw() {
         enemies[e].show(e);
         enemies[e].process();
         enemies[e].isGrounded();
+
+    }
+    
+    for (let a = 0; a < allies.length; a++) {
+        allies[a].show(a);
+        allies[a].process();
+        allies[a].animate();
+        allies[a].isGrounded();
 
     }
 
