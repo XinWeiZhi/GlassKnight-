@@ -83,7 +83,7 @@ class ShockWave extends TargetedProjectile {
 class AcidBall extends TargetedProjectile {
     constructor(x, y, target, width, height, damage, speed, hitboxX, hitboxY) {
         super(x, y, target, width, height, damage, speed, hitboxX, hitboxY)
-        this.launchSpeed = 4;
+        this.launchSpeed = 5;
         this.gravityMultiplier = 1;
     }
 
@@ -96,20 +96,14 @@ class AcidBall extends TargetedProjectile {
 
     //called 60fps
     move(i) {
-        //have gravity here
-        this.position.y -= gravity * this.gravityMultiplier;
-        this.position.y += this.launchSpeed;
-        
-        //getting the x and y values of the target 
-        this.distFrame = this.speed / 60;
-        //todo improve this checking dist
-        
-        
-        if (dist(this.position.x, this.position.y, this.aim.x, this.aim.y) <= 25) {
+        this.position.x += this.speed;
+        this.position.y += gravity * this.gravityMultiplier;
+        this.position.y -= this.launchSpeed;
+        this.gravityMultiplier += 0.02;
+
+        if (this.position.y > this.target.floorY){
             projectiles.splice(i, 1);
-        } else {
-            this.position.x += this.movementVector.x * this.distFrame;
-            this.position.y += this.movementVector.y * this.distFrame;
+        }
             
             if (this.position.x >= this.target.position.x - this.target.width / 2 && this.position.x <= this.target.position.x + this.target.width / 2 && this.position.y <= this.target.position.y + this.target.height / 2 && this.position.y >= this.target.position.y - this.target.height / 2) {
                 dealDamage(this.target, this.damage);
@@ -120,5 +114,6 @@ class AcidBall extends TargetedProjectile {
 
 
     }
-}
+
+
 

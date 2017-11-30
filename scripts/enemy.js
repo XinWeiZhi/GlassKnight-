@@ -356,6 +356,8 @@ class Harpy extends Enemy {
             } else {
                 this.position.x += 5;
             }
+
+            projectiles.push(new AcidBall(this.position.x, this.position.y, player, 50, 50, 2, 7, 20, 20))
         }
     }
 
@@ -580,6 +582,11 @@ class Worm extends Enemy {
         this.target = player;
         this.canSurface = true;
         this.surfaceWhenXDistanceIs = 120;
+        this.attackPattern = 3;
+        this.maxX;
+        this.minX;
+        this.spellDamage = 3;
+        this.direction = -1;
 
         //if it is this close to the player it will stop repositioning and start going into attack mode
         //        this.attackRange = 60; // close range attack emerge
@@ -595,44 +602,51 @@ class Worm extends Enemy {
         rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
 
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+
     }
 
     attack() {
         this.inAttackFor--;
-        //have an attack for tunneling around and then one attack for bursting up then one for spitting out acid
-        //okay have constant repositioning
-        if (this.canSurface) {
-            //reposition bc underneath
-            if (this.position.x > this.target.position.x) {
-                this.reposition(-this.speed, 0);
-            } else {
-                this.reposition(this.speed, 0);
-            }
-        } else {
-            //already on surface therefore keep firing acid until the timer ends and redive
-        }
-
-        if (this.attackPattern == 0) {
-            //if in range
-            //surface + acid
-        }
-
         if (this.attackPattern == 1) {
-            //after the timer redive
+            //acid
+            console.log("acid")
+            this.position.y = this.floorY - this.height / 2;
+            if (this.inAttackFor % 40 == 0) {
+                projectiles.push(new AcidBall(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
+                console.log(this.inAttackFor);
+            }
+
+            if (this.inAttackFor == 0) {
+                this.attackPattern = 2;
+
+                this.inAttackFor = 20;
+                console.log(this.inAttackFor)
+            }
+        }
+
+        if (this.attackPattern == 2) {
             //dive
-            //wait for atk cooldown again
+            console.log("dsdas")
+            this.jumpSpeed = -8
+            this.reposition(0, -this.jumpSpeed);
+            if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
+                this.attackPattern = 0;
+                this.inAttackFor = 0;
+                this.attackCooldown = 300; // after dive just stop attacking
+                this.maxX = this.target.position.x + random(500, 800); // values will remain these for a bit
+                this.minX = this.target.position.x - random(500, 800);
+            }
         }
 
         if (this.attackPattern == 3) {
-            //tunnel
+            //surface
             console.log("tunneling")
             //GOING UP AT THIS SPEED
-            this.jumpSpeed = 10;
+            this.jumpSpeed = 8;
             if (this.canSurface) { // reposition
-
                 if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
                     this.canSurface = false;
-                    this.inAttackFor = 150;
+                    this.inAttackFor = 150; // just enough to last for the surfacing 
                 }
             }
 
@@ -640,105 +654,90 @@ class Worm extends Enemy {
                 this.reposition(0, -this.jumpSpeed);
                 this.damage = 5;
                 this.checkCollision(200, 100);
+                if (this.position.y + this.height <= this.floorY) {
+                    this.attackPattern = 1; // acidballs
+                    this.inAttackFor = 260; // 6 acid balls 4.33 seconds
+                }
             }
 
 
         }
 
-        if (this.attackPattern == 1) {
-            //                //medium charged attack jump
-            if (this.inAttackFor > 0 || this.grounded == false) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                if (this.direction == 1) {
-                    this.position.x += 4;
-                } else {
-                    this.position.x -= 4;
-                }
-
-                this.jumpSpeed = 26;
-                this.position.y -= this.jumpSpeed;
-
-
-            } else {
-                ellipse(this.position.x, this.position.y, 500, 500);
-                if (this.grounded) {
-                    this.damage = 2;
-                    this.checkCollision(300);
-                }
-
-                this.canAttack = true;
-            }
-        }
-        if (this.attackPattern == 2) {
-            //long distance charge
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                if (this.direction == 1) {
-                    this.position.x += 20;
-                } else {
-                    this.position.x -= 20;
-                }
-                this.damage = 0.5;
-                this.checkCollision(21);
-            } else {
-                this.canAttack = true;
-            }
-        }
     }
+
 
     reposition(x, y) {
         this.position.add(createVector(x, y));
-    }
-
-    decideMove() {
-
     }
 
     interactWith(object) {
 
     }
 
+    hover() {
+        console.log("i am hovering")
+        this.hoverY = this.floorY + 250;
+        this.position.y = this.hoverY;
+
+        //reposition spamming
+        if (this.direction === 1) {
+            if (this.position.x < this.maxX) {
+                this.reposition(this.speed, 0);
+            } else {
+                this.direction = -1;
+                this.maxX = this.target.position.x + random(600, 900);
+            }
+        } else if (this.direction === -1) {
+            if (this.position.x > this.minX) {
+                this.reposition(-this.speed, 0);
+            } else {
+                this.direction = 1;
+                this.minX = this.target.position.x - random(600, 900);
+            }
+        }
+    }
+
     process() {
+
+       
+        //controls cooldowns only after diving for this guy
+        if (this.attackCooldown > 0) {
+            this.attackCooldown--;
+        } else {
+            this.attackCooldown = 0;
+        }
+        // in the middle of attacking
         if (!this.canAttack && this.inAttackFor > 0) {
             this.attack();
-        } else if (this.inAttackFor == 0) {
+        } else if( this.inAttackFor === 0) { // after diving or not finding a target at all to surface, then it will reset the ability to attack but not the atk cooldown
             this.canAttack = true;
             this.canSurface = true;
+            this.maxX = this.target.position.x + random(600, 900); // values will remain these for a bit
+            this.minX = this.target.position.x - random(600, 900);
         }
+
         //movement
         if (this.canAttack) {
+            this.hover(); // just reposition around
             //target cannot change midattack
             for (let a = 0; a < allies.length; a++) {
-                if (allies[a].position.dist(this.position) < this.aggroRange && this.target.position.dist(this.position) > allies[a].position.dist(this.position)) {
+                if (allies[a].position.dist(this.position) < this.aggroRange && allies[a].position.dist(this.position) > allies[a].position.dist(this.position)) {
                     this.target = allies[a];
+
                 }
             }
-            if (this.attackCooldown > 0) {
-                this.attackCooldown--;
-            } else {
-                this.attackCooldown = 0;
-            }
 
-            if (this.target.position.x < this.position.x) {
-
-                this.reposition(-this.speed, 0);
-                this.direction = -1;
-            } else {
-                this.reposition(this.speed, 0);
-                this.direction = 1;
-            }
-
+             
             //deciding an attack pattern if safe to do so
             if (this.canAttack && this.target.position.dist(this.position) <= this.attackRange && this.attackCooldown === 0) {
                 this.canAttack = false;
-                this.attackPattern = floor(random(0, 2)); //0,1 - 2 patterns
-                this.inAttackFor = 150;
-                //                this.attackCooldown += (this.attackPattern + 1) * 50;
+                this.attackPattern == 3
+                this.canSurface = true;
+                this.inAttackFor = floor(random(150, 200));
             }
+            
 
-
+            
         }
     }
 
