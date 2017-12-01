@@ -9,11 +9,15 @@ let numTiles = 0;
 let enemies = [];
 let camX = 0;
 let hudDesired = false;
+let characterHudDesired = false;
+let optionsHudDesired = false;
+let inventoryHudDesired = false;
 let camY = 0;
 let camZ = 0;
 let silvercoins = 0;
 let messages = []
 let allies = [];
+let interfaceButtons = [];
 //end of VARIABLES
 
 
@@ -268,18 +272,36 @@ function keyReleased() {
 
 function drawHud() {
     if (hudDesired) {
-        rect(camX + 100, camY + 100, 900, 600);
+        fill(100,190, 150, 150);
+        rect(camX + 100, camY + 200, 700, 500, 50);
+        stroke(50);
+        textSize(30);
+        text("inventory", camX + 200, camY + 300);
+        text("character", camX + 400, camY + 300);
+        text("options", camX + 600, camY + 300);
+        
+        for(let i = 0; i < interfaceButtons.length; i++) {
+            interfaceButtons[i].show();
+            if(interfaceButtons[i].isClicked()) {
+                //the one that is clicked has the new desired
+                if(interfaceButtons[i] instanceof toInventory) {
+                    
+                }
+            }
+        }
+       
+    
     }
 }
 
 function dealDamage(target, damage, slot) { // , sender
-    damage *= target.takenDamageMultiplier
+    damage = floor(damage * target.takenDamageMultiplier);
     target.hp -= damage;
     if (target instanceof Player) {
-        messages.push(new RedText(damage * 100, target.position.x, target.position.y));
+        messages.push(new RedText(damage, target.position.x, target.position.y));
         target.receivedHit();
     } else if (target instanceof Enemy) {
-        messages.push(new BlueText(damage * 100, target.position.x, target.position.y));
+        messages.push(new BlueText(damage, target.position.x, target.position.y));
         target.receivedHit(slot);
     }
 

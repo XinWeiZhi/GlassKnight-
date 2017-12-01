@@ -357,7 +357,6 @@ class Harpy extends Enemy {
                 this.position.x += 5;
             }
 
-            projectiles.push(new AcidBall(this.position.x, this.position.y, player, 50, 50, 2, 7, 20, 20))
         }
     }
 
@@ -570,8 +569,8 @@ class Worm extends Enemy {
     constructor(x, y) {
         super(x, y);
         this.image = worm;
-        this.hp = 25;
-        this.mhp = 25;
+        this.hp = 44;
+        this.mhp = 44;
         this.width = 200;
         this.height = 350;
         this.standoff = false;
@@ -587,6 +586,7 @@ class Worm extends Enemy {
         this.minX;
         this.spellDamage = 3;
         this.direction = -1;
+        this.acidBallSpeed = 10;
 
         //if it is this close to the player it will stop repositioning and start going into attack mode
         //        this.attackRange = 60; // close range attack emerge
@@ -608,26 +608,26 @@ class Worm extends Enemy {
     attack() {
         this.inAttackFor--;
         if (this.attackPattern == 1) {
-            //acid
-            console.log("acid")
             this.position.y = this.floorY - this.height / 2;
+            if (this.target.position.x > this.position.x) {
+                this.direction = 1;
+            } else {
+                this.direction = -1;
+            }
+
             if (this.inAttackFor % 40 == 0) {
-                projectiles.push(new AcidBall(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
-                console.log(this.inAttackFor);
+                projectiles.push(new AcidBall(this.position.x, this.position.y - 35, this.target, 70, 70, this.spellDamage, this.acidBallSpeed * this.direction, 55, 7.5));
             }
 
             if (this.inAttackFor == 0) {
                 this.attackPattern = 2;
-
                 this.inAttackFor = 20;
-                console.log(this.inAttackFor)
             }
         }
 
         if (this.attackPattern == 2) {
             //dive
-            console.log("dsdas")
-            this.jumpSpeed = -8
+            this.jumpSpeed = -14;
             this.reposition(0, -this.jumpSpeed);
             if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
                 this.attackPattern = 0;
@@ -640,9 +640,8 @@ class Worm extends Enemy {
 
         if (this.attackPattern == 3) {
             //surface
-            console.log("tunneling")
             //GOING UP AT THIS SPEED
-            this.jumpSpeed = 8;
+            this.jumpSpeed = 14;
             if (this.canSurface) { // reposition
                 if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
                     this.canSurface = false;
@@ -652,10 +651,12 @@ class Worm extends Enemy {
 
             if (this.canSurface == false) {
                 this.reposition(0, -this.jumpSpeed);
+
                 this.damage = 5;
-                this.checkCollision(200, 100);
-                if (this.position.y + this.height <= this.floorY) {
+                this.checkCollision(this.width / 2 + this.target.width / 2, this.height / 2 + this.target.height / 2);
+                if (this.position.y + this.height / 2 <= this.floorY) {
                     this.attackPattern = 1; // acidballs
+
                     this.inAttackFor = 260; // 6 acid balls 4.33 seconds
                 }
             }
@@ -675,7 +676,6 @@ class Worm extends Enemy {
     }
 
     hover() {
-        console.log("i am hovering")
         this.hoverY = this.floorY + 250;
         this.position.y = this.hoverY;
 
@@ -699,17 +699,15 @@ class Worm extends Enemy {
 
     process() {
 
-       
+
         //controls cooldowns only after diving for this guy
         if (this.attackCooldown > 0) {
             this.attackCooldown--;
-        } else {
-            this.attackCooldown = 0;
         }
         // in the middle of attacking
         if (!this.canAttack && this.inAttackFor > 0) {
             this.attack();
-        } else if( this.inAttackFor === 0) { // after diving or not finding a target at all to surface, then it will reset the ability to attack but not the atk cooldown
+        } else if (this.inAttackFor === 0) { // after diving or not finding a target at all to surface, then it will reset the ability to attack but not the atk cooldown
             this.canAttack = true;
             this.canSurface = true;
             this.maxX = this.target.position.x + random(600, 900); // values will remain these for a bit
@@ -722,22 +720,25 @@ class Worm extends Enemy {
             //target cannot change midattack
             for (let a = 0; a < allies.length; a++) {
                 if (allies[a].position.dist(this.position) < this.aggroRange && allies[a].position.dist(this.position) > allies[a].position.dist(this.position)) {
+
                     this.target = allies[a];
 
                 }
             }
 
-             
+
             //deciding an attack pattern if safe to do so
-            if (this.canAttack && this.target.position.dist(this.position) <= this.attackRange && this.attackCooldown === 0) {
-                this.canAttack = false;
-                this.attackPattern == 3
+            if (this.canAttack && this.target.position.dist(this.position) <= this.attackRange && this.attackCooldown === 0 && dist(this.target.position.x, 0, this.position.x, 0) < this.surfaceWhenXDistanceIs) {
+
+                this.attackPattern = 3;
                 this.canSurface = true;
                 this.inAttackFor = floor(random(150, 200));
+                this.canAttack = false
+                this.canStillDamage = true;
             }
-            
 
-            
+
+
         }
     }
 
@@ -750,29 +751,14 @@ class Worm extends Enemy {
         if (this.attackPattern == 3) {
             for (let a = 0; a < allies.length; a++) {
                 if (this.position.x + x > allies[a].position.x && this.position.x - x < allies[a].position.x && this.position.y + y > allies[a].position.y && this.position.y - y < allies[a].position.y) {
-                    dealDamage(allies[a], 10);
+                    if (this.canStillDamage) {
+                        dealDamage(allies[a], 5);
+                        this.canStillDamage = false;
+                    }
+
                 }
             }
         }
-        if (this.attackPattern == 2) {
-            if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 190) {
-                dealDamage(this.target, this.damage, 0)
-                this.inAttackFor = 0;
-            }
-        } else {
-            if (this.direction == -1) {
-                if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
-                    dealDamage(this.target, this.damage, 0)
-                    this.inAttackFor = 0;
-                }
-            } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
-                dealDamage(this.target, this.damage, 0)
-                this.inAttackFor = 0;
-
-
-            }
-        }
-
 
     }
 

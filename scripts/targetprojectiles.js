@@ -83,7 +83,7 @@ class ShockWave extends TargetedProjectile {
 class AcidBall extends TargetedProjectile {
     constructor(x, y, target, width, height, damage, speed, hitboxX, hitboxY) {
         super(x, y, target, width, height, damage, speed, hitboxX, hitboxY)
-        this.launchSpeed = 5;
+        this.launchSpeed = 7;
         this.gravityMultiplier = 1;
     }
 
@@ -99,7 +99,7 @@ class AcidBall extends TargetedProjectile {
         this.position.x += this.speed;
         this.position.y += gravity * this.gravityMultiplier;
         this.position.y -= this.launchSpeed;
-        this.gravityMultiplier += 0.02;
+        this.gravityMultiplier += 0.5;
 
         if (this.position.y > this.target.floorY){
             projectiles.splice(i, 1);
