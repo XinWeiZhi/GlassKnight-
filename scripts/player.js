@@ -21,12 +21,21 @@ class Player {
         this.weapon = new Sword(this.position.x, this.position.y);
         //make this.damage = to the weapon damage and such
 
-        this.animationIdle = [pepe, pepe, walk, walk, walk, walk, walk, walk];
-        this.animationWalkLeft = [walkLeft0, walkLeft0, walkLeft0, walkLeft0, walkLeft0, pepe, walk, pepe, walk, walk, walk, walk];
-        this.animationWalkRight = [pepe, pepe, walk, walk, pepe, walk, walk, walk];
-        this.animationJump = [walk, walk, walk, walk, walk, walk, walk, walk];
-        this.animationAttack = [sword, sword, sword, sword, sword, sword];
-        this.animationSpell = [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire];
+
+        this.animation = {
+            Idle: [pepe, pepe, walk, walk, walk, walk, walk, walk],
+            WalkLeft: [walkLeft0, walkLeft0, walkLeft0, walkLeft0, walkLeft0, pepe, walk, pepe, walk, walk, walk, walk],
+            WalkRight: [pepe, pepe, walk, walk, pepe, walk, walk, walk],
+            Jump: [walk, walk, walk, walk, walk, walk, walk, walk],
+            Attack: [sword, sword, sword, sword, sword, sword],
+            MoveAttackLeft: [],
+            MoveAttackRight: [],
+            AttackJump: [],
+            AttackDive: [],
+            Attack: [],
+            Spell: [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire],
+        }
+        this.currentAnimation = this.animationIdle;
         this.isAttackingFor = 0;
         this.image = pepe;
         this.canDash = true;
@@ -45,12 +54,29 @@ class Player {
         //perhaps this.hat / this.armor
     }
 
+    changeAnimationTo(array) {
+        if (this.currentAnimation != array) {
+            this.frame = 0;
+            this.currentAnimation = array;
+        }
+    }
+
+
     show() {
 
-
-        fill(255);
+        this.image = this.currentAnimation[this.frame];
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
 
+
+        if (this.frame < this.currentAnimation.length - 1) {
+            this.frame++;
+        } else {
+            this.frame = 0; // reset animation no matter what
+            //decide the next animation array in process and if none have animation idle
+            this.canAttack = true;
+            this.canSpell = true;
+            this.canMove = true;
+        }
 
 
     }
@@ -140,26 +166,26 @@ class Player {
 
         }
     }
+
+    reposition(x, y) {
+        this.position.add(createVector(x, y))
+    }
+
+
     //jumps etc
     process() {
+        //always happening
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
         }
-
-
 
         if (this.grounded == false && this.jumps == 2) {
             this.jumps = 1;
         }
 
-        if (player.state == 0) {
-            player.canAttack = true;
-            player.canSpell = true;
-        }
         if (this.mana < this.mMana) {
             this.mana += 0.5;
         }
-
 
         if (this.grounded == false) {
             this.position.y += gravity * this.gravityMultiplier;
@@ -168,155 +194,254 @@ class Player {
             }
 
         }
+        //animations and states
+        //can only move if this is true
+        if (this.canMove) {
+            // move animation
+            // if key is down activate move
+            
+            // if already in move then activate attack move
+            // if already in attack move then wait for animation frame to end 
+            //make animation walk frame carry over 
+            if (mouseButton == RIGHT) {
 
-
-        //if using a spell or item or weapon, this.canAttack will become false
-        if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
-            //idle
-
-
-            if (this.dashFor > 0) {
-                this.dashFor--;
-                this.mana--;
-                if (this.direction == 1) {
-                    this.position.x += this.speed * 7;
-                } else if (this.direction == -1) {
-                    this.dashFor--;
-                    this.position.x -= this.speed * 7;
-                }
-
-
-            } else {
-                if (keyIsDown(68) && keyIsDown(65)) {
-                    if (this.state != 0 && this.state != 5 && this.state != 3) {
-                        this.frame = 0;
-                        this.state = 0;
-                    }
-                } else if (keyIsDown(68)) { // move right
-                    this.direction = 1;
-                    this.position.x += this.speed;
-                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
-                        this.dashFor = 8;
-                        this.mana -= 10;
-                        this.canDash = false;
-
-                    }
-                    if (this.state != 1 && this.state != 5) {
-                        this.frame = 0;
-                        this.state = 1;
-                        this.speed = 7;
-                    }
-                } else if (keyIsDown(65)) {
-
-                    this.direction = -1;
-                    this.position.x -= this.speed;
-                    if (keyIsDown(16) && this.canDash && this.mana >= 10) {
-                        this.dashFor = 20;
-                        this.mana -= 10;
-                        this.canDash = false;
-
-                    }
-                    if (this.state != 2 && this.state != 5) {
-                        this.frame = 0;
-                        this.state = 2;
-                        this.speed = 7;
-                    }
-
-
-                } else if (this.state != 0 && this.state != 5 && this.state != 3) {
-                    this.frame = 0;
-                    this.state = 0;
-
-                }
-            }
-
-
-
-            if (keyIsDown(69) && this.state != 4) { // spell
-                this.frame = 0;
-                this.state = 4;
-                this.canSpell = false;
-                this.isAttackingFor = this.animationSpell.length - 1
             }
         }
+
+
+        if (keyIsDown(68)) {
+            if (this.direction != 1) {
+                this.direction = 1;
+                this.movementAccelerator = 0;
+            }
+            this.reposition((this.speed + this.movementAccelerator) * this.direction);
+            if (this.movementAccelerator < 2) {
+                this.movementAccelerator += 0.2;
+            }
+
+            if (mouseIsPressed) {
+                if (mouseButton == LEFT) {
+                    this.changeAnimationTo(this.animation.MoveAttackRight);
+                }
+            }
+
+        } else if (keyIsDown(65)) {
+            if (this.direction != -1) {
+                this.direction = -1;
+                this.movementAccelerator = 0;
+            }
+
+            this.reposition((this.speed + this.movementAccelerator) * this.direction);
+            if (this.movementAccelerator < 2) {
+                this.movementAccelerator += 0.2;
+            }
+
+        }
+
+
+    }
+    //canAttack if this is true
+    if (this.canAttack) {
+        if (this.direction === -1) {
+            this.changeAnimationTo(this.animationWalkLeft);
+        } else if (this.direction === 1) {
+            this.changeAnimationTo(this.animationWalkRight);
+        }
+
+
+    } else {
+        //you are attacking and moving
+        if (this.canAttack && )
     }
 
 
+}
+
+if (this.canSpell) {
+
+    this.changeAnimationTo(this.animationSpell);
+
+}
+
+if (this.canAttack) {
+
+    this.canAttack = false;
+    this.changeAnimationTo(this.animationAttack); // at the end of the animation checkCollision;
+
+}
+
+if (this.canJump) {
+
+    this.changeAnimationTo(this.animationJump);
+
+}
+
+if (this.canAttack && this.canJump && this.canMove && this.canSpell) {
+    if (this.currentAnimation != this.animationIdle) {
+        this.changeAnimationTo(this.animationIdle);
+    } else {
 
 
-    //solid code
-    isGrounded() {
-        this.feetY = this.position.y + this.height / 2;
-        if (this.floorY <= this.feetY) {
-            this.grounded = true;
-            this.jumps = 2;
-            this.gravityMultiplier = 1;
-            this.jumpSpeed = 0;
-            this.position.y = this.floorY - this.height / 2;
-            if (this.state == 5) {
+
+
+
+
+
+
+
+    }
+
+}
+
+
+
+
+//if using a spell or item or weapon, this.canAttack will become false
+if (this.canAttack && this.canSpell && this.canMove) { //canMove if you are not in an attack or spell
+    //idle
+
+
+    if (this.dashFor > 0) {
+        this.dashFor--;
+        this.mana--;
+        if (this.direction == 1) {
+            this.position.x += this.speed * 7;
+        } else if (this.direction == -1) {
+            this.dashFor--;
+            this.position.x -= this.speed * 7;
+        }
+
+
+    } else {
+        if (keyIsDown(68) && keyIsDown(65)) {
+            if (this.state != 0 && this.state != 5 && this.state != 3) {
+                this.frame = 0;
                 this.state = 0;
-                this.frame = 0;
             }
-
-        } else {
-            this.grounded = false;
-        }
-        //and if this is true, then ur feetY will equal the floorY
-
-        //find this.floorY
-        for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-                this.floorY = tiles[i].y;
-                break;
-            } else {
-                this.floorY = 10000;
-            }
-        }
-    }
-
-
-    checkCollision(a, b) { // planning on adding 3rd intake damage and just using that for the hit
-        this.hitboxX = a;
-        this.hitboxX = b;
-        for (let target = 0; target < enemies.length; target++) {
-            if (this.direction == -1) {
-                if (enemies[target].position.x >= this.position.x - this.hitboxX && enemies[target].position.x <= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
-                    dealDamage(enemies[target], this.damage, target);
-                }
-            } else  if (this.direction == 1) {
-                if (enemies[target].position.x <= this.position.x + this.hitboxX && enemies[target].position.x >= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
-                    dealDamage(enemies[target], this.damage, target);
-                }
-            }
-
-
-        }
-
-
-    }
-
-
-    attack() {
-        //attack if not already in state 3 / all the code will be in animation
-        console.log("shi")
-        this.frame = 0;
-        this.state = 3;
-        if (mouseX + camX >= this.position.x) {
+        } else if (keyIsDown(68)) { // move right
             this.direction = 1;
-        } else {
+            this.position.x += this.speed;
+            if (keyIsDown(16) && this.canDash && this.mana >= 10) {
+                this.dashFor = 8;
+                this.mana -= 10;
+                this.canDash = false;
+
+            }
+            if (this.state != 1 && this.state != 5) {
+                this.frame = 0;
+                this.state = 1;
+                this.speed = 7;
+            }
+        } else if (keyIsDown(65)) {
+
             this.direction = -1;
+            this.position.x -= this.speed;
+            if (keyIsDown(16) && this.canDash && this.mana >= 10) {
+                this.dashFor = 20;
+                this.mana -= 10;
+                this.canDash = false;
+
+            }
+            if (this.state != 2 && this.state != 5) {
+                this.frame = 0;
+                this.state = 2;
+                this.speed = 7;
+            }
+
+
+        } else if (this.state != 0 && this.state != 5 && this.state != 3) {
+            this.frame = 0;
+            this.state = 0;
+
         }
-        this.isAttackingFor = this.animationAttack.length - 1
+    }
+
+
+
+    if (keyIsDown(69) && this.state != 4) { // spell
+        this.frame = 0;
+        this.state = 4;
+        this.canSpell = false;
+        this.isAttackingFor = this.animationSpell.length - 1
+    }
+}
+}
+
+
+
+
+//solid code
+isGrounded() {
+    this.feetY = this.position.y + this.height / 2;
+    if (this.floorY <= this.feetY) {
+        this.grounded = true;
+        this.jumps = 2;
+        this.gravityMultiplier = 1;
+        this.jumpSpeed = 0;
+        this.position.y = this.floorY - this.height / 2;
+        if (this.state == 5) {
+            this.state = 0;
+            this.frame = 0;
+        }
+
+    } else {
+        this.grounded = false;
+    }
+    //and if this is true, then ur feetY will equal the floorY
+
+    //find this.floorY
+    for (let i = 0; i < tiles.length; i++) {
+        if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+            this.floorY = tiles[i].y;
+            break;
+        } else {
+            this.floorY = 10000;
+        }
+    }
+}
+
+
+checkCollision(a, b) { // planning on adding 3rd intake damage and just using that for the hit
+    this.hitboxX = a;
+    this.hitboxX = b;
+    for (let target = 0; target < enemies.length; target++) {
+        if (this.direction == -1) {
+            if (enemies[target].position.x >= this.position.x - this.hitboxX && enemies[target].position.x <= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
+                dealDamage(enemies[target], this.damage, target);
+            }
+        } else if (this.direction == 1) {
+            if (enemies[target].position.x <= this.position.x + this.hitboxX && enemies[target].position.x >= this.position.x && enemies[target].position.y + enemies[target].height / 2 >= this.position.y - this.height / 2 && enemies[target].position.y - enemies[target].height / 2 <= this.position.y + this.height / 2) {
+                dealDamage(enemies[target], this.damage, target);
+            }
+        }
+
 
     }
 
-    receivedHit() {
-        if (this.hp <= 0) {
 
-        }
+}
 
+
+attack() {
+    //attack if not already in state 3 / all the code will be in animation
+    this.frame = 0;
+    this.state = 3;
+    if (mouseX + camX >= this.position.x) {
+        this.direction = 1;
+    } else {
+        this.direction = -1;
+    }
+    this.isAttackingFor = this.animationAttack.length - 1
+
+}
+
+receivedHit() {
+    if (this.hp <= 0) {
 
     }
+
+
+}
 
 
 }

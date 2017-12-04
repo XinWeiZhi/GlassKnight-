@@ -35,6 +35,7 @@ function preload() {
     gravewatcher = loadImage("scripts/assets/abyss.jpg");
     bird = loadImage("scripts/assets/bird.jpg");
     worm = loadImage("scripts/assets/worm.jpg");
+    blackknight = loadImage("scripts/assets/blackknight.jpg");
 }
 
 function drawMap() {
@@ -52,6 +53,7 @@ function drawMap() {
         enemies.push(new Harpy(1100, 0));
         enemies.push(new GraveMaster(300, 30));
         enemies.push(new Worm(300, 800));
+        enemies.push(new BlackKnight(300, 800));
 //        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
