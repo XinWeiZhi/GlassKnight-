@@ -18,6 +18,8 @@ let silvercoins = 0;
 let messages = []
 let allies = [];
 let interfaceButtons = [];
+let summons = [];
+let buffs = [];
 //end of VARIABLES
 
 
@@ -36,6 +38,7 @@ function preload() {
     bird = loadImage("scripts/assets/bird.jpg");
     worm = loadImage("scripts/assets/worm.jpg");
     blackknight = loadImage("scripts/assets/blackknight.jpg");
+    walkAttackleft = loadImage("scripts/assets/walk.jpg");
 }
 
 function drawMap() {
@@ -308,4 +311,10 @@ function dealDamage(target, damage, slot) { // , sender
     }
 
 
+}
+
+function collisionDetected(target, from, x , y) { //target is enemies[e], from is this.position
+    if (from.x - x <= target.position.x + target.width/2 && from.x + x >= target.position.x - target.width/2 && from.y - y <= target.position.y + target.height / 2 && from.y + y >= target.position.y - target.height / 2) {
+                return true;
+            }
 }

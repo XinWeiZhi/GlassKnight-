@@ -28,11 +28,11 @@ class Player {
             WalkRight: [pepe, pepe, walk, walk, pepe, walk, walk, walk],
             Jump: [walk, walk, walk, walk, walk, walk, walk, walk],
             Attack: [sword, sword, sword, sword, sword, sword],
-            MoveAttackLeft: [],
-            MoveAttackRight: [],
-            AttackJump: [],
-            AttackDive: [],
-            Attack: [],
+            MoveAttackLeft: [walkAttackleft, walkAttackleft ,walkAttackleft ,walkAttackleft, walkAttackleft],
+            MoveAttackRight: [walkAttackleft,walkAttackleft,walkAttackleft,walkAttackleft,walkAttackleft],
+            AttackJump: [walkAttackleft,walkAttackleft,walkAttackleft,walkAttackleft],
+            AttackDive: [walkAttackleft,walkAttackleft],
+            Attack: [walkAttackleft, walkAttackleft],
             Spell: [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire],
         }
         this.currentAnimation = this.animationIdle;
@@ -51,9 +51,23 @@ class Player {
         this.atkCooldown = 0;
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
         this.takenDamageMultiplier = 1;
+        this.comboAttack = 0;
+        this.spellArray = [];
+        this.comboArray = [];
+        this.weaponArray = [];
+        
+        this.comboAttack = {
+            0: {damage: 2, movement: createVector(5,0), animation :[this.animation.MoveAttackLeft], xBox: 120, yBox: this.height / 2},
+            1: {damage: 3, movement: createVector(5,0), animation : [this.animation.Jump] , xBox: 150, yBox: this.height / 2},
+            2: {damage: 4, movement: createVector(12,0), animation: [this.animation.Attack], xBox: 150, yBox: this.height / 2},
+            3: {damage: 5, movement: createVector(5,0), animation : [this.animation.Spell] , xBox: 220, yBox: this.height / 2},
+            
+        }
+        
         //perhaps this.hat / this.armor
     }
 
+    
     changeAnimationTo(array) {
         if (this.currentAnimation != array) {
             this.frame = 0;
@@ -72,6 +86,16 @@ class Player {
             this.frame++;
         } else {
             this.frame = 0; // reset animation no matter what
+            
+            if(!this.canAttack) {
+                for(e = 0; e < enemies.length; e++) {
+                    if(collisionDetected(enemies[e], this.position, this.hitboxX, this.hitboxY)) {
+                      dealDamage(enemies[e], this.damage, e);     
+                    }
+                    
+                }
+             
+            }
             //decide the next animation array in process and if none have animation idle
             this.canAttack = true;
             this.canSpell = true;
@@ -79,6 +103,13 @@ class Player {
         }
 
 
+    }
+    
+    jump() {
+        if(keyIsDown(32)) {
+            this.position.y -= this.jumpSpeed; 
+            this.position.y += gravity * this.gravityMultiplier;
+        }
     }
 
     animate() {
@@ -104,29 +135,6 @@ class Player {
             } else {
                 this.frame = 0;
             }
-
-        } else if (this.state == 1) { // move right
-            this.image = this.animationWalkRight[this.frame];
-            if (this.frame < this.animationWalkRight.length - 1) {
-                this.frame++;
-                if (this.speed < 11) {
-                    this.speed += 0.1;
-                }
-            } else {
-                this.frame = 0;
-            }
-        } else if (this.state == 2) { // move left
-            this.image = this.animationWalkLeft[this.frame];
-            if (this.frame < this.animationWalkLeft.length - 1) {
-                this.frame++;
-                if (this.speed < 11) {
-                    this.speed += 0.1;
-                }
-            } else {
-                this.frame = 0;
-            }
-
-
 
         } else if (this.state == 3) { //attack atk timer --
 
@@ -168,10 +176,36 @@ class Player {
     }
 
     reposition(x, y) {
-        this.position.add(createVector(x, y))
+        this.position.add(createVector(x, y));
     }
 
-
+    attack(direction, spell, type, slot, damage, x, y) { //x,y refer to hitboxes, type refers to buff or projectile slot in spell array or wep
+        this.canAttack = false;
+        if(!spell) { // type will refer to combo so far instead of spell type
+            this.changeAnimationTo(this.comboArray.type.animation);
+            this.reposition(this.comboArray.type.movement);
+            this.damage = (this.comboArray.type.damage);
+            this.hitboxX = (this.comboArray.type.xBox);
+            this.hitboxY = (this.comboArray.type.yBox);
+            this.comboAttack++;
+            
+            
+        } else if(spell) {
+            if(type === "buff") {
+                
+            }
+            
+            if(type === "missile") {
+                
+            }
+            
+            if(type === "summon") {
+                
+            }
+        }
+    }
+    
+    
     //jumps etc
     process() {
         //always happening
@@ -203,14 +237,8 @@ class Player {
             // if already in move then activate attack move
             // if already in attack move then wait for animation frame to end 
             //make animation walk frame carry over 
-            if (mouseButton == RIGHT) {
-
-            }
-        }
-
-
         if (keyIsDown(68)) {
-            if (this.direction != 1) {
+            if (this.currentAnimation == this.animation.Idle) {
                 this.direction = 1;
                 this.movementAccelerator = 0;
             }
@@ -219,14 +247,17 @@ class Player {
                 this.movementAccelerator += 0.2;
             }
 
-            if (mouseIsPressed) {
+            if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
                 if (mouseButton == LEFT) {
                     this.changeAnimationTo(this.animation.MoveAttackRight);
+                    this.attack();
                 }
+            } else if (this.currentAnimation != this.animation.MoveAttackRight) {
+                this.changeAnimationTo(this.animation.WalkRight);
             }
 
         } else if (keyIsDown(65)) {
-            if (this.direction != -1) {
+            if (this.currentAnimation == this.animation.Idle) {
                 this.direction = -1;
                 this.movementAccelerator = 0;
             }
@@ -235,13 +266,27 @@ class Player {
             if (this.movementAccelerator < 2) {
                 this.movementAccelerator += 0.2;
             }
+            
+            if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
+                if (mouseButton == LEFT) {
+                    this.changeAnimationTo(this.animation.MoveAttackLeft);
+                    this.attack();
+                }
+            } else if (this.currentAnimation != this.animation.MoveAttackLeft) {
+                this.changeAnimationTo(this.animation.WalkLeft);
+            }
 
         }
 
 
     }
+    //if still attack
     //canAttack if this is true
+        //processes after move
     if (this.canAttack) {
+        if(mouseClicked) {
+            
+        }
         if (this.direction === -1) {
             this.changeAnimationTo(this.animationWalkLeft);
         } else if (this.direction === 1) {
