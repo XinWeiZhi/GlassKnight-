@@ -52,11 +52,11 @@ function drawMap() {
         enemies.push(new Enemy(900, 0));
         enemies.push(new Enemy(700, 0));
         enemies.push(new Enemy(1000, 0));
-        enemies.push(new Harpy(1200, 0));
-        enemies.push(new Harpy(1100, 0));
-        enemies.push(new GraveMaster(300, 30));
-        enemies.push(new Worm(300, 800));
-        enemies.push(new BlackKnight(300, 800));
+//        enemies.push(new Harpy(1200, 0));
+//        enemies.push(new Harpy(1100, 0));
+//        enemies.push(new GraveMaster(300, 30));
+//        enemies.push(new Worm(300, 800));
+//        enemies.push(new BlackKnight(300, 800));
 //        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
@@ -151,7 +151,7 @@ function draw() {
     
     for (let a = 0; a < allies.length; a++) {
         allies[a].show(a);
-        allies[a].process();
+        allies[a].process(a);
         allies[a].animate();
         allies[a].isGrounded();
 
@@ -176,6 +176,11 @@ function draw() {
     for (let m = 0; m < messages.length; m++) {
         messages[m].show(m);
 
+    }
+    
+    for (let b = 0; b < buffs.length; b++) {
+        buffs[b].show();
+        buffs[b].use();
     }
 
             player.takenDamageMultiplier = 1;
