@@ -9,7 +9,7 @@ class Player {
         this.maxJumps = 2;
         this.jumps = this.maxJumps;
         this.grounded = false;
-        this.jumpSpeed = 10;
+        this.jumpSpeed = 20;
         this.currentJumpSpeed = 0;
         this.terminal = 45;
         this.gravityMultiplier = 1;
@@ -18,8 +18,11 @@ class Player {
         this.canAttack = true;
         this.canSpell = true;
         this.canMove = true;
+        this.inJump = false;
+        this.jumpCoolDown = 30;
         this.direction = 1;
         this.stillGoingUp = false;
+
         this.weapon = new Sword(this.position.x, this.position.y);
         //make this.damage = to the weapon damage and such
 
@@ -35,10 +38,11 @@ class Player {
             AttackJump: [walkAttackleft, walkAttackleft, walkAttackleft, walkAttackleft],
             AttackDive: [walkAttackleft, walkAttackleft],
             Spell: [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire],
+            Up:[up,up,up,up,up,up],
         }
         this.currentAnimation = this.animation.Idle;
         this.isAttackingFor = 0;
-        this.image = pepe;
+        this.image;
         this.canDash = true;
         this.dashFor = 0;
         this.mana = 250;
@@ -62,7 +66,7 @@ class Player {
         this.silenced = false;
 
         this.comboArray = [
-            {
+            {  //regular attack regular attack regular attack
                 damage: 2,
                 movement: createVector(5, 0),
                 animation: this.animation.Attack,
@@ -89,8 +93,41 @@ class Player {
                 animation: this.animation.Spell,
                 xBox: 220,
                 yBox: this.height / 2
-            },
+            }, 
 
+        ]
+        
+        this.moveArray = [
+            //move attacks move attacks move attacks
+            {  //up
+                damage: 2,
+                movement: createVector(0, 0),
+                animation: this.animation.Up,
+                xBox: 150,
+                yBox: this.height
+            },
+            {   // left
+                damage: 3,
+                movement: createVector(5, 0),
+                animation: this.animation.Jump,
+                xBox: 150,
+                yBox: this.height / 2
+            },
+            {  // right
+                damage: 4,
+                movement: createVector(12, 0),
+                animation: this.animation.Attack,
+                xBox: 150,
+                yBox: this.height / 2
+            },
+            { // down
+                damage: 5,
+                movement: createVector(0, 0),
+                animation: this.animation.Spell,
+                xBox: 150,
+                yBox: this.height / 2
+            }, //move attack includes up attack or down attack
+              
         ]
 
         //perhaps this.hat / this.armor
@@ -101,6 +138,8 @@ class Player {
         if (this.currentAnimation != array) {
             this.frame = 0;
             this.currentAnimation = array;
+            console.log(this.currentAnimation)
+
         }
     }
 
@@ -110,7 +149,38 @@ class Player {
         this.image = this.currentAnimation[this.frame];
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
 
+    }
 
+    //    beginJump(grounded) {
+    //
+    //        if (this.jumps === this.maxJumps && this.grounded) {
+    //            this.currentJumpSpeed = this.jumpSpeed;
+    //            this.jumps--;
+    //            this.stillGoingUp = true;
+    //            this.grounded = false;
+    //        } else if (jumps > 0 && this.currentJumpSpeed <= this.jumpSpeed * 0.5) {
+    //            this.currentJumpSpeed = this.jumpSpeed;
+    //            this.jumps--;
+    //            this.stillGoingUp = true;
+    //            this.grounded = false;
+    //        }
+    //
+    //    }
+
+    //always on
+    jump() {
+        if (!this.jumpCoolDown) {
+            this.jumpCoolDown = 30;
+            this.jumps--;
+            this.currentJumpSpeed = this.jumpSpeed;
+            this.reposition(0, -this.currentJumpSpeed);
+            this.gravityMultiplier = 1;
+        }
+
+
+    }
+
+    animate() {
         if (this.frame < this.currentAnimation.length - 1) {
             this.frame++;
         } else {
@@ -131,90 +201,66 @@ class Player {
 
         }
 
-
-    }
-
-    beginJump(grounded) {
-
-        if (this.jumps === this.maxJumps && this.grounded) {
-            this.currentJumpSpeed = this.jumpSpeed;
-            this.jumps--;
-            this.stillGoingUp = true;
-            this.grounded = false;
-        } else if (jumps > 0 && this.currentJumpSpeed <= this.jumpSpeed * 0.5) {
-            this.currentJumpSpeed = this.jumpSpeed;
-            this.jumps--;
-            this.stillGoingUp = true;
-            this.grounded = false;
-        }
-
-    }
-
-    //always on
-    jump() {
-
-        if (!this.grounded) {
-            if (keyIsDown(32) && this.stillGoingUp) {
-                this.reposition(0, -this.currentJumpSpeed);
-                this.changeAnimationTo(this.animation.Jump);
-            } else if (this.stillGoingUp) {
-                this.stillGoingUp = false;
-                this.currentJumpSpeed = 0;
-            }
-
-            if (this.currentJumpSpeed > 0) {
-                this.currentJumpSpeed -= gravity;
-            }
-
-        } else if (this.grounded) {
-            this.currentJumpSpeed = 0;
-        }
-
-
-    }
-
-    animate() {
-
-
-        if (this.state == 4) { // spell
-            this.mana -= 3;
-            if (this.isAttackingFor > 0) {
-                this.isAttackingFor--;
-                if (this.frame < this.animationSpell.length - 1) {
-                    this.frame++;
-                }
-                this.image = this.animationSpell[this.frame];
-                if (this.isAttackingFor == 0) {
-                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800, 50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
-                    this.frame = 0;
-                    this.state = 0;
-                    this.canSpell = true;
-                }
-
-            }
-
-        }
+        //        if (this.state == 4) { // spell
+        //            this.mana -= 3;
+        //            if (this.isAttackingFor > 0) {
+        //                this.isAttackingFor--;
+        //                if (this.frame < this.animationSpell.length - 1) {
+        //                    this.frame++;
+        //                }
+        //                this.image = this.animationSpell[this.frame];
+        //                if (this.isAttackingFor == 0) {
+        //                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800, 50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
+        //                    this.frame = 0;
+        //                    this.state = 0;
+        //                    this.canSpell = true;
+        //                }
+        //
+        //            }
+        //
+        //        }
     }
 
     reposition(x, y) {
         this.position.add(createVector(x, y));
     }
 
-    attack(slot, combo) { // slot in spell array or wep, 0 if it is not a spell
+    attack(slot, combo, moving) { // slot in spell array or wep, 0 if it is not a spell
         this.canAttack = false;
         this.canMove = false;
-
+        let direction;
+        
         if (mouseX + camX >= this.position.x) {
             this.direction = 1;
         } else {
             this.direction = -1;
         }
+        
+        if(keyIsDown(87)) {
+            direction = 0;
+        } else if(keyIsDown(83)) {
+            direction = 3;
+        } else if(keyIsDown(68)) {
+            direction = 2;
+        } else if(keyIsDown(65)) {
+            direction = 1;
+        }
 
-        this.changeAnimationTo(this.comboArray[combo].animation); // at the end of animation deal damage
-        this.reposition(this.comboArray[combo].movement);
-        this.damage = (this.comboArray[combo].damage);
-        this.hitboxX = (this.comboArray[combo].xBox);
-        this.hitboxY = (this.comboArray[combo].yBox);
+        if (this.currentAnimation === this.animation.MoveAttackLeft || this.currentAnimation === this.animation.MoveAttackRight && moving) { // combo == 0 up, 1 L, 2 R, 3 down  
+            this.reposition(this.moveArray[direction].movement.x * this.direction, this.moveArray[direction].movement.y);
+            this.damage = (this.moveArray[direction].damage);
+            this.hitboxX = (this.moveArray[direction].xBox);
+            this.hitboxY = (this.moveArray[direction].yBox);
+            
+        } else {
+            this.changeAnimationTo(this.comboArray[this.comboAttack].animation); // at the end of animation deal damage
+            this.reposition(this.comboArray[this.comboAttack].movement.x * this.direction, this.comboArray[this.comboAttack].movement.y);
+            this.damage = (this.comboArray[this.comboAttack].damage);
+            this.hitboxX = (this.comboArray[this.comboAttack].xBox);
+            this.hitboxY = (this.comboArray[this.comboAttack].yBox);
+
+
+        }
 
 
         if (this.comboAttack == 3) {
@@ -230,7 +276,7 @@ class Player {
         this.canSpell = false;
         this.canMove = false;
         if (type === "buff") {
-//            buffs.push(new this.spellSelect[slot](allies[i], spellSelect.[slot] timer));
+            //            buffs.push(new this.spellSelect[slot](allies[i], spellSelect.[slot] timer));
         }
 
         if (type === "missile") {
@@ -247,14 +293,15 @@ class Player {
 
     //jumps etc
     process(iam) {
-
-        if (this.currentAnimation === this.animation.Jump) {
-            this.jump();
-        }
+        console.log(this.position.y)
 
         //always happening
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
+        }
+
+        if (this.jumpCoolDown > 0) {
+            this.jumpCoolDown--;
         }
 
         if (this.mana < this.mMana) {
@@ -264,12 +311,67 @@ class Player {
 
         //animations and states
 
-        //processes before move // ATTACK ATTACK ATTACK
+        
+        //can only move if this is true
+        if (this.canMove && !this.rooted && !this.stunned) {
+            this.reposition(0, -this.currentJumpSpeed);
+
+            if (keyIsDown(68) && keyIsDown(65)) {
+                this.changeAnimationTo(this.animation.Idle)
+            } else if (keyIsDown(68)) {
+                if (this.currentAnimation == this.animation.Idle) {
+                    this.direction = 1;
+                    this.movementAccelerator = 0;
+                }
+                this.reposition((this.speed + this.movementAccelerator) * this.direction);
+                if (this.movementAccelerator < 2) {
+                    this.movementAccelerator += 0.2;
+                }
+                //ATTACK ATTACK ATTACK
+                if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
+                    if (mouseButton == LEFT) {
+                        this.changeAnimationTo(this.animation.MoveAttackRight);
+                        this.attack(0, 0, true);
+                    }
+                } else if (this.currentAnimation != this.animation.MoveAttackRight) {
+                    this.changeAnimationTo(this.animation.WalkRight);
+                }
+
+            } else if (keyIsDown(65)) {
+                if (this.currentAnimation == this.animation.Idle) {
+                    this.direction = -1;
+                    this.movementAccelerator = 0;
+                }
+
+                this.reposition((this.speed + this.movementAccelerator) * -1);
+                if (this.movementAccelerator < 2) {
+                    this.movementAccelerator += 0.2;
+                }
+                //ATTACK ATTACK ATTACK
+                if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
+                    if (mouseButton == LEFT) {
+                        this.changeAnimationTo(this.animation.MoveAttackLeft);
+                        this.attack(0, 0, true);
+                    }
+                } else if (this.currentAnimation != this.animation.MoveAttackLeft) {
+                    this.changeAnimationTo(this.animation.WalkLeft);
+                }
+
+            } else if (this.canAttack) {
+                this.currentAnimation = this.animation.Idle
+            }
+
+            if (this.currentJumpSpeed > 0) {
+                this.currentAnimation = this.animation.Jump;
+            }
+        }
+        
+        //processes after move // ATTACK ATTACK ATTACK
         if (this.canAttack && !this.stunned) {
             if (mouseIsPressed) {
                 if (mouseButton == LEFT) {
                     this.changeAnimationTo(this.animation.Attack);
-                    this.attack(0, this.comboAttack);
+                    this.attack(0, this.comboAttack, false);
                 }
             }
 
@@ -287,77 +389,21 @@ class Player {
             }
 
         }
-        //can only move if this is true
-        if (this.canMove && !this.rooted && !this.stunned) {
-            // move animation
-
-            if (this.canJump) {
-                if (keyIsDown(32)) {
-                    this.beginJump(this.grounded);
-                }
-            }
-
-            if (keyIsDown(68)) {
-                if (this.currentAnimation == this.animation.Idle) {
-                    this.direction = 1;
-                    this.movementAccelerator = 0;
-                }
-                this.reposition((this.speed + this.movementAccelerator) * this.direction);
-                if (this.movementAccelerator < 2) {
-                    this.movementAccelerator += 0.2;
-                }
-                //ATTACK ATTACK ATTACK
-                if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
-                    if (mouseButton == LEFT) {
-                        this.changeAnimationTo(this.animation.MoveAttackRight);
-                        this.attack(0, this.comboAttack);
-                    }
-                } else if (this.currentAnimation != this.animation.MoveAttackRight) {
-                    this.changeAnimationTo(this.animation.WalkRight);
-                }
-
-            } else if (keyIsDown(65)) {
-                if (this.currentAnimation == this.animation.Idle) {
-                    this.direction = -1;
-                    this.movementAccelerator = 0;
-                }
-
-                this.reposition((this.speed + this.movementAccelerator) * this.direction);
-                if (this.movementAccelerator < 2) {
-                    this.movementAccelerator += 0.2;
-                }
-                //ATTACK ATTACK ATTACK
-                if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
-                    if (mouseButton == LEFT) {
-                        this.changeAnimationTo(this.animation.MoveAttackLeft);
-                        this.attack(0, this.comboAttack);
-                    }
-                } else if (this.currentAnimation != this.animation.MoveAttackLeft) {
-                    this.changeAnimationTo(this.animation.WalkLeft);
-                }
-
-            } else if (!this.grounded) {
-                this.currentAnimation = this.animation.Idle
-            }
-        }
     }
 
 
     isGrounded() {
-        this.feetY = this.position.y + this.height / 2;
-        if (this.floorY <= this.feetY) {
+        if (this.floorY <= this.position.y + this.height / 2 && this.gravityMultiplier * gravity >= this.currentJumpSpeed) {
             this.grounded = true;
-            this.jumps = 2;
+            this.jumps = this.maxJumps;
             this.gravityMultiplier = 1;
-            this.jumpSpeed = 0;
+            this.currentJumpSpeed = 0;
             this.position.y = this.floorY - this.height / 2;
-            if (this.state == 5) {
-                this.state = 0;
-                this.frame = 0;
-            }
-
         } else {
             this.grounded = false;
+            this.position.y += gravity * this.gravityMultiplier;
+            this.gravityMultiplier++;
+            //gravity
         }
 
         //find this.floorY

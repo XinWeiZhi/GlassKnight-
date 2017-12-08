@@ -39,6 +39,7 @@ function preload() {
     worm = loadImage("scripts/assets/worm.jpg");
     blackknight = loadImage("scripts/assets/blackknight.jpg");
     walkAttackleft = loadImage("scripts/assets/walk.jpg");
+    up = loadImage("scripts/assets/up.jpg");
 }
 
 function drawMap() {
@@ -150,10 +151,13 @@ function draw() {
     }
     
     for (let a = 0; a < allies.length; a++) {
-        allies[a].show(a);
+        
         allies[a].process(a);
-        allies[a].animate();
+          allies[a].animate();
+        allies[a].show(a);
         allies[a].isGrounded();
+      
+      
 
     }
 
@@ -227,25 +231,14 @@ function draw() {
 
 function keyPressed() {
 
-    if (keyCode == 32 && player.jumps > 0) {
-        player.jumps--
-            player.grounded = false;
-        player.frame = 0;
-        player.state = 5;
-        player.gravityMultiplier = 1;
-        player.jumpSpeed = 12;
-        player.stillGoingUp = true;
-
-
-
-    }
-
     if (keyCode == 27) {
         hudDesired = !hudDesired; // likely the inventory
 
     }
 
-
+    if (keyCode == 32 && player.jumps > 0) {
+                player.jump();
+            }
 
     //1 for attack or mouseleft
 
