@@ -3,6 +3,7 @@ class Buff {
         this.sender = sender;
         this.time = time;
         this.image;
+        this.type = "buff";
     }
     
     show() {
@@ -42,5 +43,21 @@ class Regenerate extends Buff {
             this.sender.hp += this.heal;
         } 
         
+    }
+}
+
+class EmptySpell {
+    constructor(x,y) {
+        this.position = createVector(x,y);
+        this.type = null;
+        this.width = 60;
+    }
+    
+    show() {
+        rect(this.position.x, this.position.y, this.width, this.width);
+    }
+    
+    use() {
+        console.log("assign a spell to this slot"); 
     }
 }

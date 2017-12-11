@@ -38,7 +38,7 @@ class Player {
             AttackJump: [walkAttackleft, walkAttackleft, walkAttackleft, walkAttackleft],
             AttackDive: [walkAttackleft, walkAttackleft],
             Spell: [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire],
-            Up:[up,up,up,up,up,up],
+            Up: [up, up, up, up, up, up],
         }
         this.currentAnimation = this.animation.Idle;
         this.isAttackingFor = 0;
@@ -57,16 +57,22 @@ class Player {
         this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
         this.takenDamageMultiplier = 1;
         this.comboAttack = 0;
-        this.spellSelect = [new Dash()];
+
+
+        this.spellSelect = [FireballRef, FireballRef, FireballRef, FireballRef];
+
+
+
         this.weaponSelect = [];
         this.rooted = false;
         this.stunned = false;
         this.slowedBy = 1;
         this.poisoned = false;
         this.silenced = false;
+        this.canProcess = true;
 
         this.comboArray = [
-            {  //regular attack regular attack regular attack
+            { //regular attack regular attack regular attack
                 damage: 2,
                 movement: createVector(5, 0),
                 animation: this.animation.Attack,
@@ -93,27 +99,27 @@ class Player {
                 animation: this.animation.Spell,
                 xBox: 220,
                 yBox: this.height / 2
-            }, 
+            },
 
         ]
-        
+
         this.moveArray = [
             //move attacks move attacks move attacks
-            {  //up
+            { //up
                 damage: 2,
                 movement: createVector(0, 0),
                 animation: this.animation.Up,
                 xBox: 150,
                 yBox: this.height
             },
-            {   // left
+            { // left
                 damage: 3,
                 movement: createVector(5, 0),
                 animation: this.animation.Jump,
                 xBox: 150,
                 yBox: this.height / 2
             },
-            {  // right
+            { // right
                 damage: 4,
                 movement: createVector(12, 0),
                 animation: this.animation.Attack,
@@ -127,7 +133,7 @@ class Player {
                 xBox: 150,
                 yBox: this.height / 2
             }, //move attack includes up attack or down attack
-              
+
         ]
 
         //perhaps this.hat / this.armor
@@ -200,25 +206,6 @@ class Player {
             this.canSpell = true;
 
         }
-
-        //        if (this.state == 4) { // spell
-        //            this.mana -= 3;
-        //            if (this.isAttackingFor > 0) {
-        //                this.isAttackingFor--;
-        //                if (this.frame < this.animationSpell.length - 1) {
-        //                    this.frame++;
-        //                }
-        //                this.image = this.animationSpell[this.frame];
-        //                if (this.isAttackingFor == 0) {
-        //                    projectiles.push(new FireBall(this.position.x, this.position.y, 1800, 50, 40, this.spellDamage, this.speed / 7 * this.direction, 55, 20));
-        //                    this.frame = 0;
-        //                    this.state = 0;
-        //                    this.canSpell = true;
-        //                }
-        //
-        //            }
-        //
-        //        }
     }
 
     reposition(x, y) {
@@ -229,20 +216,20 @@ class Player {
         this.canAttack = false;
         this.canMove = false;
         let direction;
-        
+
         if (mouseX + camX >= this.position.x) {
             this.direction = 1;
         } else {
             this.direction = -1;
         }
-        
-        if(keyIsDown(87)) {
+
+        if (keyIsDown(87)) {
             direction = 0;
-        } else if(keyIsDown(83)) {
+        } else if (keyIsDown(83)) {
             direction = 3;
-        } else if(keyIsDown(68)) {
+        } else if (keyIsDown(68)) {
             direction = 2;
-        } else if(keyIsDown(65)) {
+        } else if (keyIsDown(65)) {
             direction = 1;
         }
 
@@ -251,7 +238,7 @@ class Player {
             this.damage = (this.moveArray[direction].damage);
             this.hitboxX = (this.moveArray[direction].xBox);
             this.hitboxY = (this.moveArray[direction].yBox);
-            
+
         } else {
             this.changeAnimationTo(this.comboArray[this.comboAttack].animation); // at the end of animation deal damage
             this.reposition(this.comboArray[this.comboAttack].movement.x * this.direction, this.comboArray[this.comboAttack].movement.y);
@@ -271,30 +258,36 @@ class Player {
     }
 
     spell(direction, slot, i) {
-        let type = spellSelect[slot].type;
-        this.canAttack = false;
-        this.canSpell = false;
-        this.canMove = false;
-        if (type === "buff") {
-            //            buffs.push(new this.spellSelect[slot](allies[i], spellSelect.[slot] timer));
+        if (this.mana - this.spellSelect[slot].manaCost >= 0) {
+            let type = this.spellSelect[slot].type;
+            this.canAttack = false;
+            this.canSpell = false;
+            this.canMove = false;
+            if (type === "buff") {
+                //            buffs.push(new spellSelect[slot])
+                //            buffs.push(new this.spellSelect[slot](allies[i], spellSelect.[slot] timer));
+            }
+
+            if (type === "missile") {
+                this.spellSelect[slot].make(this.position.x, this.position.y, this.spellSelect[slot].maxRange, 50, 40, this.spellSelect[slot].damage + this.spellDamage, this.speed / 7 * this.direction, this.spellSelect[slot].xBox, this.spellSelect[slot].yBox);
+            }
+
+            if (type === "summon") {
+
+            }
+
+            if (type === "teleport") {
+
+            }
+
+            this.mana -= this.spellSelect[slot].manaCost;
         }
 
-        if (type === "missile") {
-
-        }
-
-        if (type === "summon") {
-
-        }
-
-        if (type === "teleport") {}
     }
 
 
-    //jumps etc
+    //jumps etcd
     process(iam) {
-        console.log(this.position.y)
-
         //always happening
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
@@ -311,83 +304,85 @@ class Player {
 
         //animations and states
 
-        
-        //can only move if this is true
-        if (this.canMove && !this.rooted && !this.stunned) {
-            this.reposition(0, -this.currentJumpSpeed);
+        if (this.canProcess) {
 
-            if (keyIsDown(68) && keyIsDown(65)) {
-                this.changeAnimationTo(this.animation.Idle)
-            } else if (keyIsDown(68)) {
-                if (this.currentAnimation == this.animation.Idle) {
+
+            //can only move if this is true
+            if (this.canMove && !this.rooted && !this.stunned) {
+                this.reposition(0, -this.currentJumpSpeed);
+
+                if (keyIsDown(68) && keyIsDown(65)) {
+                    this.changeAnimationTo(this.animation.Idle)
+                } else if (keyIsDown(68)) {
+                    if (this.currentAnimation == this.animation.Idle) {
+                        this.movementAccelerator = 0;
+                    }
                     this.direction = 1;
-                    this.movementAccelerator = 0;
-                }
-                this.reposition((this.speed + this.movementAccelerator) * this.direction);
-                if (this.movementAccelerator < 2) {
-                    this.movementAccelerator += 0.2;
-                }
-                //ATTACK ATTACK ATTACK
-                if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
-                    if (mouseButton == LEFT) {
-                        this.changeAnimationTo(this.animation.MoveAttackRight);
-                        this.attack(0, 0, true);
+                    this.reposition((this.speed + this.movementAccelerator) * this.direction);
+                    if (this.movementAccelerator < 2) {
+                        this.movementAccelerator += 0.2;
                     }
-                } else if (this.currentAnimation != this.animation.MoveAttackRight) {
-                    this.changeAnimationTo(this.animation.WalkRight);
-                }
+                    //ATTACK ATTACK ATTACK
+                    if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
+                        if (mouseButton == LEFT) {
+                            this.changeAnimationTo(this.animation.MoveAttackRight);
+                            this.attack(0, 0, true);
+                        }
+                    } else if (this.currentAnimation != this.animation.MoveAttackRight) {
+                        this.changeAnimationTo(this.animation.WalkRight);
+                    }
 
-            } else if (keyIsDown(65)) {
-                if (this.currentAnimation == this.animation.Idle) {
+                } else if (keyIsDown(65)) { // a
+                    if (this.currentAnimation == this.animation.Idle) {
+                        this.movementAccelerator = 0;
+                    }
                     this.direction = -1;
-                    this.movementAccelerator = 0;
-                }
-
-                this.reposition((this.speed + this.movementAccelerator) * -1);
-                if (this.movementAccelerator < 2) {
-                    this.movementAccelerator += 0.2;
-                }
-                //ATTACK ATTACK ATTACK
-                if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
-                    if (mouseButton == LEFT) {
-                        this.changeAnimationTo(this.animation.MoveAttackLeft);
-                        this.attack(0, 0, true);
+                    this.reposition((this.speed + this.movementAccelerator) * -1);
+                    if (this.movementAccelerator < 2) {
+                        this.movementAccelerator += 0.2;
                     }
-                } else if (this.currentAnimation != this.animation.MoveAttackLeft) {
-                    this.changeAnimationTo(this.animation.WalkLeft);
+                    //ATTACK ATTACK ATTACK
+                    if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
+                        if (mouseButton == LEFT) {
+                            this.changeAnimationTo(this.animation.MoveAttackLeft);
+                            this.attack(0, 0, true);
+                        }
+                    } else if (this.currentAnimation != this.animation.MoveAttackLeft) {
+                        this.changeAnimationTo(this.animation.WalkLeft);
+                    }
+
+                } else if (this.canAttack) {
+                    this.currentAnimation = this.animation.Idle
                 }
 
-            } else if (this.canAttack) {
-                this.currentAnimation = this.animation.Idle
-            }
-
-            if (this.currentJumpSpeed > 0) {
-                this.currentAnimation = this.animation.Jump;
-            }
-        }
-        
-        //processes after move // ATTACK ATTACK ATTACK
-        if (this.canAttack && !this.stunned) {
-            if (mouseIsPressed) {
-                if (mouseButton == LEFT) {
-                    this.changeAnimationTo(this.animation.Attack);
-                    this.attack(0, this.comboAttack, false);
+                if (this.currentJumpSpeed > 0) {
+                    this.currentAnimation = this.animation.Jump;
                 }
             }
 
-            //SPELL SPELL SPELL, w will be used for up - attack
-            if (!this.silenced) {
-                if (keyIsDown(81)) { // q
-                    this.spell(this.direction, 1, iam);
-                } else if (keyIsDown(69)) { // e
-                    this.spell(this.direction, 2, iam);
-                } else if (keyIsDown(82)) { // r
-                    this.spell(this.direction, 3, iam);
-                } else if (keyIsDown(16)) { // shift
-                    this.spell(this.direction, 0, iam);
+            //processes after move // ATTACK ATTACK ATTACK
+            if (this.canAttack && !this.stunned) {
+                if (mouseIsPressed) {
+                    if (mouseButton == LEFT) {
+                        this.changeAnimationTo(this.animation.Attack);
+                        this.attack(0, this.comboAttack, false);
+                    }
                 }
-            }
 
+                //SPELL SPELL SPELL, w will be used for up - attack
+                if (!this.silenced) {
+                    if (keyIsDown(81)) { // q
+                        this.spell(this.direction, 1, iam);
+                    } else if (keyIsDown(69)) { // e
+                        this.spell(this.direction, 2, iam);
+                    } else if (keyIsDown(82)) { // r
+                        this.spell(this.direction, 3, iam);
+                    } else if (keyIsDown(16)) { // shift
+                        this.spell(this.direction, 0, iam);
+                    }
+                }
+
+            }
         }
     }
 

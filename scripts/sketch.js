@@ -20,6 +20,31 @@ let allies = [];
 let interfaceButtons = [];
 let summons = [];
 let buffs = [];
+
+let FireballRef = {
+    manaCost: 20,
+    type: "missile",
+    damage: 8,
+    xBox: 70,
+    yBox: 70,
+    maxRange: 1500,
+    make: function (x, y, maxRange, width, height, damage, speed, direction, xBox , yBox) {
+        projectiles.push(new Fireball(x, y, maxRange, width, height, damage, speed, direction, xBox, yBox));
+    }
+
+}
+
+
+//let DashRef = {
+//
+//    make(x, y, u know stuff) {
+//        projectiles.push(new Fireball)
+//    }
+//}
+
+
+
+
 //end of VARIABLES
 
 
@@ -53,12 +78,12 @@ function drawMap() {
         enemies.push(new Enemy(900, 0));
         enemies.push(new Enemy(700, 0));
         enemies.push(new Enemy(1000, 0));
-//        enemies.push(new Harpy(1200, 0));
-//        enemies.push(new Harpy(1100, 0));
-//        enemies.push(new GraveMaster(300, 30));
-//        enemies.push(new Worm(300, 800));
-//        enemies.push(new BlackKnight(300, 800));
-//        allies.push(new Jim(300,400));
+        //        enemies.push(new Harpy(1200, 0));
+        //        enemies.push(new Harpy(1100, 0));
+        //        enemies.push(new GraveMaster(300, 30));
+        enemies.push(new Worm(300, 800));
+        //        enemies.push(new BlackKnight(300, 800));
+        //        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
@@ -136,10 +161,10 @@ function draw() {
 
     // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
     //draw player
-//    player.show();
-//    player.process();
-//    player.animate();
-//    player.isGrounded();
+    //    player.show();
+    //    player.process();
+    //    player.animate();
+    //    player.isGrounded();
 
     //draw enemies
 
@@ -149,15 +174,15 @@ function draw() {
         enemies[e].isGrounded();
 
     }
-    
+
     for (let a = 0; a < allies.length; a++) {
-        
+
         allies[a].process(a);
-          allies[a].animate();
+        allies[a].animate();
         allies[a].show(a);
         allies[a].isGrounded();
-      
-      
+
+
 
     }
 
@@ -181,24 +206,25 @@ function draw() {
         messages[m].show(m);
 
     }
-    
+
     for (let b = 0; b < buffs.length; b++) {
         buffs[b].show();
         buffs[b].use();
     }
 
-            player.takenDamageMultiplier = 1;
- 
+    player.takenDamageMultiplier = 1;
+
     if (mouseIsPressed) {
         if (mouseButton == RIGHT) {
             fill(190, 130, 30, 90);
             stroke("yellow");
             rect(player.position.x + player.direction * 50 - 15, player.position.y - 30, 30, 130);
             player.takenDamageMultiplier = 0.25;
-        } 
+        }
 
     }
-    
+
+
 
     //draw hud
     noStroke();
@@ -237,8 +263,8 @@ function keyPressed() {
     }
 
     if (keyCode == 32 && player.jumps > 0) {
-                player.jump();
-            }
+        player.jump();
+    }
 
     //1 for attack or mouseleft
 
@@ -254,15 +280,7 @@ function keyPressed() {
 }
 
 function mouseClicked() {
-    if (mouseButton == LEFT) {
-        if (player.canAttack && player.atkCooldown == 0) {
-            if (player.state != 3) {
-                player.atkCooldown = 15;
-                player.attack();
-                player.canAttack = false;
-            }
-        }
-    }
+
 
 }
 
@@ -275,25 +293,49 @@ function keyReleased() {
 
 function drawHud() {
     if (hudDesired) {
-        fill(100,190, 150, 150);
+        fill(100, 190, 150, 150);
         rect(camX + 100, camY + 200, 700, 500, 50);
         stroke(50);
         textSize(30);
         text("inventory", camX + 200, camY + 300);
         text("character", camX + 400, camY + 300);
         text("options", camX + 600, camY + 300);
-        
-        for(let i = 0; i < interfaceButtons.length; i++) {
+
+        player.canProcess = false;
+
+        for (let i = 0; i < interfaceButtons.length; i++) {
             interfaceButtons[i].show();
-            if(interfaceButtons[i].isClicked()) {
+            if (interfaceButtons[i].isClicked()) {
                 //the one that is clicked has the new desired
-                if(interfaceButtons[i] instanceof toInventory) {
-                    
+                if (interfaceButtons[i] instanceof toInventory) {
+                    inventoryHudDesired = true;
+                    optionsHudDesired = false;
+                    characterHudDesired = false;
+                } else if (interfaceButtons[i] instanceof toOptions) {
+                    optionsHudDesired = true;
+                    inventoryHudDesired = false;
+                    characterHudDesired = false;
+
+                } else if (interfaceButtons[i] instanceof ToCharacter) {
+                    characterHudDesired = true;
+                    optionsHudDesired = false;
+                    inventoryHudDesired = false;
                 }
             }
         }
-       
-    
+
+        if (optionsHudDesired) {
+            fill("red");
+            rect(camX + 160, camY + 250, 120, 60)
+        } else if (inventoryHudDesired) {
+
+        } else if (characterHudDesired) {
+
+        }
+
+
+    } else {
+        player.canProcess = true;
     }
 }
 
@@ -311,8 +353,8 @@ function dealDamage(target, damage, slot) { // , sender
 
 }
 
-function collisionDetected(target, from, x , y) { //target is enemies[e], from is this.position
-    if (from.x - x <= target.position.x + target.width/2 && from.x + x >= target.position.x - target.width/2 && from.y - y <= target.position.y + target.height / 2 && from.y + y >= target.position.y - target.height / 2) {
-                return true;
-            }
+function collisionDetected(target, from, x, y) { //target is enemies[e], from is this.position
+    if (from.x - x <= target.position.x + target.width / 2 && from.x + x >= target.position.x - target.width / 2 && from.y - y <= target.position.y + target.height / 2 && from.y + y >= target.position.y - target.height / 2) {
+        return true;
+    }
 }

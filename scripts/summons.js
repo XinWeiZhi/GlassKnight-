@@ -20,6 +20,7 @@ class Summon {
         this.canMove = true;
         this.canStillDamage = true;
         this.attackCooldown = 0;
+        this.type = "summon";
     }
 
     animate() {
