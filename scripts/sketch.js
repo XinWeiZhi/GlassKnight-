@@ -28,19 +28,41 @@ let FireballRef = {
     xBox: 70,
     yBox: 70,
     maxRange: 1500,
+    cooldown: 0, 
+    fullCooldown: 60, // 1 second cd
     make: function (x, y, maxRange, width, height, damage, speed, direction, xBox , yBox) {
-        projectiles.push(new Fireball(x, y, maxRange, width, height, damage, speed, direction, xBox, yBox));
+        projectiles.push(new FireBall(x, y, maxRange, width, height, damage, speed, direction, xBox, yBox));
     }
 
 }
 
 
-//let DashRef = {
-//
-//    make(x, y, u know stuff) {
-//        projectiles.push(new Fireball)
-//    }
-//}
+let DashRef = {
+    manaCost: 10,
+    type: "teleport",
+    duration: 5, // 
+    cooldown: 0, 
+    fullCooldown: 30, 
+    make(sender,speed) {
+        buffs.push(new Dash(sender,speed, DashRef.duration))
+    }
+}
+
+let RegenerateRef = {
+    manaCost: 50,
+    type: "buff",
+    duration: 1200, // 
+    cooldown: 0, 
+    fullCooldown: 2000,
+    stock: 2,
+    make(sender, hp, speed, damage) {
+//        if(RegenerateRef.stock > 0) {
+            buffs.push(new Regenerate(sender,hp, speed, damage , RegenerateRef.duration)); 
+//            RegenerateRef.stock--;
+//        }
+       
+    }
+}
 
 
 
@@ -209,7 +231,7 @@ function draw() {
 
     for (let b = 0; b < buffs.length; b++) {
         buffs[b].show();
-        buffs[b].use();
+        buffs[b].use(b);
     }
 
     player.takenDamageMultiplier = 1;
@@ -279,16 +301,9 @@ function keyPressed() {
     //e or r for spell
 }
 
-function mouseClicked() {
-
-
-}
 
 
 function keyReleased() {
-    if (keyCode === 16) {
-        player.canDash = true;
-    }
 }
 
 function drawHud() {

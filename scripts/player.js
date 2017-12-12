@@ -2,6 +2,8 @@ class Player {
     constructor(x, y) {
         this.position = createVector(this.x, this.y);
         this.speed = 9;
+        this.realSpeed = 9;
+        this.movementAccelerator = 2;
         this.width = 100;
         this.height = 180;
         this.hp = 20;
@@ -22,6 +24,7 @@ class Player {
         this.jumpCoolDown = 30;
         this.direction = 1;
         this.stillGoingUp = false;
+        this.damageMultiplier = 1;
 
         this.weapon = new Sword(this.position.x, this.position.y);
         //make this.damage = to the weapon damage and such
@@ -43,8 +46,6 @@ class Player {
         this.currentAnimation = this.animation.Idle;
         this.isAttackingFor = 0;
         this.image;
-        this.canDash = true;
-        this.dashFor = 0;
         this.mana = 250;
         this.mMana = 250;
         this.frame = 0;
@@ -59,10 +60,7 @@ class Player {
         this.comboAttack = 0;
 
 
-        this.spellSelect = [FireballRef, FireballRef, FireballRef, FireballRef];
-
-
-
+        this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
         this.weaponSelect = [];
         this.rooted = false;
         this.stunned = false;
@@ -74,21 +72,21 @@ class Player {
         this.comboArray = [
             { //regular attack regular attack regular attack
                 damage: 2,
-                movement: createVector(5, 0),
+                movement: createVector(0, 0),
                 animation: this.animation.Attack,
                 xBox: 120,
                 yBox: this.height / 2
             },
             {
                 damage: 3,
-                movement: createVector(5, 0),
+                movement: createVector(2, 0),
                 animation: this.animation.Jump,
                 xBox: 150,
                 yBox: this.height / 2
             },
             {
                 damage: 4,
-                movement: createVector(12, 0),
+                movement: createVector(3, 0),
                 animation: this.animation.Attack,
                 xBox: 150,
                 yBox: this.height / 2
@@ -157,21 +155,6 @@ class Player {
 
     }
 
-    //    beginJump(grounded) {
-    //
-    //        if (this.jumps === this.maxJumps && this.grounded) {
-    //            this.currentJumpSpeed = this.jumpSpeed;
-    //            this.jumps--;
-    //            this.stillGoingUp = true;
-    //            this.grounded = false;
-    //        } else if (jumps > 0 && this.currentJumpSpeed <= this.jumpSpeed * 0.5) {
-    //            this.currentJumpSpeed = this.jumpSpeed;
-    //            this.jumps--;
-    //            this.stillGoingUp = true;
-    //            this.grounded = false;
-    //        }
-    //
-    //    }
 
     //always on
     jump() {
@@ -192,7 +175,7 @@ class Player {
         } else {
             this.frame = 0; // reset animation no matter what
 
-            if (!this.canAttack && this.spell) { // so only if its a physical attack not a spell check collision
+            if (!this.canAttack && this.canSpell) { // so only if its a physical attack not a spell check collision
                 for (let e = 0; e < enemies.length; e++) {
                     if (collisionDetected(enemies[e], this.position, this.hitboxX, this.hitboxY)) {
                         dealDamage(enemies[e], this.damage, e);
@@ -258,14 +241,13 @@ class Player {
     }
 
     spell(direction, slot, i) {
-        if (this.mana - this.spellSelect[slot].manaCost >= 0) {
+        if (this.mana - this.spellSelect[slot].manaCost >= 0 && this.spellSelect[slot].cooldown <= 0) {
             let type = this.spellSelect[slot].type;
             this.canAttack = false;
             this.canSpell = false;
             this.canMove = false;
-            if (type === "buff") {
-                //            buffs.push(new spellSelect[slot])
-                //            buffs.push(new this.spellSelect[slot](allies[i], spellSelect.[slot] timer));
+            if (type === "teleport") {
+                this.spellSelect[slot].make(this,this.speed);
             }
 
             if (type === "missile") {
@@ -276,11 +258,12 @@ class Player {
 
             }
 
-            if (type === "teleport") {
-
+            if (type === "buff") {
+                this.spellSelect[slot].make(this,this.health,this.speed,this.damageMultiplier);
             }
 
             this.mana -= this.spellSelect[slot].manaCost;
+            this.spellSelect[slot].cooldown = this.spellSelect[slot].fullCooldown;
         }
 
     }
@@ -292,6 +275,19 @@ class Player {
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
         }
+        
+        if(this.spellSelect[0].cooldown >= 0) {
+            this.spellSelect[0].cooldown--;
+        } 
+         if(this.spellSelect[1].cooldown >= 0) {
+            this.spellSelect[1].cooldown--;
+        } 
+         if(this.spellSelect[2].cooldown >= 0) {
+            this.spellSelect[2].cooldown--;
+        } 
+         if(this.spellSelect[3].cooldown >= 0) {
+            this.spellSelect[3].cooldown--;
+        } 
 
         if (this.jumpCoolDown > 0) {
             this.jumpCoolDown--;
@@ -301,7 +297,7 @@ class Player {
             this.mana += 0.5;
         }
 
-
+      
         //animations and states
 
         if (this.canProcess) {
@@ -314,11 +310,8 @@ class Player {
                 if (keyIsDown(68) && keyIsDown(65)) {
                     this.changeAnimationTo(this.animation.Idle)
                 } else if (keyIsDown(68)) {
-                    if (this.currentAnimation == this.animation.Idle) {
-                        this.movementAccelerator = 0;
-                    }
+                    this.realSpeed = this.speed;
                     this.direction = 1;
-                    this.reposition((this.speed + this.movementAccelerator) * this.direction);
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
@@ -333,11 +326,8 @@ class Player {
                     }
 
                 } else if (keyIsDown(65)) { // a
-                    if (this.currentAnimation == this.animation.Idle) {
-                        this.movementAccelerator = 0;
-                    }
+                    this.realSpeed = this.speed;
                     this.direction = -1;
-                    this.reposition((this.speed + this.movementAccelerator) * -1);
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
@@ -353,13 +343,15 @@ class Player {
 
                 } else if (this.canAttack) {
                     this.currentAnimation = this.animation.Idle
+                    this.realSpeed = 0;
+                    this.movementAccelerator = 0;
                 }
-
+                  
                 if (this.currentJumpSpeed > 0) {
                     this.currentAnimation = this.animation.Jump;
                 }
             }
-
+            this.reposition((this.realSpeed + this.movementAccelerator) * this.direction);
             //processes after move // ATTACK ATTACK ATTACK
             if (this.canAttack && !this.stunned) {
                 if (mouseIsPressed) {

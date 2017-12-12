@@ -10,38 +10,54 @@ class Buff {
         
     }
     
-    use() {
+    use(b) {
         
     }
 }
 
 class Dash extends Buff {
-    constructor(sender,time) {
-        super(sender,time);
+    constructor(sender,speed, duration) {
+        super(sender,speed,duration);
         this.image;
+        this.speed = speed;
+        this.duration = duration;
     }
     
     show() {
         fill(0,0,0,70);
-        rect(this.sender.position.x, this.sender.position.y, 100, 100)
+        rect(this.sender.position.x, this.sender.position.y, 100, 100);
+    }
+    
+    use(b) {
+        this.sender.realSpeed = this.speed * 7;
+        this.sender.canMove = false;
+        this.duration--;
+        if(this.duration <= 0) {
+            buffs.splice(b,1);
+        }
     }
 }
 
 class Regenerate extends Buff {
-    constructor(sender,time) {
-        super(sender, time);
+    constructor(sender, hp, duration) {
+        super(sender, hp, duration);
         this.image;
-        this.heal = 0.25;
+        this.heal = 0.02;
     }
     
     show() {
         
     }
     
-    use() {
+    use(b) {
         if(this.sender.hp < this.sender.mhp) {
             this.sender.hp += this.heal;
         } 
+        
+        this.duration--;
+        if(this.duration <= 0) {
+            buffs.splice(b,1);
+        }
         
     }
 }
