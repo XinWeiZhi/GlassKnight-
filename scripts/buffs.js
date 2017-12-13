@@ -1,8 +1,8 @@
 class Buff {
-    constructor(sender, time) {
+    constructor(sender, stat, duration) {
         this.sender = sender;
-        this.time = time;
         this.image;
+        this.duration = duration;
         this.type = "buff";
     }
     
@@ -20,7 +20,6 @@ class Dash extends Buff {
         super(sender,speed,duration);
         this.image;
         this.speed = speed;
-        this.duration = duration;
     }
     
     show() {
@@ -39,10 +38,11 @@ class Dash extends Buff {
 }
 
 class Regenerate extends Buff {
-    constructor(sender, hp, duration) {
-        super(sender, hp, duration);
+    constructor(sender, duration) {
+        super(sender, duration);
         this.image;
-        this.heal = 0.02;
+        this.heal = 0.03;
+        this.duration = duration;
     }
     
     show() {
@@ -55,6 +55,7 @@ class Regenerate extends Buff {
         } 
         
         this.duration--;
+        console.log(this.duration);
         if(this.duration <= 0) {
             buffs.splice(b,1);
         }
@@ -67,13 +68,14 @@ class EmptySpell {
         this.position = createVector(x,y);
         this.type = null;
         this.width = 60;
+        this.type = "buff"
     }
     
     show() {
         rect(this.position.x, this.position.y, this.width, this.width);
     }
     
-    use() {
+    make() {
         console.log("assign a spell to this slot"); 
     }
 }

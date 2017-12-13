@@ -50,7 +50,7 @@ class Player {
         this.mMana = 250;
         this.frame = 0;
         this.hitboxX = 215;
-        this.spellDamage = 5;
+        this.spellDamage = 0;
         this.damage = 2;
         this.experience = 0;
         this.experienceToLevel = 30;
@@ -254,12 +254,12 @@ class Player {
                 this.spellSelect[slot].make(this.position.x, this.position.y, this.spellSelect[slot].maxRange, 50, 40, this.spellSelect[slot].damage + this.spellDamage, this.speed / 7 * this.direction, this.spellSelect[slot].xBox, this.spellSelect[slot].yBox);
             }
 
-            if (type === "summon") {
-
-            }
+//            if (type === "summon") {
+//                this.spellSelect[slot].make(this,this.position.x, this.position.y);
+//            }
 
             if (type === "buff") {
-                this.spellSelect[slot].make(this,this.health,this.speed,this.damageMultiplier);
+                this.spellSelect[slot].make(this);
             }
 
             this.mana -= this.spellSelect[slot].manaCost;

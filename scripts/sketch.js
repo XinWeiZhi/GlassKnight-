@@ -20,20 +20,25 @@ let allies = [];
 let interfaceButtons = [];
 let summons = [];
 let buffs = [];
+let spellHudWidth = 60;
+
 
 let FireballRef = {
     manaCost: 20,
     type: "missile",
-    damage: 8,
+    damage: 5,
     xBox: 70,
     yBox: 70,
     maxRange: 1500,
-    cooldown: 0, 
-    fullCooldown: 60, // 1 second cd
-    make: function (x, y, maxRange, width, height, damage, speed, direction, xBox , yBox) {
+    cooldown: 0,
+    fullCooldown: 60,
+    make: function (x, y, maxRange, width, height, damage, speed, direction, xBox, yBox) {
         projectiles.push(new FireBall(x, y, maxRange, width, height, damage, speed, direction, xBox, yBox));
+    },
+    show(a) {
+        image(fireballIcon, camX + 200 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 200 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
     }
-
 }
 
 
@@ -41,31 +46,53 @@ let DashRef = {
     manaCost: 10,
     type: "teleport",
     duration: 5, // 
-    cooldown: 0, 
-    fullCooldown: 30, 
-    make(sender,speed) {
-        buffs.push(new Dash(sender,speed, DashRef.duration))
+    cooldown: 0,
+    fullCooldown: 30,
+    make(sender, speed) {
+        buffs.push(new Dash(sender, speed, DashRef.duration));
+    },
+    show(a) {
+        image(dashIcon, camX + 200 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 200 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
     }
 }
 
 let RegenerateRef = {
-    manaCost: 50,
+    manaCost: 120,
     type: "buff",
     duration: 1200, // 
-    cooldown: 0, 
+    cooldown: 0,
     fullCooldown: 2000,
     stock: 2,
-    make(sender, hp, speed, damage) {
-//        if(RegenerateRef.stock > 0) {
-            buffs.push(new Regenerate(sender,hp, speed, damage , RegenerateRef.duration)); 
-//            RegenerateRef.stock--;
-//        }
-       
+    make(sender) {
+        buffs.push(new Regenerate(sender, this.duration));
+    },
+    show(a) {
+        image(healIcon, camX + 200 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 200 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
     }
 }
 
+//let SummonBoarRef = {
+//    manaCost: 120,
+//    type: "summon",
+//    duration: 3600, // 
+//    cooldown: 0, 
+//    fullCooldown: 7200,
+//    make(sender, x, y) {
+//            allies.push(new SummonBoar(x,y)); 
+//       
+//    }
+//}
 
 
+//spell 1 coords 300,600 
+//spell 2 coords 400,600
+//spell 3 coords 500,800 
+//spell 4 coords 600,700 
+//item 1 coords  700 , 800
+//item 2 coords  800 , 800
+//switch heros in the character menu
 
 //end of VARIABLES
 
@@ -87,6 +114,10 @@ function preload() {
     blackknight = loadImage("scripts/assets/blackknight.jpg");
     walkAttackleft = loadImage("scripts/assets/walk.jpg");
     up = loadImage("scripts/assets/up.jpg");
+    fireballIcon = loadImage("scripts/assets/fireball.png");
+    healIcon = loadImage("scripts/assets/heal.png");
+    dashIcon = loadImage("scripts/assets/dash.png");
+    empowerIcon = loadImage("scripts/assets/empower.png");
 }
 
 function drawMap() {
@@ -173,27 +204,21 @@ function drawEnemies() {
 function draw() {
     background(30);
     cameraControl();
-
     stroke(220, 160, 70);
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
     }
-
-
-
-    // camera([player.position.x - 300], [player.position.y - player.floorY], [0]);
-    //draw player
-    //    player.show();
-    //    player.process();
-    //    player.animate();
-    //    player.isGrounded();
-
-    //draw enemies
-
     for (let e = 0; e < enemies.length; e++) {
         enemies[e].show(e);
         enemies[e].process();
         enemies[e].isGrounded();
+
+    }
+
+    for (let ability = 0; ability < player.spellSelect.length; ability++) {
+        fill(140, 190, 200, 60);
+        player.spellSelect[ability].show(ability);
+        //        last 2 reserved for items 1,2 keys
 
     }
 
@@ -281,6 +306,9 @@ function keyPressed() {
 
     if (keyCode == 27) {
         hudDesired = !hudDesired; // likely the inventory
+        interfaceButtons.push(new ToCharacter(camX + 104, camY + 150));
+        interfaceButtons.push(new ToInventory(camX + 204, camY + 150));
+        interfaceButtons.push(new ToOptions(camX + 304, camY + 150));
 
     }
 
@@ -303,18 +331,21 @@ function keyPressed() {
 
 
 
-function keyReleased() {
-}
+function keyReleased() {}
 
 function drawHud() {
+    //regular hud
+
     if (hudDesired) {
-        fill(100, 190, 150, 150);
-        rect(camX + 100, camY + 200, 700, 500, 50);
         stroke(50);
-        textSize(30);
-        text("inventory", camX + 200, camY + 300);
-        text("character", camX + 400, camY + 300);
-        text("options", camX + 600, camY + 300);
+        if (!inventoryHudDesired && !optionsHudDesired && !characterHudDesired) {
+            fill(140, 170, 130, 150);
+            rect(camX + 100, camY + 200, 700, 500, 20);
+            textSize(30);
+
+        }
+
+
 
         player.canProcess = false;
 
@@ -322,11 +353,11 @@ function drawHud() {
             interfaceButtons[i].show();
             if (interfaceButtons[i].isClicked()) {
                 //the one that is clicked has the new desired
-                if (interfaceButtons[i] instanceof toInventory) {
+                if (interfaceButtons[i] instanceof ToInventory) {
                     inventoryHudDesired = true;
                     optionsHudDesired = false;
                     characterHudDesired = false;
-                } else if (interfaceButtons[i] instanceof toOptions) {
+                } else if (interfaceButtons[i] instanceof ToOptions) {
                     optionsHudDesired = true;
                     inventoryHudDesired = false;
                     characterHudDesired = false;
@@ -340,17 +371,24 @@ function drawHud() {
         }
 
         if (optionsHudDesired) {
-            fill("red");
-            rect(camX + 160, camY + 250, 120, 60)
+            fill(150, 150, 150, 150);
+            rect(camX + 100, camY + 200, 700, 500, 20);
         } else if (inventoryHudDesired) {
-
+            fill(180, 130, 150, 150);
+            rect(camX + 100, camY + 200, 700, 500, 20);
         } else if (characterHudDesired) {
+            fill(180, 150, 120, 150);
+            rect(camX + 100, camY + 200, 700, 500, 20);
 
         }
 
 
     } else {
         player.canProcess = true;
+        interfaceButtons = [];
+        characterHudDesired = false;
+        optionsHudDesired = false;
+        inventoryHudDesired = false;
     }
 }
 
