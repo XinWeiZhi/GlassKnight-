@@ -1,35 +1,23 @@
 class Player {
     constructor(x, y) {
         this.position = createVector(this.x, this.y);
-        this.speed = 9;
-        this.realSpeed = 9;
-        this.movementAccelerator = 2;
         this.width = 100;
         this.height = 180;
-        this.hp = 20;
-        this.mhp = 20;
-        this.maxJumps = 2;
-        this.jumps = this.maxJumps;
-        this.grounded = false;
-        this.jumpSpeed = 20;
-        this.currentJumpSpeed = 0;
-        this.terminal = 45;
-        this.gravityMultiplier = 1;
-        this.feetY = this.position.y + this.height / 2;
-        this.floorY = 800;
-        this.canAttack = true;
-        this.canSpell = true;
-        this.canMove = true;
-        this.inJump = false;
-        this.jumpCoolDown = 30;
-        this.direction = 1;
-        this.stillGoingUp = false;
-        this.damageMultiplier = 1;
-
+        
+        this.buff = {
+            damage: 1, // go up in 0.xx
+            speed: 1, // ^
+            damageReduction: 0, // up in x.xx
+            
+            
+        }
+        
         this.weapon = new Sword(this.position.x, this.position.y);
+        this.armor;
         //make this.damage = to the weapon damage and such
-
-
+        //animation
+        this.image;
+        this.frame = 0;
         this.animation = {
             Idle: [pepe, pepe, walk, walk, walk, walk, walk, walk],
             WalkLeft: [walkLeft0, walkLeft0, walkLeft0, walkLeft0, walkLeft0, pepe, walk, pepe, walk, walk, walk, walk],
@@ -44,31 +32,66 @@ class Player {
             Up: [up, up, up, up, up, up],
         }
         this.currentAnimation = this.animation.Idle;
-        this.isAttackingFor = 0;
-        this.image;
+
+        //skills
+        this.comboAttack = 0;
+        this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
+        this.consumableSelect = [0,0,0,0,0]; // kb 1, 2, 3, 4 ,5
+        
+        //stats
+        this.hp = 20;
+        this.mhp = 20;
+        this.characterHp = 20;
+        this.manaRegeneration = 0;
+        this.hpRegeneration = 0;
+        this.characterTenacity = 30;
+        
+        this.characterArmor = 0;
+        this.characterMagicResistance = 0;
+        
         this.mana = 250;
         this.mMana = 250;
-        this.frame = 0;
-        this.hitboxX = 215;
-        this.spellDamage = 0;
+        
         this.damage = 2;
-        this.experience = 0;
+        this.characterDamage = 2;
+        this.characterSpellDamage = 0;
+        
+        this.characterSpeed = 9;
+        this.speed = 9;
+
+        this.experience = 0; // remove these in the future
         this.experienceToLevel = 30;
-        this.atkCooldown = 0;
-        this.state = 0 // 0 for idle, 1 for movement right, 2 for move left, 3 for attacking, 4 for spell, 5 for jump
+        this.level = 1;
+
+        //calculation stats
+        this.realSpeed = 9;
+        this.movementAccelerator = 2;
+        this.floorY = 800;
+        this.jumpCoolDown = 30;
+        this.direction = 1;
+        this.damageMultiplier = 1;
         this.takenDamageMultiplier = 1;
-        this.comboAttack = 0;
+        this.atkCooldown = 0;
+        this.hitboxX = 215;
+        this.stillGoingUp = false;
+        this.maxJumps = 2;
+        this.jumps = this.maxJumps;
+        this.grounded = false;
+        this.jumpSpeed = 20; //based on char
+        this.currentJumpSpeed = 0;
+        this.gravityMultiplier = 1;
 
-
-        this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
-        this.weaponSelect = [];
+        //disables
+        this.canAttack = true;
+        this.canSpell = true;
+        this.canMove = true;
         this.rooted = false;
         this.stunned = false;
         this.slowedBy = 1;
         this.poisoned = false;
         this.silenced = false;
         this.canProcess = true;
-
+        //
         this.comboArray = [
             { //regular attack regular attack regular attack
                 damage: 2,
@@ -134,7 +157,6 @@ class Player {
 
         ]
 
-        //perhaps this.hat / this.armor
     }
 
 
@@ -142,23 +164,15 @@ class Player {
         if (this.currentAnimation != array) {
             this.frame = 0;
             this.currentAnimation = array;
-            console.log(this.currentAnimation)
-
         }
     }
-
-
     show() {
-
         this.image = this.currentAnimation[this.frame];
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
 
     }
-
-
-    //always on
     jump() {
-        if (!this.jumpCoolDown) {
+        if (this.jumpCoolDown <= 0) {
             this.jumpCoolDown = 30;
             this.jumps--;
             this.currentJumpSpeed = this.jumpSpeed;
@@ -167,6 +181,25 @@ class Player {
         }
 
 
+    }
+    
+    addBuff(stat, amount) {
+        //stat will be player.hp, or something player.
+        stat += amount;
+            //once a stat dies out it will remove itself from the addBuff
+            // dmg boost addBuff(player.equipDamage, 3), addBuff(player.equipDamage, -3)
+        this.updateStats();
+    }
+    
+    updateStats() {
+        this.mhp = this.characterHp + this.armor.hp 
+        this.hpRegeneration = this.hpRegeneration; // only affected by buffs
+        this.manaRegeneration = this.manaRegeneration; // only affected by buffs
+        this.tenacity = this.characterTenacity + this.armor.tenacity;
+        this.takenDamageMultiplier = 1 + this.characterDamageResistance / -100 + this.armor.DamageResistance/ - 100 + this.buff.damageReduction / -100;
+        this.damage = (this.characterDamage + this.weapon.damage ) * this.buff.damage;
+        this.spellDamage = this.characterSpellDamage; 
+        this.speed = this.characterSpeed - this.armor.speedDebuff * this.buff.speed;
     }
 
     animate() {
@@ -247,16 +280,16 @@ class Player {
             this.canSpell = false;
             this.canMove = false;
             if (type === "teleport") {
-                this.spellSelect[slot].make(this,this.speed);
+                this.spellSelect[slot].make(this, this.speed);
             }
 
             if (type === "missile") {
                 this.spellSelect[slot].make(this.position.x, this.position.y, this.spellSelect[slot].maxRange, 50, 40, this.spellSelect[slot].damage + this.spellDamage, this.speed / 7 * this.direction, this.spellSelect[slot].xBox, this.spellSelect[slot].yBox);
             }
 
-//            if (type === "summon") {
-//                this.spellSelect[slot].make(this,this.position.x, this.position.y);
-//            }
+            //            if (type === "summon") {
+            //                this.spellSelect[slot].make(this,this.position.x, this.position.y);
+            //            }
 
             if (type === "buff") {
                 this.spellSelect[slot].make(this);
@@ -269,44 +302,41 @@ class Player {
     }
 
 
-    //jumps etcd
     process(iam) {
         //always happening
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
         }
-        
-        if(this.spellSelect[0].cooldown >= 0) {
+        if (this.spellSelect[0].cooldown >= 0) {
             this.spellSelect[0].cooldown--;
-        } 
-         if(this.spellSelect[1].cooldown >= 0) {
+        }
+        if (this.spellSelect[1].cooldown >= 0) {
             this.spellSelect[1].cooldown--;
-        } 
-         if(this.spellSelect[2].cooldown >= 0) {
+        }
+        if (this.spellSelect[2].cooldown >= 0) {
             this.spellSelect[2].cooldown--;
-        } 
-         if(this.spellSelect[3].cooldown >= 0) {
+        }
+        if (this.spellSelect[3].cooldown >= 0) {
             this.spellSelect[3].cooldown--;
-        } 
-
+        }
         if (this.jumpCoolDown > 0) {
             this.jumpCoolDown--;
         }
-
         if (this.mana < this.mMana) {
             this.mana += 0.5;
         }
 
-      
-        //animations and states
-
+//        if(this.manaRegeneration != 0) {
+//            this.mana += this.manaRegeneration;
+//        } 
+//        
+//        if(this.hpRegeneration != 0) {
+//            this.hp += this.hpRegeneration;
+//        }
         if (this.canProcess) {
-
-
-            //can only move if this is true
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
-
+                
                 if (keyIsDown(68) && keyIsDown(65)) {
                     this.changeAnimationTo(this.animation.Idle)
                 } else if (keyIsDown(68)) {
@@ -315,6 +345,7 @@ class Player {
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
+                    
                     //ATTACK ATTACK ATTACK
                     if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
                         if (mouseButton == LEFT) {
@@ -331,6 +362,7 @@ class Player {
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
+                    
                     //ATTACK ATTACK ATTACK
                     if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
                         if (mouseButton == LEFT) {
@@ -346,7 +378,7 @@ class Player {
                     this.realSpeed = 0;
                     this.movementAccelerator = 0;
                 }
-                  
+
                 if (this.currentJumpSpeed > 0) {
                     this.currentAnimation = this.animation.Jump;
                 }
@@ -406,7 +438,10 @@ class Player {
 
     receivedHit(a) {
         if (this.hp <= 0) {
-
+            //die
+        }
+        if (this.tenacity <= 0) {
+            //stagger
         }
 
 

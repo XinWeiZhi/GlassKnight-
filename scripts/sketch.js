@@ -306,9 +306,9 @@ function keyPressed() {
 
     if (keyCode == 27) {
         hudDesired = !hudDesired; // likely the inventory
-        interfaceButtons.push(new ToCharacter(camX + 104, camY + 150));
-        interfaceButtons.push(new ToInventory(camX + 204, camY + 150));
-        interfaceButtons.push(new ToOptions(camX + 304, camY + 150));
+        interfaceButtons.push(new ToCharacter(camX + 165, camY + 100));
+        interfaceButtons.push(new ToInventory(camX + 455, camY + 100));
+        interfaceButtons.push(new ToOptions(camX + 745, camY + 100));
 
     }
 
@@ -329,26 +329,18 @@ function keyPressed() {
     //e or r for spell
 }
 
+function keyReleased() {
 
 
-function keyReleased() {}
+}
 
 function drawHud() {
     //regular hud
 
     if (hudDesired) {
-        stroke(50);
-        if (!inventoryHudDesired && !optionsHudDesired && !characterHudDesired) {
-            fill(140, 170, 130, 150);
-            rect(camX + 100, camY + 200, 700, 500, 20);
-            textSize(30);
-
-        }
-
-
-
         player.canProcess = false;
-
+        stroke(50);
+        textSize(30);
         for (let i = 0; i < interfaceButtons.length; i++) {
             interfaceButtons[i].show();
             if (interfaceButtons[i].isClicked()) {
@@ -370,16 +362,24 @@ function drawHud() {
             }
         }
 
+
+
         if (optionsHudDesired) {
             fill(150, 150, 150, 150);
-            rect(camX + 100, camY + 200, 700, 500, 20);
+            rect(camX + 70, camY + 70, 1000, 750, 50);
         } else if (inventoryHudDesired) {
             fill(180, 130, 150, 150);
-            rect(camX + 100, camY + 200, 700, 500, 20);
+            rect(camX + 70, camY + 70, 1000, 750, 50);
         } else if (characterHudDesired) {
             fill(180, 150, 120, 150);
-            rect(camX + 100, camY + 200, 700, 500, 20);
+            rect(camX + 70, camY + 70, 1000, 750, 50);
+            fill(0)
+            text(player.characterDamage,camX + 200, camY + 300);
+            text(player.characterHp,camX + 200, camY + 200);
 
+        } else {
+            fill(140, 170, 130, 150);
+            rect(camX + 70, camY + 70, 1000, 750, 50);
         }
 
 
