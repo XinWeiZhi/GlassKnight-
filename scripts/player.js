@@ -1,21 +1,19 @@
 class Player {
     constructor(x, y) {
         this.position = createVector(this.x, this.y);
+        this.weapon = new Sword(this);
+        this.armor = new AssassinCloak(this);
         this.width = 100;
         this.height = 180;
-        
+
         this.buff = {
-            damage: 1, // go up in 0.xx
+            damage: 1, // up in 0.xx - %
             speed: 1, // ^
             damageReduction: 0, // up in x.xx
-            
-            
+
+
         }
-        
-        this.weapon = new Sword(this.position.x, this.position.y);
-        this.armor;
-        //make this.damage = to the weapon damage and such
-        //animation
+
         this.image;
         this.frame = 0;
         this.animation = {
@@ -36,35 +34,42 @@ class Player {
         //skills
         this.comboAttack = 0;
         this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
-        this.consumableSelect = [0,0,0,0,0]; // kb 1, 2, 3, 4 ,5
-        
+        this.consumableSelect = [0, 0, 0, 0, 0]; // kb 1, 2, 3, 4 ,5
+
         //stats
-        this.hp = 20;
-        this.mhp = 20;
+
         this.characterHp = 20;
+        this.mhp = this.characterHp + this.armor.hp;
+        this.hp = this.mhp;
         this.manaRegeneration = 0;
         this.hpRegeneration = 0;
         this.characterTenacity = 30;
-        
+        this.mtenacity = this.characterTenacity + this.armor.tenacity;
+        this.tenacity = this.mtenacity;
+
         this.characterArmor = 0;
         this.characterMagicResistance = 0;
-        
+        this.characterDamageResistance = 0;
+
         this.mana = 250;
         this.mMana = 250;
-        
+
         this.damage = 2;
         this.characterDamage = 2;
         this.characterSpellDamage = 0;
-        
+        this.spellDamage = 0;
+
         this.characterSpeed = 9;
-        this.speed = 9;
+        this.speed = (this.characterSpeed - this.armor.speedDebuff) * this.buff.speed;
+
 
         this.experience = 0; // remove these in the future
         this.experienceToLevel = 30;
         this.level = 1;
 
         //calculation stats
-        this.realSpeed = 9;
+
+        this.realSpeed = 0;
         this.movementAccelerator = 2;
         this.floorY = 800;
         this.jumpCoolDown = 30;
@@ -82,6 +87,7 @@ class Player {
         this.gravityMultiplier = 1;
 
         //disables
+        this.staggered = false;
         this.canAttack = true;
         this.canSpell = true;
         this.canMove = true;
@@ -156,7 +162,7 @@ class Player {
             }, //move attack includes up attack or down attack
 
         ]
-
+        this.updateStats();
     }
 
 
@@ -182,24 +188,17 @@ class Player {
 
 
     }
-    
-    addBuff(stat, amount) {
-        //stat will be player.hp, or something player.
-        stat += amount;
-            //once a stat dies out it will remove itself from the addBuff
-            // dmg boost addBuff(player.equipDamage, 3), addBuff(player.equipDamage, -3)
-        this.updateStats();
-    }
-    
+
+
     updateStats() {
-        this.mhp = this.characterHp + this.armor.hp 
+        this.mhp = this.characterHp + this.armor.hp
         this.hpRegeneration = this.hpRegeneration; // only affected by buffs
         this.manaRegeneration = this.manaRegeneration; // only affected by buffs
-        this.tenacity = this.characterTenacity + this.armor.tenacity;
-        this.takenDamageMultiplier = 1 + this.characterDamageResistance / -100 + this.armor.DamageResistance/ - 100 + this.buff.damageReduction / -100;
-        this.damage = (this.characterDamage + this.weapon.damage ) * this.buff.damage;
-        this.spellDamage = this.characterSpellDamage; 
-        this.speed = this.characterSpeed - this.armor.speedDebuff * this.buff.speed;
+        this.mtenacity = this.characterTenacity + this.armor.tenacity;
+        this.takenDamageMultiplier = 1 + this.characterDamageResistance / -100 + this.armor.damageResistance / -100 + this.buff.damageReduction / -100;
+        this.damage = (this.characterDamage + this.weapon.damage) * this.buff.damage;
+        this.spellDamage = this.characterSpellDamage;
+        this.speed = (this.characterSpeed - this.armor.speedDebuff) * this.buff.speed;
     }
 
     animate() {
@@ -322,21 +321,22 @@ class Player {
         if (this.jumpCoolDown > 0) {
             this.jumpCoolDown--;
         }
-        if (this.mana < this.mMana) {
-            this.mana += 0.5;
+        if (this.tenacity < this.characterTenacity) {
+            this.tenacity++;
         }
 
-//        if(this.manaRegeneration != 0) {
-//            this.mana += this.manaRegeneration;
-//        } 
-//        
-//        if(this.hpRegeneration != 0) {
-//            this.hp += this.hpRegeneration;
-//        }
+
+        if (this.manaRegeneration != 0) {
+            this.mana += this.manaRegeneration;
+        }
+
+        if (this.hpRegeneration != 0) {
+            this.hp += this.hpRegeneration;
+        }
         if (this.canProcess) {
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
-                
+
                 if (keyIsDown(68) && keyIsDown(65)) {
                     this.changeAnimationTo(this.animation.Idle)
                 } else if (keyIsDown(68)) {
@@ -345,7 +345,7 @@ class Player {
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
-                    
+
                     //ATTACK ATTACK ATTACK
                     if (mouseIsPressed && this.currentAnimation == this.animation.WalkRight && this.canAttack) {
                         if (mouseButton == LEFT) {
@@ -362,7 +362,7 @@ class Player {
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
-                    
+
                     //ATTACK ATTACK ATTACK
                     if (mouseIsPressed && this.currentAnimation == this.animation.WalkLeft && this.canAttack) {
                         if (mouseButton == LEFT) {
@@ -436,14 +436,20 @@ class Player {
         }
     }
 
-    receivedHit(a) {
+    receivedHit(damage) {
         if (this.hp <= 0) {
             //die
         }
-        if (this.tenacity <= 0) {
+        this.tenacity -= damage;
+        if (this.tenacity <= 0 && !this.staggered) {
             //stagger
+            this.staggered = true;
         }
 
+
+    }
+
+    stagger() {
 
     }
 

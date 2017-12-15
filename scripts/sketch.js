@@ -45,9 +45,9 @@ let FireballRef = {
 let DashRef = {
     manaCost: 10,
     type: "teleport",
-    duration: 5, // 
+    duration: 4, // 
     cooldown: 0,
-    fullCooldown: 30,
+    fullCooldown: 26,
     make(sender, speed) {
         buffs.push(new Dash(sender, speed, DashRef.duration));
     },
@@ -178,6 +178,22 @@ function drawMap() {
             tiles.push(new Grass(-400 + tileA * 5000, 700 - tileA * 35));
             tiles[tileA].width = 5000
         }
+        interactables.push(new Door(300, 530, 4));
+    } else if (map === 4) {
+        tiles = [];
+        interactables = [];
+
+        numTiles = 11
+        enemies.push(new Enemy(800, 0));
+        enemies.push(new Enemy(900, 0));
+        enemies.push(new Enemy(700, 0));
+        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Enemy(1200, 0));
+        enemies.push(new Enemy(1100, 0));
+        for (let tileA = 0; tileA < numTiles; tileA++) {
+            tiles.push(new Stone(-400 + tileA * 5000, 700 - tileA * 35));
+            tiles[tileA].width = 5000
+        }
         interactables.push(new Door(300, 530, 1));
     }
     //draw prebuilt maps
@@ -290,9 +306,9 @@ function draw() {
     ellipse(camX + 160, camY + 60, 120, 120)
     //exp bar
     fill("gray")
-    rect(camX + 160, camY + 120, player.experienceToLevel * 10, 20);
+    rect(camX + 160, camY + 120, player.characterTenacity * 4, 20);
     fill("green")
-    rect(camX + 160, camY + 120, player.experience * 10, 20);
+    rect(camX + 160, camY + 120, player.tenacity * 4, 20);
 
 
 
@@ -397,7 +413,7 @@ function dealDamage(target, damage, slot) { // , sender
     target.hp -= damage;
     if (target instanceof Player) {
         messages.push(new RedText(damage, target.position.x, target.position.y));
-        target.receivedHit();
+        target.receivedHit(damage);
     } else if (target instanceof Enemy) {
         messages.push(new BlueText(damage, target.position.x, target.position.y));
         target.receivedHit(slot);

@@ -25,6 +25,8 @@ class Enemy {
         this.attackCooldown = 0;
         this.takenDamageMultiplier = 1;
         this.hoverY = 800;
+//        this.armor = new Chainmail(this)
+//        this.hp = 10 + this.armor.hp;
 //        this.animationIdle = [];
 //        this.animationRun = [];
 //        this.animationAttack1 = [];
