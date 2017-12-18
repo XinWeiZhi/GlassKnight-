@@ -45,7 +45,7 @@ let FireballRef = {
 let DashRef = {
     manaCost: 10,
     type: "teleport",
-    duration: 4, // 
+    duration: 3, // 
     cooldown: 0,
     fullCooldown: 26,
     make(sender, speed) {
@@ -70,6 +70,69 @@ let RegenerateRef = {
     show(a) {
         image(healIcon, camX + 200 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
         rect(camX + 200 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+    }
+}
+
+let EmptySpellRef = {
+    manaCost: 0,
+    type: null,
+    duration: 0, // 
+    cooldown: 0,
+    fullCooldown: 20,
+    make(sender) {
+//        buffs.push(new Regenerate(sender, this.duration));
+    },
+    show(a) {
+        image(healIcon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 200 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+    }
+}
+
+let EmptyItemRef = {
+    manaCost: 0,
+    type: null,
+    duration: 0, // 
+    cooldown: 0,
+    fullCooldown: 10,
+    make(sender) {
+//        buffs.push(new Regenerate(sender, this.duration));
+    },
+    show(a) {
+        image(healIcon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 600 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+    }
+}
+
+let HealthPotionRef = { //heal 6hp over 1 second
+    manaCost: 0,
+    type: "buff",
+    duration: 60, // 
+    cooldown: 0,
+    fullCooldown: 10,
+    castFrames: 3,
+    stock: 3,
+    make(sender) {
+        buffs.push(new Regenerate(sender, this.duration));
+        this.stock--;
+    },
+    show(a) {
+        image(hppotion, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 600 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+    }
+}
+
+let CannonRef = {
+    manaCost: 0,
+    type: "summon",
+    duration: 0, // 
+    cooldown: 0,
+    fullCooldown: 10,
+    make(sender) {
+//        buffs.push(new Regenerate(sender, this.duration));
+    },
+    show(a) {
+        image(cannon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
+        rect(camX + 600 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
     }
 }
 
@@ -118,6 +181,9 @@ function preload() {
     healIcon = loadImage("scripts/assets/heal.png");
     dashIcon = loadImage("scripts/assets/dash.png");
     empowerIcon = loadImage("scripts/assets/empower.png");
+    stunned = loadImage("scripts/assets/stunned.jpg");
+    hppotion = loadImage("scripts/assets/hppotion.jpg");
+    cannon = loadImage("scripts/assets/cannon.jpg");
 }
 
 function drawMap() {
@@ -199,20 +265,15 @@ function drawMap() {
     //draw prebuilt maps
 
 }
-
 function setup() {
     let width = window.outerWidth;
     let height = window.outerHeight;
     createCanvas(width, height);
     background(0);
-    //initialize player
     player = new Player(0, 800);
     allies.push(player);
     drawMap();
 }
-
-
-
 function drawEnemies() {
     //draw prebuilt enemies
 }
@@ -234,7 +295,12 @@ function draw() {
     for (let ability = 0; ability < player.spellSelect.length; ability++) {
         fill(140, 190, 200, 60);
         player.spellSelect[ability].show(ability);
-        //        last 2 reserved for items 1,2 keys
+        
+    }
+    
+    for (let item = 0; item < player.itemSelect.length; item++) {
+        fill(140, 190, 200, 60);
+        player.itemSelect[item].show(item);
 
     }
 
@@ -306,9 +372,9 @@ function draw() {
     ellipse(camX + 160, camY + 60, 120, 120)
     //exp bar
     fill("gray")
-    rect(camX + 160, camY + 120, player.characterTenacity * 4, 20);
+    rect(camX + 160, camY + 120, (player.characterTenacity + player.armor.tenacity)* 10, 20);
     fill("green")
-    rect(camX + 160, camY + 120, player.tenacity * 4, 20);
+    rect(camX + 160, camY + 120, player.tenacity * 10, 20);
 
 
 
@@ -325,6 +391,7 @@ function keyPressed() {
         interfaceButtons.push(new ToCharacter(camX + 165, camY + 100));
         interfaceButtons.push(new ToInventory(camX + 455, camY + 100));
         interfaceButtons.push(new ToOptions(camX + 745, camY + 100));
+        interfaceButtons.push(new CloseTab(camX + 1000, camY + 100));
 
     }
 
@@ -374,10 +441,15 @@ function drawHud() {
                     characterHudDesired = true;
                     optionsHudDesired = false;
                     inventoryHudDesired = false;
+                } else if (interfaceButtons[i] instanceof CloseTab) {
+                    characterHudDesired = false;
+                    optionsHudDesired = false;
+                    inventoryHudDesired = false;
+                    hudDesired = false;
                 }
             }
         }
-
+        
 
 
         if (optionsHudDesired) {
@@ -390,8 +462,13 @@ function drawHud() {
             fill(180, 150, 120, 150);
             rect(camX + 70, camY + 70, 1000, 750, 50);
             fill(0)
-            text(player.characterDamage,camX + 200, camY + 300);
-            text(player.characterHp,camX + 200, camY + 200);
+            //text
+            text("Damage: " + floor(player.characterDamage), camX + 200, camY + 500);
+            text("HP: " + floor(player.hp) + "/ " + floor(player.mhp), camX + 200, camY + 200);
+            text("Spell Damage: " + player.characterSpellDamage, camX + 200, camY + 600);
+            text("MP: " + floor(player.mana) + "/ " + floor(player.mMana), camX + 200, camY + 300);
+            text("Speed: " + floor(player.speed), camX + 200, camY + 700);
+            text("Tenacity : " + floor(player.tenacity) + "/ " + floor(player.mtenacity), camX + 200, camY + 400);
 
         } else {
             fill(140, 170, 130, 150);

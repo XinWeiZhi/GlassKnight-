@@ -108,3 +108,14 @@ class ToCharacter extends InterfaceButton {
     }
 
 }
+
+class CloseTab extends InterfaceButton {
+    constructor(x, y) {
+        super(x, y);
+        this.width = this.height;
+    }
+    show() {
+        fill("red")
+        rect(this.position.x, this.position.y, this.width, this.height);
+    }
+}

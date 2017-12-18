@@ -41,8 +41,8 @@ class AssassinCloak extends Armor {
         this.armor = 10;
         this.magicResistance = 10;
         this.damageResistance = 20;
-        this.tenacity = 20;
-        this.speedDebuff = -6;
+        this.tenacity = 0;
+        this.speedDebuff = -3;
     }
 }
 

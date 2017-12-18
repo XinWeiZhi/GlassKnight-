@@ -28,13 +28,14 @@ class Player {
             AttackDive: [walkAttackleft, walkAttackleft],
             Spell: [fire, fire, fire, fire, fire, fire, fire, fire, fire, fire, fire],
             Up: [up, up, up, up, up, up],
+            Stunned: [stunned, stunned, stunned, stunned, stunned],
         }
         this.currentAnimation = this.animation.Idle;
 
         //skills
         this.comboAttack = 0;
         this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
-        this.consumableSelect = [0, 0, 0, 0, 0]; // kb 1, 2, 3, 4 ,5
+        this.itemSelect = [HealthPotionRef, EmptyItemRef, EmptyItemRef]; // kb 1, 2, 3, 4 ,5
 
         //stats
 
@@ -43,7 +44,7 @@ class Player {
         this.hp = this.mhp;
         this.manaRegeneration = 0;
         this.hpRegeneration = 0;
-        this.characterTenacity = 30;
+        this.characterTenacity = 8;
         this.mtenacity = this.characterTenacity + this.armor.tenacity;
         this.tenacity = this.mtenacity;
 
@@ -97,6 +98,7 @@ class Player {
         this.poisoned = false;
         this.silenced = false;
         this.canProcess = true;
+        this.framesSinceDamaged = 0;
         //
         this.comboArray = [
             { //regular attack regular attack regular attack
@@ -272,7 +274,7 @@ class Player {
         }
     }
 
-    spell(direction, slot, i) {
+    spell(direction, slot) {
         if (this.mana - this.spellSelect[slot].manaCost >= 0 && this.spellSelect[slot].cooldown <= 0) {
             let type = this.spellSelect[slot].type;
             this.canAttack = false;
@@ -300,9 +302,34 @@ class Player {
 
     }
 
+    item(direction, slot) {
+            this.canAttack = false;
+            this.canSpell = false;
+            this.canMove = false;
+        let type = this.itemSelect[slot].type;
+            if (type === "teleport") {
+                this.itemSelect[slot].make(this, this.speed);
+            }
+
+            if (type === "missile") {
+                this.itemSelect[slot].make(this.position.x, this.position.y, this.itemSelect[slot].maxRange, 50, 40, this.itemSelect[slot].damage + this.spellDamage, this.speed / 7 * this.direction, this.itemSelect[slot].xBox, this.itemSelect[slot].yBox);
+            }
+
+            //            if (type === "summon") {
+            //                this.itemSelect[slot].make(this,this.position.x, this.position.y);
+            //            }
+
+            if (type === "buff") {
+                this.itemSelect[slot].make(this);
+            }
+            this.itemSelect[slot].cooldown = this.itemSelect[slot].fullCooldown;
+    }
+    
 
     process(iam) {
         //always happening
+
+        this.framesSinceDamaged++;
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
         }
@@ -321,10 +348,18 @@ class Player {
         if (this.jumpCoolDown > 0) {
             this.jumpCoolDown--;
         }
-        if (this.tenacity < this.characterTenacity) {
-            this.tenacity++;
+        if (this.tenacity < this.characterTenacity + this.armor.tenacity) {
+            this.tenacity += this.characterTenacity / 300 * this.framesSinceDamaged / 100;
         }
-
+        if (this.staggered) {
+            this.changeAnimationTo(this.animation.Stunned);
+            this.canProcess = false;
+            this.tenacity += this.characterTenacity / 100;
+            if (this.tenacity > this.characterTenacity / 4) {
+                this.staggered = false;
+                this.canProcess = true;
+            }
+        }
 
         if (this.manaRegeneration != 0) {
             this.mana += this.manaRegeneration;
@@ -333,7 +368,10 @@ class Player {
         if (this.hpRegeneration != 0) {
             this.hp += this.hpRegeneration;
         }
+
+
         if (this.canProcess) {
+
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
 
@@ -342,6 +380,7 @@ class Player {
                 } else if (keyIsDown(68)) {
                     this.realSpeed = this.speed;
                     this.direction = 1;
+                    this.reposition((this.realSpeed + this.movementAccelerator));
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
@@ -359,6 +398,7 @@ class Player {
                 } else if (keyIsDown(65)) { // a
                     this.realSpeed = this.speed;
                     this.direction = -1;
+                    this.reposition((-this.realSpeed - this.movementAccelerator));
                     if (this.movementAccelerator < 2) {
                         this.movementAccelerator += 0.2;
                     }
@@ -382,8 +422,10 @@ class Player {
                 if (this.currentJumpSpeed > 0) {
                     this.currentAnimation = this.animation.Jump;
                 }
+            } else {
+                this.reposition((this.realSpeed) * this.direction);
             }
-            this.reposition((this.realSpeed + this.movementAccelerator) * this.direction);
+
             //processes after move // ATTACK ATTACK ATTACK
             if (this.canAttack && !this.stunned) {
                 if (mouseIsPressed) {
@@ -396,13 +438,19 @@ class Player {
                 //SPELL SPELL SPELL, w will be used for up - attack
                 if (!this.silenced) {
                     if (keyIsDown(81)) { // q
-                        this.spell(this.direction, 1, iam);
+                        this.spell(this.direction, 1);
                     } else if (keyIsDown(69)) { // e
-                        this.spell(this.direction, 2, iam);
+                        this.spell(this.direction, 2);
                     } else if (keyIsDown(82)) { // r
-                        this.spell(this.direction, 3, iam);
+                        this.spell(this.direction, 3);
                     } else if (keyIsDown(16)) { // shift
-                        this.spell(this.direction, 0, iam);
+                        this.spell(this.direction, 0);
+                    } else if (keyIsDown(49)) { // #1
+                        this.item(this.direction, 0);
+                    } else if (keyIsDown(50)) { // #2
+                        this.item(this.direction, 1);
+                    } else if (keyIsDown(51)) { // #3
+                        this.item(this.direction, 2);
                     }
                 }
 
@@ -440,16 +488,16 @@ class Player {
         if (this.hp <= 0) {
             //die
         }
-        this.tenacity -= damage;
-        if (this.tenacity <= 0 && !this.staggered) {
-            //stagger
-            this.staggered = true;
+
+        if (!this.staggered) {
+            this.framesSinceDamaged = 0;
+            this.tenacity -= damage;
+            if (this.tenacity <= 0) {
+                this.tenacity = 0;
+                this.staggered = true;
+            }
         }
 
-
-    }
-
-    stagger() {
 
     }
 
