@@ -6,8 +6,6 @@ class TargetedProjectile { // things that go after people
         this.speed = speed
         this.position = createVector(x + this.width / 2, y + this.height / 2);
         this.distFrame;
-        this.hitboxX = hitboxX;
-        this.hitboxY = hitboxY;
         this.target = target;
         this.aim = createVector(target.position.x, target.position.y);
         this.movementVector = p5.Vector.sub(this.aim, this.position);
@@ -89,6 +87,41 @@ class AcidBall extends TargetedProjectile {
 
     show() {
         fill(111, 245, 25, 190);
+        ellipse(this.position.x - this.width / 2, this.position.y, this.width, this.height);
+    }
+
+
+
+    //called 60fps
+    move(i) {
+        this.position.x += this.speed;
+        this.position.y += gravity * this.gravityMultiplier;
+        this.position.y -= this.launchSpeed;
+        this.gravityMultiplier += 0.5;
+
+        if (this.position.y > this.target.floorY){
+            projectiles.splice(i, 1);
+        }
+            
+            if (this.position.x >= this.target.position.x - this.target.width / 2 && this.position.x <= this.target.position.x + this.target.width / 2 && this.position.y <= this.target.position.y + this.target.height / 2 && this.position.y >= this.target.position.y - this.target.height / 2) {
+                dealDamage(this.target, this.damage);
+                projectiles.splice(i, 1);
+            }
+
+        }
+
+
+    }
+
+class Beam extends TargetedProjectile {
+    constructor(x, y, target, width, height, damage, speed) {
+        super(x, y, target, width, height, damage, speed)
+        
+    }
+
+    show() {
+        fill(111, 245, 25, 190);
+        line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
         ellipse(this.position.x - this.width / 2, this.position.y, this.width, this.height);
     }
 

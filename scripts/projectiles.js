@@ -72,9 +72,42 @@ class FireBall extends PresetProjectile {
     }
 }
 
-class Beam extends PresetProjectile {
-    constructor(x, y, range, width, height, damage, speed) {
-        super(x, y, range, width, height, damage, speed)
+//class Beam extends PresetProjectile {
+//    constructor(x, y, range, width, height, damage, speed) {
+//        super(x, y, range, width, height, damage, speed)
+//    }
+//
+//    show() {
+//        fill("red");
+//        rect(this.position.x + this.width / 2, this.position.y + this.width / 2, this.width, this.height);
+//    }
+//
+//
+//
+//    //called 60fps
+//    move(i) {
+//        for (let e = 0; e < enemies.length; e++) {
+//            if(collisionDetected(enemies[e], this.position, this.width / 2, this.height/2)) {
+//                dealDamage(enemies[e], this.damage, e);
+//        }
+//            
+//            if(distann)
+//
+//
+//
+//        //getting the x and y values of the target 
+//        this.distFrame = this.speed / 60;
+//        //todo improve this checking dist
+//        //        this.position.add(this.movementVector * this.distFrame);
+//        this.position.x += this.movementVector.x * this.distFrame;
+//        this.position.y += this.movementVector.y * this.distFrame;
+//
+//    }
+//}
+
+class Grapeshot extends PresetProjectile {
+    constructor(x, y, range, width, height, damage, speed, hitboxX, hitboxY) {
+        super(x, y, range, width, height, damage, speed, hitboxX, hitboxY)
     }
 
     show() {
@@ -87,11 +120,12 @@ class Beam extends PresetProjectile {
     //called 60fps
     move(i) {
         for (let e = 0; e < enemies.length; e++) {
-            if(collisionDetected(enemies[e], this.position, this.width / 2, this.height/2)) {
+            //if(collisionDetected(enemies[e], this.position, this.width / 2, this.height/2)) {
+            if (this.position.x >= enemies[e].position.x - enemies[e].width / 2 && this.position.x <= enemies[e].position.x + enemies[e].width / 2 && this.position.y <= enemies[e].position.y + enemies[e].height / 2 && this.position.y >= enemies[e].position.y - enemies[e].height / 2) {
                 dealDamage(enemies[e], this.damage, e);
+                projectiles.splice(i, 1);
+            }
         }
-            
-            if(distann)
 
 
 

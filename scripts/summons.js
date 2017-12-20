@@ -172,7 +172,7 @@ class SummonCannon extends Summon {
         this.target;
         this.threatenedLevel = 0;
         this.framesSinceAttack = 0;
-        this.direction = 1; 
+        this.direction = 1;
     }
 
     process() {
@@ -202,8 +202,12 @@ class SummonCannon extends Summon {
         if player is nearby and not attacking, it will not target over the cannon
         */
 
-        if(this.target === null) {
+        if (this.target === null) {
             this.threatenedLevel = 0;
+        } else {
+            strokeWeight(2);
+            stroke("red");
+            line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
         }
         if (player.target === null || player.target.position.dist(this.position) > this.attackRange) {
             for (let e = 0; e < enemies.length; e++) {
@@ -215,21 +219,24 @@ class SummonCannon extends Summon {
             this.target = enemies[e]
         }
 
+
     }
 
-    attack(pattern) {
+    attack(pattern, timer) {
         //cannon fire 1 quick attack
-        if(pattern === 1) {
-            projectiles.push(new Beam()) {
-                
-            }
-        } else if(pattern === 2) {
-            this.position.x - this.repelDistance * this.direction;
+        if (pattern === 1) {
+            //pause for 5 frames
+            if(timer> 5) {
+                projectiles.push(new Beam(this.position.x, this.position.y, this.target, 1, 1, 2, 100)) 
             
+            }
+        } else if (pattern === 2) {
+            this.position.x - this.repelDistance * this.direction;
+
             projectiles.push(new GrapeShot())
         }
         //cannon fire 2 repel aoe
-        
+
     }
 
     reposition() {
