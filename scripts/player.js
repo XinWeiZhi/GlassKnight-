@@ -35,7 +35,7 @@ class Player {
         //skills
         this.comboAttack = 0;
         this.spellSelect = [DashRef, RegenerateRef, FireballRef, FireballRef];
-        this.itemSelect = [HealthPotionRef, EmptyItemRef, EmptyItemRef]; // kb 1, 2, 3, 4 ,5
+        this.itemSelect = [HealthPotionRef, CannonRef, EmptyItemRef]; // kb 1, 2, 3, 4 ,5
 
         //stats
 
@@ -67,13 +67,15 @@ class Player {
         this.experience = 0; // remove these in the future
         this.experienceToLevel = 30;
         this.level = 1;
+        
+        this.jumpSpeed = 10; //based on char
 
         //calculation stats
-
+        this.target = null;
         this.realSpeed = 0;
         this.movementAccelerator = 2;
         this.floorY = 800;
-        this.jumpCoolDown = 30;
+//        this.jumpCoolDown = 30;
         this.direction = 1;
         this.damageMultiplier = 1;
         this.takenDamageMultiplier = 1;
@@ -83,7 +85,6 @@ class Player {
         this.maxJumps = 2;
         this.jumps = this.maxJumps;
         this.grounded = false;
-        this.jumpSpeed = 20; //based on char
         this.currentJumpSpeed = 0;
         this.gravityMultiplier = 1;
 
@@ -98,7 +99,9 @@ class Player {
         this.poisoned = false;
         this.silenced = false;
         this.canProcess = true;
+        this.inDash = false;
         this.framesSinceDamaged = 0;
+        this.framesSinceAttack = 0;
         //
         this.comboArray = [
             { //regular attack regular attack regular attack
@@ -180,14 +183,10 @@ class Player {
 
     }
     jump() {
-        if (this.jumpCoolDown <= 0) {
-            this.jumpCoolDown = 30;
             this.jumps--;
             this.currentJumpSpeed = this.jumpSpeed;
-            this.reposition(0, -this.currentJumpSpeed);
             this.gravityMultiplier = 1;
-        }
-
+            this.stillGoingUp = true;
 
     }
 
@@ -213,6 +212,10 @@ class Player {
                 for (let e = 0; e < enemies.length; e++) {
                     if (collisionDetected(enemies[e], this.position, this.hitboxX, this.hitboxY)) {
                         dealDamage(enemies[e], this.damage, e);
+                        this.framesSinceAttack = 0;
+                        for(let a = 0; a < allies.length; a++) {
+                            allies[a].target = enemies[e];
+                        }
                     }
                 }
             }
@@ -266,11 +269,13 @@ class Player {
 
         }
 
-
+        
         if (this.comboAttack == 3) {
             this.comboAttack = 0;
-        } else {
+        } else if(this.framesSinceAttack < 10) {
             this.comboAttack++;
+        } else {
+            this.comboAttack = 0;
         }
     }
 
@@ -303,10 +308,11 @@ class Player {
     }
 
     item(direction, slot) {
+        if (this.itemSelect[slot].cooldown <= 0) {
             this.canAttack = false;
             this.canSpell = false;
             this.canMove = false;
-        let type = this.itemSelect[slot].type;
+            let type = this.itemSelect[slot].type;
             if (type === "teleport") {
                 this.itemSelect[slot].make(this, this.speed);
             }
@@ -315,21 +321,23 @@ class Player {
                 this.itemSelect[slot].make(this.position.x, this.position.y, this.itemSelect[slot].maxRange, 50, 40, this.itemSelect[slot].damage + this.spellDamage, this.speed / 7 * this.direction, this.itemSelect[slot].xBox, this.itemSelect[slot].yBox);
             }
 
-            //            if (type === "summon") {
-            //                this.itemSelect[slot].make(this,this.position.x, this.position.y);
-            //            }
+            if (type === "summon") {
+                this.itemSelect[slot].make(this, this.position.x, this.position.y);
+            }
 
             if (type === "buff") {
                 this.itemSelect[slot].make(this);
             }
             this.itemSelect[slot].cooldown = this.itemSelect[slot].fullCooldown;
+        }
     }
-    
+
 
     process(iam) {
         //always happening
 
         this.framesSinceDamaged++;
+        this.framesSinceAttack++;
         if (this.atkCooldown > 0) {
             this.atkCooldown--;
         }
@@ -345,8 +353,15 @@ class Player {
         if (this.spellSelect[3].cooldown >= 0) {
             this.spellSelect[3].cooldown--;
         }
-        if (this.jumpCoolDown > 0) {
-            this.jumpCoolDown--;
+        
+        if (this.itemSelect[0].cooldown >= 0) {
+            this.itemSelect[0].cooldown--;
+        }
+        if (this.itemSelect[1].cooldown >= 0) {
+            this.itemSelect[1].cooldown--;
+        }
+        if (this.itemSelect[2].cooldown >= 0) {
+            this.itemSelect[2].cooldown--;
         }
         if (this.tenacity < this.characterTenacity + this.armor.tenacity) {
             this.tenacity += this.characterTenacity / 300 * this.framesSinceDamaged / 100;
@@ -358,6 +373,7 @@ class Player {
             if (this.tenacity > this.characterTenacity / 4) {
                 this.staggered = false;
                 this.canProcess = true;
+                this.currentJumpSpeed = 0;
             }
         }
 
@@ -374,7 +390,11 @@ class Player {
 
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
-
+                if(keyIsDown(32) && this.stillGoingUp) {
+                    this.reposition(0, -this.jumpSpeed * 0.75)
+                } else {
+                    this.stillGoingUp = false;
+                }
                 if (keyIsDown(68) && keyIsDown(65)) {
                     this.changeAnimationTo(this.animation.Idle)
                 } else if (keyIsDown(68)) {
@@ -422,7 +442,7 @@ class Player {
                 if (this.currentJumpSpeed > 0) {
                     this.currentAnimation = this.animation.Jump;
                 }
-            } else {
+            } else if (this.inDash) {
                 this.reposition((this.realSpeed) * this.direction);
             }
 
@@ -460,7 +480,13 @@ class Player {
 
 
     isGrounded() {
+        
+        if(!this.grounded) {
+            this.position.y += gravity * this.gravityMultiplier;
+            this.gravityMultiplier++;
+        }
         if (this.floorY <= this.position.y + this.height / 2 && this.gravityMultiplier * gravity >= this.currentJumpSpeed) {
+
             this.grounded = true;
             this.jumps = this.maxJumps;
             this.gravityMultiplier = 1;
@@ -468,9 +494,6 @@ class Player {
             this.position.y = this.floorY - this.height / 2;
         } else {
             this.grounded = false;
-            this.position.y += gravity * this.gravityMultiplier;
-            this.gravityMultiplier++;
-            //gravity
         }
 
         //find this.floorY

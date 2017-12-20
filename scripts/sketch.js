@@ -43,9 +43,9 @@ let FireballRef = {
 
 
 let DashRef = {
-    manaCost: 10,
+    manaCost: 3,
     type: "teleport",
-    duration: 3, // 
+    duration: 4, // 
     cooldown: 0,
     fullCooldown: 26,
     make(sender, speed) {
@@ -80,7 +80,7 @@ let EmptySpellRef = {
     cooldown: 0,
     fullCooldown: 20,
     make(sender) {
-//        buffs.push(new Regenerate(sender, this.duration));
+        //        buffs.push(new Regenerate(sender, this.duration));
     },
     show(a) {
         image(healIcon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
@@ -95,7 +95,7 @@ let EmptyItemRef = {
     cooldown: 0,
     fullCooldown: 10,
     make(sender) {
-//        buffs.push(new Regenerate(sender, this.duration));
+        //        summons.push(new SummonBoar(sender.position.x, sender.position.y));
     },
     show(a) {
         image(healIcon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
@@ -106,18 +106,24 @@ let EmptyItemRef = {
 let HealthPotionRef = { //heal 6hp over 1 second
     manaCost: 0,
     type: "buff",
-    duration: 60, // 
+    duration: 120, // 
     cooldown: 0,
-    fullCooldown: 10,
+    fullCooldown: 120,
     castFrames: 3,
-    stock: 3,
+    stock: 4,
     make(sender) {
-        buffs.push(new Regenerate(sender, this.duration));
-        this.stock--;
+        if (this.stock > 0) {
+            buffs.push(new Regenerate(sender, this.duration));
+            this.stock--;
+        }
+
     },
     show(a) {
         image(hppotion, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
         rect(camX + 600 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+        fill(60, 60, 10, 40);
+        stroke(12);
+        text(this.stock, camX + 600 + 70 * a, camY + 800);
     }
 }
 
@@ -126,27 +132,20 @@ let CannonRef = {
     type: "summon",
     duration: 0, // 
     cooldown: 0,
-    fullCooldown: 10,
-    make(sender) {
-//        buffs.push(new Regenerate(sender, this.duration));
+    fullCooldown: 50,
+    stock: 1,
+    make(sender, x, y) {
+        allies.push(new SummonBoar(x, y));
+        console.log("noatr")
     },
     show(a) {
         image(cannon, camX + 600 + 70 * a, camY + 800, spellHudWidth, spellHudWidth);
         rect(camX + 600 + 70 * a, camY + 860, spellHudWidth, spellHudWidth * this.cooldown / this.fullCooldown * -1);
+        fill(60, 60, 10, 40);
+        stroke(12);
+        text(this.stock, camX + 600 + 70 * a, camY + 800);
     }
 }
-
-//let SummonBoarRef = {
-//    manaCost: 120,
-//    type: "summon",
-//    duration: 3600, // 
-//    cooldown: 0, 
-//    fullCooldown: 7200,
-//    make(sender, x, y) {
-//            allies.push(new SummonBoar(x,y)); 
-//       
-//    }
-//}
 
 
 //spell 1 coords 300,600 
@@ -265,6 +264,7 @@ function drawMap() {
     //draw prebuilt maps
 
 }
+
 function setup() {
     let width = window.outerWidth;
     let height = window.outerHeight;
@@ -274,6 +274,7 @@ function setup() {
     allies.push(player);
     drawMap();
 }
+
 function drawEnemies() {
     //draw prebuilt enemies
 }
@@ -295,9 +296,9 @@ function draw() {
     for (let ability = 0; ability < player.spellSelect.length; ability++) {
         fill(140, 190, 200, 60);
         player.spellSelect[ability].show(ability);
-        
+
     }
-    
+
     for (let item = 0; item < player.itemSelect.length; item++) {
         fill(140, 190, 200, 60);
         player.itemSelect[item].show(item);
@@ -372,15 +373,16 @@ function draw() {
     ellipse(camX + 160, camY + 60, 120, 120)
     //exp bar
     fill("gray")
-    rect(camX + 160, camY + 120, (player.characterTenacity + player.armor.tenacity)* 10, 20);
+    rect(camX + 160, camY + 120, (player.characterTenacity + player.armor.tenacity) * 10, 20);
     fill("green")
     rect(camX + 160, camY + 120, player.tenacity * 10, 20);
 
-
-
-
-
-
+    if (player.target != null) {
+        fill("gray");
+        rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.mhp * 6, 16);
+        fill("blue");
+        rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.hp * 6, 16);
+    }
     drawHud();
 }
 
@@ -449,7 +451,7 @@ function drawHud() {
                 }
             }
         }
-        
+
 
 
         if (optionsHudDesired) {

@@ -29,10 +29,12 @@ class Dash extends Buff {
 
     use(b) {
         this.sender.canMove = false;
-        this.sender.realSpeed = (this.sender.characterSpeed - this.sender.armor.speedDebuff) * 6;
+        this.sender.inDash = true;
+        this.sender.realSpeed = (this.sender.characterSpeed - this.sender.armor.speedDebuff) * 7.5;
         this.sender.updateStats()
         this.duration--;
         if (this.duration <= 0) {
+            this.sender.inDash = false;
             buffs.splice(b, 1);
         }
     }
@@ -42,7 +44,7 @@ class Regenerate extends Buff {
     constructor(sender, duration) {
         super(sender, duration);
         this.image;
-        this.heal = 0.05;
+        this.heal = 0.1;
         this.duration = duration;
     }
 

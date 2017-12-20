@@ -1,5 +1,6 @@
 class Enemy {
     constructor(x, y) {
+        this.name = "Skeleton";
         this.position = createVector(x, y);
         this.damage = 1;
         this.attackPattern;
@@ -45,10 +46,6 @@ class Enemy {
     }
     
     show() {
-        fill(231, 10, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
-        fill(100, 230, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
@@ -211,16 +208,6 @@ class Harpy extends Enemy {
         this.spellDamage = 1;
         this.shockWaveSpeed = 3;
         //perhaps this.hat / this.armor
-    }
-
-    show() {
-        
-        fill(231, 10, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
-        fill(100, 230, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
-
-        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
     process() {
@@ -399,16 +386,6 @@ class GraveMaster extends Enemy {
         this.standoff = false;
         this.attackRange = 400;
         //perhaps this.hat / this.armor
-    }
-
-    show() {
-        
-        fill(231, 10, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
-        fill(100, 230, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
-
-        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
 
     process() {
@@ -606,16 +583,6 @@ class Worm extends Enemy {
         this.aggroRange = 1200;
 
         //perhaps this.hat / this.armor
-    }
-
-    show() {
-        fill(231, 10, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
-        fill(100, 230, 40);
-        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
-
-        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
-
     }
 
     attack() {
