@@ -183,6 +183,7 @@ function preload() {
     stunned = loadImage("scripts/assets/stunned.jpg");
     hppotion = loadImage("scripts/assets/hppotion.jpg");
     cannon = loadImage("scripts/assets/cannon.jpg");
+    grapeshot = loadImage("scripts/assets/grapeshot.jpg");
 }
 
 function drawMap() {

@@ -21,16 +21,16 @@ class Summon {
         this.canStillDamage = true;
         this.attackCooldown = 0;
         this.type = "summon";
-         this.takenDamageMultiplier = 1;
+        this.takenDamageMultiplier = 1;
         this.gravityMultiplier = 1;
         this.inAttack = false;
         this.duration;
     }
 
     animate() {
-        
+
     }
-    
+
     show() {
         image(this.image, this.position.x, this.position.y, this.width, this.height);
     }
@@ -54,7 +54,7 @@ class Summon {
             this.grounded = true;
             this.jumps = this.mJumps;
             this.jumpSpeed = 8;
-            this.position.y = this.floorY - this.height ;
+            this.position.y = this.floorY - this.height;
         } else {
             this.grounded = false;
             this.position.y += gravity * this.gravityMultiplier;
@@ -94,7 +94,7 @@ class SummonBoar extends Summon {
         this.height = 110;
         this.changeAggroAt = 1000;
         this.target;
-       
+
     }
     //show, isGrounded
     attack(pattern, damage) {
@@ -111,47 +111,47 @@ class SummonBoar extends Summon {
 
         }
     }
-    
-//    follow() {
-//        if(player.position.x < this.position.x) {
-//            this.reposition(-this.speed, 0);
-//        } else {
-//            this.reposition(this.speed,0);
-//        }
-//    }
+
+    //    follow() {
+    //        if(player.position.x < this.position.x) {
+    //            this.reposition(-this.speed, 0);
+    //        } else {
+    //            this.reposition(this.speed,0);
+    //        }
+    //    }
     // check for target
     process() {
-        
-//        if(this.inAttack) {
-//            this.attack();
-//        } else {
-//            this.follow();
-//        }
-        
+
+        //        if(this.inAttack) {
+        //            this.attack();
+        //        } else {
+        //            this.follow();
+        //        }
+
         for (let e = 0; e < enemies.length; e++) {
-                if (this.target == null || this.target.hp <= 0) {
-                    this.target = enemies[e];
-                    this.changeAggroAt = 1000;
-                
-                }
+            if (this.target == null || this.target.hp <= 0) {
+                this.target = enemies[e];
+                this.changeAggroAt = 1000;
+
+            }
             break;
-            } 
-     if(this.target.position.x > this.position.x) {
-         this.reposition(this.speed, 0);
-     } else {
-         this.reposition(-this.speed, 0);
-     }
+        }
+        if (this.target.position.x > this.position.x) {
+            this.reposition(this.speed, 0);
+        } else {
+            this.reposition(-this.speed, 0);
+        }
         if (this.attackCooldown <= 0) {
             this.canStillDamage = true;
             this.canAttack = false;
-            
+
         } else {
             this.attackCooldown--;
             this.canAttack = true;
         }
-        
-        if(this.canAttack === false) {
-            this.attack(1,3);
+
+        if (this.canAttack === false) {
+            this.attack(1, 3);
         }
     }
 
@@ -170,21 +170,22 @@ class SummonCannon extends Summon {
         this.height = 140;
         this.changeAggroAt = 1000;
         this.target;
-        this.threatenedLevel;
-       
+        this.threatenedLevel = 0;
+        this.framesSinceAttack = 0;
+        this.direction = 1; 
     }
-    
+
     process() {
-     this.target();
-        if(this.attackCooldown === 0) {
+        this.target();
+        if (this.attackCooldown === 0) {
             let pattern = 0;
-            
-            if(this.threatenedLevel > 500)
-            this.attack();
+
+            if (this.threatenedLevel > 500)
+                this.attack();
         }
-        
+
     }
-    
+
     target() {
         //in aggroRange
         /* 
@@ -200,38 +201,55 @@ class SummonCannon extends Summon {
         if player is nearby and attacking, it will automatically target
         if player is nearby and not attacking, it will not target over the cannon
         */
-        
-        this.threatenedLevel = 0;
-        let currentTarget = null;
-        for (let e = 0; e < enemies.length; e++) {
-            let threatDistance = this.position.dist(enemies[e].position);
-            let threatDamage = enemies[e].damage;
-            
+
+        if(this.target === null) {
+            this.threatenedLevel = 0;
         }
+        if (player.target === null || player.target.position.dist(this.position) > this.attackRange) {
+            for (let e = 0; e < enemies.length; e++) {
+                if (this.threatenedLevel < enemies[e].damage * 50 + this.position.dist(enemies[e].position) && this.position.dist(enemies[e].position) <= this.attackRange) {
+                    this.target = enemies[e];
+                }
+            }
+        } else if (player.target.position.dist(this.position) <= this.attackRange) {
+            this.target = enemies[e]
+        }
+
     }
-    
-    attack() {
+
+    attack(pattern) {
+        //cannon fire 1 quick attack
+        if(pattern === 1) {
+            projectiles.push(new Beam()) {
+                
+            }
+        } else if(pattern === 2) {
+            this.position.x - this.repelDistance * this.direction;
+            
+            projectiles.push(new GrapeShot())
+        }
+        //cannon fire 2 repel aoe
         
     }
-    
+
     reposition() {
-        
+
     }
-    
+
     receiveHit(damage) {
-        
+
     }
-    
+
     follow() {
-        
+
     }
-    
-    
-    
+
+
+
     isGrounded() {
-        
+
     }
-    
+
     //show, isGrounded
     attack(pattern, damage) {
         if (pattern === 1) {
@@ -247,53 +265,54 @@ class SummonCannon extends Summon {
 
         }
     }
-    
+
     follow() {
-        if(player.position.x < this.position.x) {
+        //100 is follow range
+        if (player.position.x - 100 < this.position.x) {
             this.reposition(-this.speed, 0);
         } else {
-            this.reposition(this.speed,0);
+            this.reposition(this.speed, 0);
         }
     }
     // check for target
     process() {
-        
+
         target()
         attack()
         move()
         receiveHit()
-        
-        
-        if(this.inAttack) {
+
+
+        if (this.playerTarget == null) {
             this.attack();
         } else {
             this.follow();
         }
-        
+
         for (let e = 0; e < enemies.length; e++) {
-                if (this.target == null || this.target.hp <= 0) {
-                    this.target = enemies[e];
-                    this.changeAggroAt = 1000;
-                
-                }
+            if (this.target == null || this.target.hp <= 0) {
+                this.target = enemies[e];
+                this.changeAggroAt = 1000;
+
+            }
             break;
-            } 
-     if(this.target.position.x > this.position.x) {
-         this.reposition(this.speed, 0);
-     } else {
-         this.reposition(-this.speed, 0);
-     }
+        }
+        if (this.target.position.x > this.position.x) {
+            this.reposition(this.speed, 0);
+        } else {
+            this.reposition(-this.speed, 0);
+        }
         if (this.attackCooldown <= 0) {
             this.canStillDamage = true;
             this.canAttack = false;
-            
+
         } else {
             this.attackCooldown--;
             this.canAttack = true;
         }
-        
-        if(this.canAttack === false) {
-            this.attack(1,3);
+
+        if (this.canAttack === false) {
+            this.attack(1, 3);
         }
     }
 

@@ -272,7 +272,7 @@ class Player {
         
         if (this.comboAttack == 3) {
             this.comboAttack = 0;
-        } else if(this.framesSinceAttack < 10) {
+        } else if(this.framesSinceAttack < 6) {
             this.comboAttack++;
         } else {
             this.comboAttack = 0;
@@ -335,7 +335,7 @@ class Player {
 
     process(iam) {
         //always happening
-
+        console.log(this.framesSinceAttack)
         this.framesSinceDamaged++;
         this.framesSinceAttack++;
         if (this.atkCooldown > 0) {

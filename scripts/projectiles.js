@@ -3,8 +3,6 @@ class PresetProjectile {
         this.width = width;
         this.height = height;
         this.damage = damage;
-        this.hitboxX = hitboxX;
-        this.hitboxY = hitboxY;
         this.position = createVector(x + this.width / 2, y - this.height / 2);
         this.speed = speed;
         this.distFrame;
@@ -61,6 +59,39 @@ class FireBall extends PresetProjectile {
                 projectiles.splice(i, 1);
             }
         }
+
+
+
+        //getting the x and y values of the target 
+        this.distFrame = this.speed / 60;
+        //todo improve this checking dist
+        //        this.position.add(this.movementVector * this.distFrame);
+        this.position.x += this.movementVector.x * this.distFrame;
+        this.position.y += this.movementVector.y * this.distFrame;
+
+    }
+}
+
+class Beam extends PresetProjectile {
+    constructor(x, y, range, width, height, damage, speed) {
+        super(x, y, range, width, height, damage, speed)
+    }
+
+    show() {
+        fill("red");
+        rect(this.position.x + this.width / 2, this.position.y + this.width / 2, this.width, this.height);
+    }
+
+
+
+    //called 60fps
+    move(i) {
+        for (let e = 0; e < enemies.length; e++) {
+            if(collisionDetected(enemies[e], this.position, this.width / 2, this.height/2)) {
+                dealDamage(enemies[e], this.damage, e);
+        }
+            
+            if(distann)
 
 
 
