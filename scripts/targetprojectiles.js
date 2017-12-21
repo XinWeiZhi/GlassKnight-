@@ -116,32 +116,41 @@ class AcidBall extends TargetedProjectile {
 class Beam extends TargetedProjectile {
     constructor(x, y, target, width, height, damage, speed) {
         super(x, y, target, width, height, damage, speed)
-        
+        this.startPosition = createVector(x,y);
+        this.speed = 10000;
+        this.duration = 10;
     }
 
     show() {
-        fill(111, 245, 25, 190);
-        line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
-        ellipse(this.position.x - this.width / 2, this.position.y, this.width, this.height);
+        stroke(230,20,30, 180);
+        strokeWeight(16);
+        line(this.startPosition.x, this.startPosition.y, this.position.x, this.position.y);
+//        ellipse(this.position.x, this.position.y, this.width, this.height);
+        strokeWeight(1);
     }
 
 
 
     //called 60fps
     move(i) {
-        this.position.x += this.speed;
-        this.position.y += gravity * this.gravityMultiplier;
-        this.position.y -= this.launchSpeed;
-        this.gravityMultiplier += 0.5;
-
-        if (this.position.y > this.target.floorY){
+    this.duration--
+        if(this.duration == 0) {
             projectiles.splice(i, 1);
         }
-            
-            if (this.position.x >= this.target.position.x - this.target.width / 2 && this.position.x <= this.target.position.x + this.target.width / 2 && this.position.y <= this.target.position.y + this.target.height / 2 && this.position.y >= this.target.position.y - this.target.height / 2) {
-                dealDamage(this.target, this.damage);
-                projectiles.splice(i, 1);
+        this.movementVector = p5.Vector.sub(this.target.position, this.startPosition);;
+         this.distFrame = this.speed / 60;
+            this.position.add(this.movementVector * this.distFrame);
+        
+        
+            for(let e = 0; e < enemies.length; e++) {
+                 if (this.position.x >= enemies[e].position.x - enemies[e].width / 2 && this.position.x <= enemies[e].position.x + enemies[e].width / 2 && this.position.y <= enemies[e].position.y + enemies[e].height / 2 && this.position.y >= enemies[e].position.y - enemies[e].height / 2) {
+                dealDamage(enemies[e], this.damage, e);
+                     projectiles.splice(i, 1);
             }
+            }
+        
+        
+           
 
         }
 

@@ -335,7 +335,6 @@ class Player {
 
     process(iam) {
         //always happening
-        console.log(this.framesSinceAttack)
         this.framesSinceDamaged++;
         this.framesSinceAttack++;
         if (this.atkCooldown > 0) {

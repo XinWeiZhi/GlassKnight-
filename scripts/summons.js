@@ -159,9 +159,9 @@ class SummonBoar extends Summon {
 }
 
 class SummonCannon extends Summon {
-    constructor(x, y) {
-        super(x, y)
-        this.speed = 0;
+    constructor(x, y, duration) {
+        super(x, y, duration)
+        this.speed = 5;
         this.image = cannon;
         this.damage = 3;
         this.hp = 10;
@@ -169,159 +169,139 @@ class SummonCannon extends Summon {
         this.width = 180;
         this.height = 140;
         this.changeAggroAt = 1000;
+        this.attackRange = 1000;
         this.target;
         this.threatenedLevel = 0;
         this.framesSinceAttack = 0;
         this.direction = 1;
+        this.canProcess = true;
+        this.duration = duration;
+        this.currentSpeed = 0;
     }
 
-    process() {
-        this.target();
-        if (this.attackCooldown === 0) {
-            let pattern = 0;
 
-            if (this.threatenedLevel > 500)
-                this.attack();
-        }
-
-    }
-
-    target() {
+    getTarget() {
         //in aggroRange
         /* 
-        cannon will operate based on threatLevel;
-        if threatLevel is higher, then cannon will target
-        factors:
-        distance to itself, 
-        who player is attacking,
+            cannon will operate based on threatLevel;
+            if threatLevel is higher, then cannon will target
+            factors:
+            distance to itself, 
+            who player is attacking,
         
-        also, enemy will target based on same factors, 
-        distance to itself, 
-        player or summon or npc,
-        if player is nearby and attacking, it will automatically target
-        if player is nearby and not attacking, it will not target over the cannon
-        */
+            also, enemy will target based on same factors, 
+            distance to itself, 
+            player or summon or npc,
+            if player is nearby and attacking, it will automatically target
+            if player is nearby and not attacking, it will not target over the cannon
+            */
 
-        if (this.target === null) {
+        if (this.target == null) {
             this.threatenedLevel = 0;
+            console.log("yes")
         } else {
-            strokeWeight(2);
-            stroke("red");
+            strokeWeight(5);
+            stroke(200, 30, 10);
             line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
         }
         if (player.target === null || player.target.position.dist(this.position) > this.attackRange) {
             for (let e = 0; e < enemies.length; e++) {
-                if (this.threatenedLevel < enemies[e].damage * 50 + this.position.dist(enemies[e].position) && this.position.dist(enemies[e].position) <= this.attackRange) {
+                if (this.threatenedLevel < enemies[e].damage * 200 - this.position.dist(enemies[e].position) && this.position.dist(enemies[e].position) <= this.attackRange) {
                     this.target = enemies[e];
+                    this.threatenedLevel = enemies[e].damage * 200 - this.position.dist(enemies[e].position);
                 }
             }
         } else if (player.target.position.dist(this.position) <= this.attackRange) {
-            this.target = enemies[e]
+            this.target = player.target;
+            this.threatenedLevel = this.target.damage * 200 - this.position.dist(this.target.position);
+        } else {
+            this.target = null;
         }
-
-
     }
 
-    attack(pattern, timer) {
+    attack(pattern, target) {
         //cannon fire 1 quick attack
         if (pattern === 1) {
             //pause for 5 frames
-            if(timer> 5) {
-                projectiles.push(new Beam(this.position.x, this.position.y, this.target, 1, 1, 2, 100)) 
-            
+            if (frameCount % 5 == 0) {
+                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, 2, 100));
+
             }
+
         } else if (pattern === 2) {
             this.position.x - this.repelDistance * this.direction;
-
             projectiles.push(new GrapeShot())
         }
         //cannon fire 2 repel aoe
-
+        
     }
 
-    reposition() {
-
+    reposition(x, y) {
+        this.position.add(x, y);
     }
 
-    receiveHit(damage) {
-
-    }
-
-    follow() {
-
-    }
-
-
-
-    isGrounded() {
-
-    }
-
-    //show, isGrounded
-    attack(pattern, damage) {
-        if (pattern === 1) {
-            this.reposition(this.speed, 0);
-            for (let e = 0; e < enemies.length; e++) {
-                if (collisionDetected(enemies[e], this.position, this.width / 2, this.height / 2)) {
-                    dealDamage(this.target, damage, e);
-                    this.attackCooldown = 60;
-                    this.canStillDamage = false;
-                    this.canAttack = false;
-                }
-            }
-
+    receiveHit(damage, slot) {
+        if (this.hp <= 0) {
+            allies.splice(slot, 1);
         }
     }
 
     follow() {
         //100 is follow range
-        if (player.position.x - 100 < this.position.x) {
+
+        if (player.position.x - 220 <= this.position.x) {
             this.reposition(-this.speed, 0);
-        } else {
+        } else if (player.position.x - 220 > this.position.x) {
             this.reposition(this.speed, 0);
         }
+
+
+
     }
+
+
+
     // check for target
-    process() {
-
-        target()
-        attack()
-        move()
-        receiveHit()
-
-
-        if (this.playerTarget == null) {
-            this.attack();
-        } else {
-            this.follow();
+    process(i) {
+        this.duration--;
+        if (this.duration <= 0) {
+            allies.splice(i, 1);
         }
+        //cooldowns
+        if (this.target != null) {
+            //attack etc
+            if (this.target.position.dist(this.position) <= this.attackRange) {
 
-        for (let e = 0; e < enemies.length; e++) {
-            if (this.target == null || this.target.hp <= 0) {
-                this.target = enemies[e];
-                this.changeAggroAt = 1000;
-
+                this.attack(1, this.target);
             }
-            break;
-        }
-        if (this.target.position.x > this.position.x) {
-            this.reposition(this.speed, 0);
+            if(this.target.hp <= 0) {
+                this.target = null;
+            }
         } else {
-            this.reposition(-this.speed, 0);
-        }
-        if (this.attackCooldown <= 0) {
-            this.canStillDamage = true;
-            this.canAttack = false;
+            this.getTarget();
 
-        } else {
-            this.attackCooldown--;
-            this.canAttack = true;
+            if (player.position.dist(this.position) > 240) {
+                this.follow();
+            }
         }
 
-        if (this.canAttack === false) {
-            this.attack(1, 3);
-        }
+
+
+
     }
 
 
+
+    //        if (this.attackCooldown <= 0) {
+    //            this.canStillDamage = true;
+    //            this.canAttack = false;
+    //
+    //        } else {
+    //            this.attackCooldown--;
+    //            this.canAttack = true;
+    //        }
+    //
+    //        if (this.canAttack === false) {
+    //            this.attack(1, 3);
+    //        }
 }

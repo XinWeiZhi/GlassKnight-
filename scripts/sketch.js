@@ -130,12 +130,12 @@ let HealthPotionRef = { //heal 6hp over 1 second
 let CannonRef = {
     manaCost: 0,
     type: "summon",
-    duration: 0, // 
+    duration: 1200, // 
     cooldown: 0,
     fullCooldown: 50,
     stock: 1,
     make(sender, x, y) {
-        allies.push(new SummonBoar(x, y));
+        allies.push(new SummonCannon(x, y, this.duration));
         console.log("noatr")
     },
     show(a) {
@@ -308,10 +308,11 @@ function draw() {
 
     for (let a = 0; a < allies.length; a++) {
 
-        allies[a].process(a);
+        
         allies[a].animate();
         allies[a].show(a);
         allies[a].isGrounded();
+        allies[a].process(a);
 
 
 
@@ -383,7 +384,12 @@ function draw() {
         rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.mhp * 6, 16);
         fill("blue");
         rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.hp * 6, 16);
+        if(player.target.hp<= 0) {
+        player.target = null;
     }
+    }
+    
+    
     drawHud();
 }
 
