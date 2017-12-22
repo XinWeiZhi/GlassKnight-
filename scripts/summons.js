@@ -163,7 +163,7 @@ class SummonCannon extends Summon {
         super(x, y, duration)
         this.speed = 5;
         this.image = cannon;
-        this.damage = 3;
+        this.damage = 1;
         this.hp = 10;
         this.mhp = 10;
         this.width = 180;
@@ -198,13 +198,12 @@ class SummonCannon extends Summon {
 
         if (this.target == null) {
             this.threatenedLevel = 0;
-            console.log("yes")
         } else {
-            strokeWeight(5);
+            strokeWeight(1);
             stroke(200, 30, 10);
             line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
         }
-        if (player.target === null || player.target.position.dist(this.position) > this.attackRange) {
+        if (player.target == null) {
             for (let e = 0; e < enemies.length; e++) {
                 if (this.threatenedLevel < enemies[e].damage * 200 - this.position.dist(enemies[e].position) && this.position.dist(enemies[e].position) <= this.attackRange) {
                     this.target = enemies[e];
@@ -223,8 +222,8 @@ class SummonCannon extends Summon {
         //cannon fire 1 quick attack
         if (pattern === 1) {
             //pause for 5 frames
-            if (frameCount % 5 == 0) {
-                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, 2, 100));
+            if (frameCount % 30 == 0) {
+                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, this.damage, 100, this.target.position));
 
             }
 
@@ -271,7 +270,7 @@ class SummonCannon extends Summon {
         if (this.target != null) {
             //attack etc
             if (this.target.position.dist(this.position) <= this.attackRange) {
-
+                console.log("in attack")
                 this.attack(1, this.target);
             }
             if(this.target.hp <= 0) {
@@ -279,7 +278,6 @@ class SummonCannon extends Summon {
             }
         } else {
             this.getTarget();
-
             if (player.position.dist(this.position) > 240) {
                 this.follow();
             }

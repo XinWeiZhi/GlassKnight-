@@ -767,262 +767,243 @@ class Worm extends Enemy {
 
 }
 
-//class BlackKnight extends Enemy {
-//    constructor(x, y) {
-//        super(x, y);
-//        this.image = blackknight;
-//        this.hp = 60;
-//        this.mhp = 60;
-//        this.width = 200;
-//        this.height = 350;
-//        this.standoff = false;
-//        this.attackRange = 700;
-//        this.hoverY = this.floorY + 300;
-//        this.jumpSpeed = 7;
-//        this.speed = 5;
-//        this.target = player;
-//        this.canSurface = true;
-//        this.surfaceWhenXDistanceIs = 120;
-//        this.attackPattern = 3;
-//        this.maxX;
-//        this.minX;
-//        this.spellDamage = 3;
-//        this.direction = -1;
-//        this.acidBallSpeed = 10;
-//
-//        //if it is this close to the player it will stop repositioning and start going into attack mode
-//        //        this.attackRange = 60; // close range attack emerge
-//        this.aggroRange = 1200;
-//
-//        //perhaps this.hat / this.armor
-//    }
-//
-//    show() {
-//        fill(231, 10, 40);
-//        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
-//        fill(100, 230, 40);
-//        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
-//
-//        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
-//
-//    }
-//    
-//    attack() {
-//        //quick slash can be comboed
-//        this.inAttackFor--;
-//        if(this.target.position.dist(this.position) < 120) {
-//            
-//            this.checkCollision(160,this.height);
-//        }
-//        
-//        if (this.inAttackFor == 0) {
-//            //second slash
-//            if (this.attackPattern == 1) {
-//                if (this.target.position.x > this.position.x) {
-//                    this.direction = 1;
-//                } else {
-//                    this.direction = -1;
-//                }
-//                
-//                
-//                this.attackPattern = 2;
-//                this.inAttackFor = 20;
-//            }
-//        }
-//
-//        if (this.attackPattern == 2) {
-//            if (this.target.position.x > this.position.x) {
-//                this.direction = 1;
-//            } else {
-//                this.direction = -1;
-//            }
-//
-//            if (this.inAttackFor == 0) {
-//                //third slash
-//                if (this.attackPattern == 1) {
-//                if (this.target.position.x > this.position.x) {
-//                    this.direction = 1;
-//                } else {
-//                    this.direction = -1;
-//                }
-//                this.attackPattern = 2;
-//                this.inAttackFor = 20;
-//            }
-//        }
-//
-//        if (this.attackPattern == 3) {
-//            if (this.target.position.x > this.position.x) {
-//                this.direction = 1;
-//            } else {
-//                this.direction = -1;
-//            }
-//
-//            if (this.inAttackFor == 0) {
-//                //stop after 3 slashes
-//
-//                this.attackPattern = 2;
-//                this.inAttackFor = 20;
-//            }
-//        }
-//
-//
-//
-//
-//        //block and reposition spam
-//        if (this.attackPattern == 2) {
-//            //dive
-//            this.jumpSpeed = -14;
-//            this.reposition(0, -this.jumpSpeed);
-//            if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
-//                this.attackPattern = 0;
-//                this.inAttackFor = 0;
-//                this.attackCooldown = 300; // after dive just stop attacking
-//                this.maxX = this.target.position.x + random(500, 800); // values will remain these for a bit
-//                this.minX = this.target.position.x - random(500, 800);
-//            }
-//        }
-//        //charge attack
-//        if (this.attackPattern == 3) {
-//            //surface
-//            //GOING UP AT THIS SPEED
-//            this.jumpSpeed = 14;
-//            if (this.canSurface) { // reposition
-//                if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
-//                    this.canSurface = false;
-//                    this.inAttackFor = 150; // just enough to last for the surfacing 
-//                }
-//            }
-//
-//            if (this.canSurface == false) {
-//                this.reposition(0, -this.jumpSpeed);
-//
-//                this.damage = 5;
-//                this.checkCollision(this.width / 2 + this.target.width / 2, this.height / 2 + this.target.height / 2);
-//                if (this.position.y + this.height / 2 <= this.floorY) {
-//                    this.attackPattern = 1; // acidballs
-//
-//                    this.inAttackFor = 260; // 6 acid balls 4.33 seconds
-//                }
-//            }
-//        }
-//
-//
-//    reposition(x, y) {
-//        this.position.add(createVector(x, y));
-//    }
-//
-//    interactWith(object) {
-//
-//    }
-//
-//    hover() {
-//        this.hoverY = this.floorY + 250;
-//        this.position.y = this.hoverY;
-//
-//        //reposition spamming
-//        if (this.direction === 1) {
-//            if (this.position.x < this.maxX) {
-//                this.reposition(this.speed, 0);
-//            } else {
-//                this.direction = -1;
-//                this.maxX = this.target.position.x + random(600, 900);
-//            }
-//        } else if (this.direction === -1) {
-//            if (this.position.x > this.minX) {
-//                this.reposition(-this.speed, 0);
-//            } else {
-//                this.direction = 1;
-//                this.minX = this.target.position.x - random(600, 900);
-//            }
-//        }
-//    }
-//
-//    process() {
-//
-//
-//        //controls cooldowns only after diving for this guy
-//        if (this.attackCooldown > 0) {
-//            this.attackCooldown--;
-//        }
-//        // in the middle of attacking
-//        if (!this.canAttack && this.inAttackFor > 0) {
-//            this.attack();
-//        } else if (this.inAttackFor === 0) { // after diving or not finding a target at all to surface, then it will reset the ability to attack but not the atk cooldown
-//            this.canAttack = true;
-//            this.canSurface = true;
-//            this.maxX = this.target.position.x + random(600, 900); // values will remain these for a bit
-//            this.minX = this.target.position.x - random(600, 900);
-//        }
-//
-//        //movement
-//        if (this.canAttack) {
-//            this.hover(); // just reposition around
-//            //target cannot change midattack
-//            for (let a = 0; a < allies.length; a++) {
-//                if (allies[a].position.dist(this.position) < this.aggroRange && allies[a].position.dist(this.position) > allies[a].position.dist(this.position)) {
-//
-//                    this.target = allies[a];
-//
-//                }
-//            }
-//
-//
-//            //deciding an attack pattern if safe to do so
-//            if (this.canAttack && this.target.position.dist(this.position) <= this.attackRange && this.attackCooldown === 0 && dist(this.target.position.x, 0, this.position.x, 0) < this.surfaceWhenXDistanceIs) {
-//
-//                this.attackPattern = 3;
-//                this.canSurface = true;
-//                this.inAttackFor = floor(random(150, 200));
-//                this.canAttack = false
-//                this.canStillDamage = true;
-//            }
-//
-//
-//
-//        }
-//    }
-//
-//    //  perhaps also have item interaction            
-//
-//
-//
-//    //takes in 2 parameters, the x which is dist from position of enemy to square side and y which is center to top or bot
-//    checkCollision(x, y) {
-//        if (this.attackPattern == 3) {
-//            for (let a = 0; a < allies.length; a++) {
-//                if (this.position.x + x > allies[a].position.x && this.position.x - x < allies[a].position.x && this.position.y + y > allies[a].position.y && this.position.y - y < allies[a].position.y) {
-//                    if (this.canStillDamage) {
-//                        dealDamage(allies[a], 5);
-//                        this.canStillDamage = false;
-//                    }
-//
-//                }
-//            }
-//        }
-//
-//    }
-//
-//
-//
-//
-//    //solid code
-//    isGrounded() {
-//        //is Submerged
-//        if (this.position.y + this.height / 2 > this.floorY) {
-//            this.grounded = true;
-//            this.canExplode = true;
-//            this.gravityMultiplier = 1;
-//        }
-//
-//
-//        //find this.floorY
-//        for (let i = 0; i < tiles.length; i++) {
-//            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-//                this.floorY = tiles[i].y;
-//                break;
-//            }
-//        }
-//    }
-//
-//
-//}
+//boss 1 
+class BlackKnight extends Enemy {
+    constructor(x, y) {
+        super(x, y);
+        this.name = "Black Knight"
+        this.boss = true;
+        this.image = blackknight;
+        this.hp = 120;
+        this.mhp = 120;
+        this.width = 200;
+        this.height = 350;
+        this.standoff = false;
+        this.attackRange = 700;
+        this.hoverY = this.floorY + 300;
+        this.jumpSpeed = 7;
+        this.speed = 5;
+        this.target = player;
+        this.canSurface = true;
+        this.surfaceWhenXDistanceIs = 120;
+        this.attackPattern = 3;
+        this.maxX;
+        this.minX;
+        this.spellDamage = 3;
+        this.direction = -1;
+        this.acidBallSpeed = 10;
+
+        //if it is this close to the player it will stop repositioning and start going into attack mode
+        //        this.attackRange = 60; // close range attack emerge
+        this.aggroRange = 1200;
+
+        //perhaps this.hat / this.armor
+    }
+
+    show() {
+        fill(231, 10, 40);
+        rect(this.position.x - 80, this.position.y - 120, this.mhp * this.factor, 1 * this.factor);
+        fill(100, 230, 40);
+        rect(this.position.x - 80, this.position.y - 120, this.hp * this.factor, 1 * this.factor);
+
+        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+
+    }
+    
+    attack(pattern,direction) {
+        //quick slash can be comboed
+        this.inAttackFor--;
+        if(this.target.position.dist(this.position) < 120) {
+            
+            this.checkCollision(160,this.height);
+        }
+        
+        if (this.inAttackFor == 0) {
+            //second slash
+            if (this.attackPattern == 1) {
+                if (this.target.position.x > this.position.x) {
+                    this.direction = 1;
+                } else {
+                    this.direction = -1;
+                }
+                
+                
+                this.attackPattern = 2;
+                this.inAttackFor = 20;
+            }
+        }
+
+        if (this.attackPattern == 2) {
+            if (this.target.position.x > this.position.x) {
+                this.direction = 1;
+            } else {
+                this.direction = -1;
+            }
+
+            if (this.inAttackFor == 0) {
+                //third slash
+                if (this.attackPattern == 1) {
+                if (this.target.position.x > this.position.x) {
+                    this.direction = 1;
+                } else {
+                    this.direction = -1;
+                }
+                this.attackPattern = 2;
+                this.inAttackFor = 20;
+            }
+        }
+
+        if (this.attackPattern == 3) {
+            if (this.target.position.x > this.position.x) {
+                this.direction = 1;
+            } else {
+                this.direction = -1;
+            }
+
+            if (this.inAttackFor == 0) {
+                //stop after 3 slashes
+
+                this.attackPattern = 2;
+                this.inAttackFor = 20;
+            }
+        }
+
+
+
+
+        //block and reposition spam
+        if (this.attackPattern == 2) {
+            //dive
+            this.jumpSpeed = -14;
+            this.reposition(0, -this.jumpSpeed);
+            if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
+                this.attackPattern = 0;
+                this.inAttackFor = 0;
+                this.attackCooldown = 300; // after dive just stop attacking
+                this.maxX = this.target.position.x + random(500, 800); // values will remain these for a bit
+                this.minX = this.target.position.x - random(500, 800);
+            }
+        }
+        //charge attack
+        if (this.attackPattern == 3) {
+            //surface
+            //GOING UP AT THIS SPEED
+            this.jumpSpeed = 14;
+            if (this.canSurface) { // reposition
+                if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
+                    this.canSurface = false;
+                    this.inAttackFor = 150; // just enough to last for the surfacing 
+                }
+            }
+
+            if (this.canSurface == false) {
+                this.reposition(0, -this.jumpSpeed);
+
+                this.damage = 5;
+                this.checkCollision(this.width / 2 + this.target.width / 2, this.height / 2 + this.target.height / 2);
+                if (this.position.y + this.height / 2 <= this.floorY) {
+                    this.attackPattern = 1; // acidballs
+
+                    this.inAttackFor = 260; // 6 acid balls 4.33 seconds
+                }
+            }
+        }
+        }
+    }
+
+
+    reposition(x, y) {
+        this.position.add(createVector(x, y));
+    }
+
+    interactWith(object) {
+
+    }
+
+    hover() {
+        this.hoverY = this.floorY + 250;
+        this.position.y = this.hoverY;
+
+        //reposition spamming
+        if (this.direction === 1) {
+            if (this.position.x < this.maxX) {
+                this.reposition(this.speed, 0);
+            } else {
+                this.direction = -1;
+                this.maxX = this.target.position.x + random(600, 900);
+            }
+        } else if (this.direction === -1) {
+            if (this.position.x > this.minX) {
+                this.reposition(-this.speed, 0);
+            } else {
+                this.direction = 1;
+                this.minX = this.target.position.x - random(600, 900);
+            }
+        }
+    }
+
+    process() {
+
+
+        //controls cooldowns only after diving for this guy
+        if (this.attackCooldown > 0) {
+            this.attackCooldown--;
+        }
+        // in the middle of attacking
+        if (!this.canAttack && this.inAttackFor > 0) {
+            this.attack();
+        } else if (this.inAttackFor === 0) { // after diving or not finding a target at all to surface, then it will reset the ability to attack but not the atk cooldown
+            this.canAttack = true;
+            this.canSurface = true;
+            this.maxX = this.target.position.x + random(600, 900); // values will remain these for a bit
+            this.minX = this.target.position.x - random(600, 900);
+        }
+
+        //movement
+        if (this.canAttack) {
+            this.hover(); // just reposition around
+            //target cannot change midattack
+            for (let a = 0; a < allies.length; a++) {
+                if (allies[a].position.dist(this.position) < this.aggroRange && allies[a].position.dist(this.position) > allies[a].position.dist(this.position)) {
+
+                    this.target = allies[a];
+
+                }
+            }
+
+
+            //deciding an attack pattern if safe to do so
+            if (this.canAttack && this.target.position.dist(this.position) <= this.attackRange && this.attackCooldown === 0 && dist(this.target.position.x, 0, this.position.x, 0) < this.surfaceWhenXDistanceIs) {
+
+                this.attackPattern = 3;
+                this.canSurface = true;
+                this.inAttackFor = floor(random(150, 200));
+                this.canAttack = false
+                this.canStillDamage = true;
+            }
+
+
+
+        }
+    }
+    //solid code
+    isGrounded() {
+        //is Submerged
+        if (this.position.y + this.height / 2 > this.floorY) {
+            this.grounded = true;
+            this.canExplode = true;
+            this.gravityMultiplier = 1;
+        }
+
+
+        //find this.floorY
+        for (let i = 0; i < tiles.length; i++) {
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+                this.floorY = tiles[i].y;
+                break;
+            }
+        }
+    }
+
+
+}
