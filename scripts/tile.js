@@ -1,5 +1,6 @@
 class Tile {
     constructor(x, y) {
+        this.position = createVector(x, y);
         this.x = x;
         this.y = y;
         this.width = 1200;
@@ -9,6 +10,22 @@ class Tile {
 
     show() {
         image(this.image, this.x, this.y, this.width, this.height);
+    }
+    
+    collisionChecking() {
+        for(let a = 0; a < allies.length; a++) {
+            if(allies[a].position.y + allies[a].height/2 > this.position.y) {
+                allies[a].position.y = this.position.y - allies[a].width / 2;
+                allies[a].isGrounded = true;
+            }
+        }
+        
+        for(let a = 0; a < allies.length; a++) {
+            if(allies[a].position.y + allies[a].height/2 > this.position.y) {
+                allies[a].position.y = this.position.y - allies[a].width / 2;
+                allies[a].isGrounded = true;
+            }
+        }
     }
 
 }

@@ -236,12 +236,12 @@ class Player {
         this.canAttack = false;
         this.canMove = false;
         let direction;
-
-        if (mouseX + camX >= this.position.x) {
-            this.direction = 1;
-        } else {
-            this.direction = -1;
-        }
+//
+//        if (mouseX + camX >= this.position.x) {
+//            this.direction = 1;
+//        } else {
+//            this.direction = -1;
+//        }
 
         if (keyIsDown(87)) {
             direction = 0;

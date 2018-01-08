@@ -21,6 +21,7 @@ let interfaceButtons = [];
 let summons = [];
 let buffs = [];
 let spellHudWidth = 60;
+let gamestate = 0; // intro ,  
 
 
 let FireballRef = {
@@ -281,6 +282,7 @@ function drawEnemies() {
 }
 
 function draw() {
+    //slow motion counter
     background(30);
     cameraControl();
     stroke(220, 160, 70);
@@ -494,7 +496,9 @@ function drawHud() {
     }
 }
 
-function dealDamage(target, damage, slot) { // , sender
+//planning on just checking for death during their process like this.checkDead(), as it is right now a dot could kill
+
+function dealDamage(target, damage) { // , sender
     damage = floor(damage * target.takenDamageMultiplier);
     target.hp -= damage;
     if (target instanceof Player) {
@@ -508,8 +512,55 @@ function dealDamage(target, damage, slot) { // , sender
 
 }
 
+function damageAlly(target,damage) {
+    damage = floor(damage * target.takenDamageMultiplier);
+    if (target instanceof Player) {
+        messages.push(new RedText(damage, target.position.x, target.position.y));
+        target.hp -= damage;
+        target.tenacity -= damage;
+    } else {
+        messages.push(new RedText(damage, target.position.x, target.position.y));
+        target.hp -= damage;
+    }
+}
+
+function damageEnemy(target,damage) {
+        damage = floor(damage * target.takenDamageMultiplier);
+        messages.push(new BlueText(damage, target.position.x, target.position.y));
+        target.hp -= damage;
+        target.tenacity -= damage;
+}
+
+
 function collisionDetected(target, from, x, y) { //target is enemies[e], from is this.position
     if (from.x - x <= target.position.x + target.width / 2 && from.x + x >= target.position.x - target.width / 2 && from.y - y <= target.position.y + target.height / 2 && from.y + y >= target.position.y - target.height / 2) {
         return true;
     }
+}
+
+function targetEnemy(position, range) {
+    let target;
+    let currentTargetRange = range;
+        for(let e = 0; e < enemies.length; e++ ) {
+            if(position.dist(enemies[e].position) < currentTargetRange) {
+                target = enemies[e];
+                currentTargetRange = position.dist(enemies[e].position);
+                
+            }
+        }
+        return target;
+    
+}
+
+function targetAlly(position, range) {
+    let target;
+    let currentTargetRange = range;
+     for(let a = 0; a < allies[a].length; a++ ) {
+            if(position.dist(allies[a].position) < currentTargetRange) {
+                let target = allies[a];
+                currentTargetRange = position.dist(allies[a].position);
+                
+            }
+        }
+        return target;
 }

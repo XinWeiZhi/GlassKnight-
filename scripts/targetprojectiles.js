@@ -139,7 +139,7 @@ class Beam extends TargetedProjectile {
                 projectiles.splice(i, 1);
             }
         this.movementVector = p5.Vector.sub(this.aim, this.startPosition);
-//        this.movementVector = p5.Vector.mult(this.movementVector.mult, 3);
+        //        this.movementVector = p5.Vector.mult(this.movementVector.mult, 3);
         this.distFrame = this.speed / 10;
 
         for (let d = 0; d <= this.duration; d++) {
@@ -154,6 +154,42 @@ class Beam extends TargetedProjectile {
         }
 
     }
+
+
+}
+
+class CannonArrow extends TargetedProjectile {
+    constructor(x, y, target, width, height, damage, speed, end) {
+        super(x, y, target, width, height, damage, speed, end);
+    }
+
+    show() {
+        fill(20);
+        ellipse(this.position.x - this.width / 2, this.position.y - this.width / 2, this.width, this.height);
+    }
+
+
+
+    //called 60fps
+    move(i) {
+        //move
+
+        //        this.movementVector = p5.Vector.mult(this.movementVector.mult, 3);
+        this.distFrame = this.speed / 60;
+        //todo improve this checking dist
+        if (dist(this.position.x, this.position.y, this.aim.x, this.aim.y) <= 25) {
+            projectiles.splice(i, 1);
+        } else {
+            this.position.x += this.movementVector.x * this.distFrame;
+            this.position.y += this.movementVector.y * this.distFrame;
+            if(targetEnemy(this.position, 40)) {
+                 dealDamage(targetEnemy(this.position, 40), this.damage);
+                projectiles.splice(i, 1);
+            }
+        }
+
+    }
+
 
 
 }

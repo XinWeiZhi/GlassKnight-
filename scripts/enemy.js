@@ -189,6 +189,18 @@ class Enemy {
     }
 
 }
+//REWRITING AI
+class Skeleton extends Enemy {
+    constructor(x,y) {
+        super(x,y);
+    }
+    
+    process() {
+        
+    }
+    
+    
+}
 
 
 class Harpy extends Enemy {

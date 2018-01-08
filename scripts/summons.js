@@ -161,82 +161,37 @@ class SummonBoar extends Summon {
 class SummonCannon extends Summon {
     constructor(x, y, duration) {
         super(x, y, duration)
-        this.speed = 5;
+        this.speed = 6;
         this.image = cannon;
         this.damage = 1;
         this.hp = 10;
         this.mhp = 10;
         this.width = 180;
         this.height = 140;
-        this.changeAggroAt = 1000;
-        this.attackRange = 1000;
+        this.attackRange = 1200;
         this.target;
-        this.threatenedLevel = 0;
-        this.framesSinceAttack = 0;
         this.direction = 1;
         this.canProcess = true;
         this.duration = duration;
         this.currentSpeed = 0;
+
     }
 
-
-    getTarget() {
-        //in aggroRange
-        /* 
-            cannon will operate based on threatLevel;
-            if threatLevel is higher, then cannon will target
-            factors:
-            distance to itself, 
-            who player is attacking,
-        
-            also, enemy will target based on same factors, 
-            distance to itself, 
-            player or summon or npc,
-            if player is nearby and attacking, it will automatically target
-            if player is nearby and not attacking, it will not target over the cannon
-            */
-
-        if (this.target == null) {
-            this.threatenedLevel = 0;
-        } else {
-            strokeWeight(1);
-            stroke(200, 30, 10);
-            line(this.position.x, this.position.y, this.target.position.x, this.target.position.y);
-        }
-        if (player.target == null) {
-            for (let e = 0; e < enemies.length; e++) {
-                if (this.threatenedLevel < enemies[e].damage * 200 - this.position.dist(enemies[e].position) && this.position.dist(enemies[e].position) <= this.attackRange) {
-                    this.target = enemies[e];
-                    this.threatenedLevel = enemies[e].damage * 200 - this.position.dist(enemies[e].position);
-                }
-            }
-        } else if (player.target.position.dist(this.position) <= this.attackRange) {
-            this.target = player.target;
-            this.threatenedLevel = this.target.damage * 200 - this.position.dist(this.target.position);
-        } else {
-            this.target = null;
-        }
-    }
 
     attack(pattern, target) {
+        console.log("attack")
         //cannon fire 1 quick attack
         if (pattern === 1) {
-            //pause for 5 frames
-            if (frameCount % 30 == 0) {
-                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, this.damage, 100, this.target.position));
-
-            }
-
+            //                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, this.damage, 100, this.target.position));
+            projectiles.push(new CannonArrow(this.position.x, this.position.y, this.target, 1, 1, this.damage, 10, this.target.position));
+            this.attackCooldown = 30;
         } else if (pattern === 2) {
-            this.position.x - this.repelDistance * this.direction;
-            projectiles.push(new GrapeShot())
+            this.position.add(-30 * this.direction, 10);
+            //            projectiles.push(new GrapeShot())
+            this.attackCooldown = 30;
         }
-        //cannon fire 2 repel aoe
-        
-    }
 
-    reposition(x, y) {
-        this.position.add(x, y);
+
     }
 
     receiveHit(damage, slot) {
@@ -246,60 +201,57 @@ class SummonCannon extends Summon {
     }
 
     follow() {
-        //100 is follow range
-
         if (player.position.x - 220 <= this.position.x) {
-            this.reposition(-this.speed, 0);
+           
+            if(this.direction != -1) {
+                this.direction = -1;
+                this.currentSpeed = 0;
+            }
+             this.position.add(-this.currentSpeed, 0);
         } else if (player.position.x - 220 > this.position.x) {
-            this.reposition(this.speed, 0);
+            
+            if(this.direction != 1) {
+                this.direction = 1;
+                this.currentSpeed = 0;
+            }
+            this.position.add(this.currentSpeed, 0);
         }
-
-
-
+        if (this.currentSpeed < this.speed) {
+            this.currentSpeed += 0.2;
+        }
     }
 
 
 
     // check for target
     process(i) {
+
+        //usual pattern is follow player unless an enemy enters into the range of 1500 vector x,y, in this case the cannon will switch immediately into attack mode with cannonball arrows
+        //cooldowns
+        this.target = targetEnemy(this.position, this.attackRange);
+        if (this.target != null && this.attackCooldown == 0) {
+            //decide between attack 1 or 2
+            if (this.target.position.dist(this.position) < 70) {
+//                this.attack(2, this.target);
+                this.attack(1, this.target);
+            } else {
+                this.attack(1, this.target);
+            }
+        } else {
+            this.follow();
+            if (this.attackCooldown > 0) {
+                this.attackCooldown--;
+            }
+        }
+
+        //check timer
         this.duration--;
         if (this.duration <= 0) {
             allies.splice(i, 1);
         }
-        //cooldowns
-        if (this.target != null) {
-            //attack etc
-            if (this.target.position.dist(this.position) <= this.attackRange) {
-                console.log("in attack")
-                this.attack(1, this.target);
-            }
-            if(this.target.hp <= 0) {
-                this.target = null;
-            }
-        } else {
-            this.getTarget();
-            if (player.position.dist(this.position) > 240) {
-                this.follow();
-            }
-        }
-
-
 
 
     }
 
 
-
-    //        if (this.attackCooldown <= 0) {
-    //            this.canStillDamage = true;
-    //            this.canAttack = false;
-    //
-    //        } else {
-    //            this.attackCooldown--;
-    //            this.canAttack = true;
-    //        }
-    //
-    //        if (this.canAttack === false) {
-    //            this.attack(1, 3);
-    //        }
 }
