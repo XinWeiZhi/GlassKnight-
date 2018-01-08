@@ -102,7 +102,7 @@ class SummonBoar extends Summon {
             this.reposition(this.speed, 0);
             for (let e = 0; e < enemies.length; e++) {
                 if (collisionDetected(enemies[e], this.position, this.width / 2, this.height / 2)) {
-                    dealDamage(this.target, damage, e);
+                    dealDamage(this.target, damage);
                     this.attackCooldown = 60;
                     this.canStillDamage = false;
                     this.canAttack = false;
@@ -164,8 +164,8 @@ class SummonCannon extends Summon {
         this.speed = 6;
         this.image = cannon;
         this.damage = 1;
-        this.hp = 10;
-        this.mhp = 10;
+        this.hp = 15;
+        this.mhp = 15;
         this.width = 180;
         this.height = 140;
         this.attackRange = 1200;
@@ -183,8 +183,8 @@ class SummonCannon extends Summon {
         //cannon fire 1 quick attack
         if (pattern === 1) {
             //                projectiles.push(new Beam(this.position.x + this.width / 2, this.position.y + this.height / 2, this.target, 1, 1, this.damage, 100, this.target.position));
-            projectiles.push(new CannonArrow(this.position.x, this.position.y, this.target, 1, 1, this.damage, 10, this.target.position));
-            this.attackCooldown = 30;
+            projectiles.push(new CannonArrow(this.position.x, this.position.y, this.target, 20, 20, this.damage, 5, this.target.position));
+            this.attackCooldown = 6;
         } else if (pattern === 2) {
             this.position.add(-30 * this.direction, 10);
             //            projectiles.push(new GrapeShot())

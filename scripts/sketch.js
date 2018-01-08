@@ -5,6 +5,7 @@ let map = 1;
 let tiles = [];
 let projectiles = [];
 let gravity = 0.6;
+let terminalVelocity = 50;
 let numTiles = 0;
 let enemies = [];
 let camX = 0;
@@ -524,11 +525,13 @@ function damageAlly(target,damage) {
     }
 }
 
-function damageEnemy(target,damage) {
+function damageEnemy(target,damage,arrayPosition) {
         damage = floor(damage * target.takenDamageMultiplier);
+        stroke("yellow");
         messages.push(new BlueText(damage, target.position.x, target.position.y));
         target.hp -= damage;
         target.tenacity -= damage;
+        target.receivedHit(arrayPosition);
 }
 
 

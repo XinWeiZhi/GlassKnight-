@@ -1,5 +1,207 @@
 class Enemy {
     constructor(x, y) {
+        this.name;
+        this.position = createVector(x, y);
+        this.originPosition = createVector(x, y); // usually make rounds around there  
+        this.damage;
+        this.attackPattern; //0 will always be standoff stance
+        this.speed;
+        this.currentSpeed;
+        this.width;
+        this.height;
+        this.hp;
+        this.mhp
+        this.grounded;
+        this.jumpSpeed;
+        this.currentJumpSpeed;
+        this.gravityMultiplier = 1;
+        this.floorY;
+        this.image;
+        this.factor = 20; // ??
+        this.canAttack = true;
+        this.attackRange = 400; // should actually vary
+        this.onRange = 3500; // when to start processing
+        this.aggroRange = 1000; // when to start attacking 
+        this.inAttackFor; //max time in stance
+        this.target;
+        this.stamina;
+        this.attackCooldown; // after attacking perhaps chains into another, otherwise assume stance 0 
+        this.takenDamageMultiplier = 1;
+        this.hoverY;
+        this.tenacity = 100;
+    }
+
+    show() {
+        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+    }
+
+    wander() {
+        //move around origin location - 1000 to origin location + 1000
+        if (this.position.x <= this.originPosition.x - 1000) {
+            this.position.add(this.currentSpeed, 0)
+            this.direction = 1;
+        } else if (this.position.x >= this.originPosition.x + 1000) {
+            this.position.add(-this.currentSpeed, 0)
+            this.direction = -1;
+        } else {
+            //make the rounds 
+            this.position.add(this.currentSpeed * this.direction, 0)
+        }
+    }
+
+    attack() {
+        //example for skeleton specifically
+        if (this.attackPattern === 0) { // basic standoff, movement etc 
+            if(this.target.position.x <= this.position.x) {
+                this.direction = -1;
+            } else {
+                this.direction = 1;
+            }
+            //movement
+        } else if (this.attackPattern === 1) {
+
+        } else if (this.attackPattern === 2) {
+
+        } else if (this.attackPattern === 3) {
+
+        }
+
+    }
+
+    process() {
+        if (player.position.dist(this.position) < this.onRange) {
+            this.target = targetAlly(this.position, this.aggroRange); //check if anything in range else the function returns null target, to do include stealth if time
+            if (this.target != null) {
+                //ATTACK!!
+                //select attackPattern
+                if (this.inAttackFor === 0) {
+                    //criteria for different attack patterns
+                    if (this.target.position.dist(this.position) > this.attackRange) {
+                        this.attackPattern = 0; //standoff
+                    } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 0) {
+                        //random choice between charge or slash (1,2)
+                        this.attackPattern = floor(random(1, 3));
+                    } else {
+                        //chain the slash or charge into a jump attack
+                        this.attackPattern = 3;
+                    }
+                } else {
+                    //this is already in an attack and should finish
+                    this.attack();
+                }
+
+            } else {
+                //no target therefore should make rounds
+                this.wander();
+            }
+            //things that will always be in effect
+            this.checkIfGrounded();
+
+        }
+        //
+
+
+
+
+
+
+    }
+    if (this.canAttack == false && this.attackPattern == 0) {
+        //quick stab
+        if (this.inAttackFor > 0) {
+            this.inAttackFor--;
+            //add attack pattern coding here
+            //just a quick stab
+
+        } else {
+            this.checkCollision(120, this.height);
+            this.canAttack = true;
+        }
+    } else if (this.canAttack == false && this.attackPattern == 2) {
+        //medium charged attack jump
+        if (this.inAttackFor > 0) {
+            this.inAttackFor--;
+            //add attack pattern coding here
+            if (this.direction == 1) {
+                this.position.x += 4;
+            } else {
+                this.position.x -= 4;
+            }
+
+            this.jumpSpeed = 15;
+            this.position.y -= this.jumpSpeed;
+
+
+        } else {
+
+            this.checkCollision(100, this.height);
+
+
+            this.canAttack = true;
+        }
+    } else if (this.canAttack == false && this.attackPattern == 1) {
+        //long distance charge
+        if (this.inAttackFor > 0) {
+            this.inAttackFor--;
+            //add attack pattern coding here
+            if (this.direction == 1) {
+                this.position.x += 10;
+            } else {
+                this.position.x -= 10;
+            }
+            this.checkCollision(10);
+        } else {
+            this.canAttack = true;
+        }
+    }
+
+
+
+    //solid code
+    checkIfGrounded() {
+        //relying not on overlapping tiles, todo finding the highest platform not above the object
+        for (let i = 0; i < tiles.length; i++) {
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+                this.floorY = tiles[i].y;
+                break;
+            }
+        }
+        
+        if (this.position.y + this.height / 2 > this.floorY) {
+            this.grounded = true;
+            //therefore 
+            this.currentJumpSpeed = 0;
+            this.gravityMultiplier = 1;
+            this.position.y = this.floorY - this.height/2;
+            
+        } else {
+            this.grounded = false;
+            //therefore
+            this.position.add( = 0, gravity * this.gravityMultiplier);
+            if (this.gravityMultiplier * gravity <= terminalVelocity) {
+                this.gravityMultiplier++;
+            }
+        }
+
+        
+    }
+
+    receivedHit(i) {
+        if (this.hp <= 0) {
+            effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
+            enemies.splice(i, 1);
+
+        }
+
+        //        if(this.tenacity <= 0) {
+        //            this.stagger();
+        //        }
+    }
+
+}
+
+class Enemy {
+    constructor(x, y) {
         this.name = "Skeleton";
         this.position = createVector(x, y);
         this.damage = 1;
@@ -20,22 +222,24 @@ class Enemy {
         this.factor = 20;
         this.canAttack = true;
         this.attackRange = 200;
+        this.detectRange = 1400;
         this.inAttackFor = 0;
         this.target;
         this.hitboxX = 250;
         this.attackCooldown = 0;
         this.takenDamageMultiplier = 1;
         this.hoverY = 800;
-//        this.armor = new Chainmail(this)
-//        this.hp = 10 + this.armor.hp;
-//        this.animationIdle = [];
-//        this.animationRun = [];
-//        this.animationAttack1 = [];
-//        this.animationAttack2 = [];
-//        this.animationAttack3 = [];
-//        this.animationBlock = [];
-//        this.animationIdle = [];
-//        this.currentAnimation = this.animationIdle;
+        this.tenacity = 100;
+        //        this.armor = new Chainmail(this)
+        //        this.hp = 10 + this.armor.hp;
+        //        this.animationIdle = [];
+        //        this.animationRun = [];
+        //        this.animationAttack1 = [];
+        //        this.animationAttack2 = [];
+        //        this.animationAttack3 = [];
+        //        this.animationBlock = [];
+        //        this.animationIdle = [];
+        //        this.currentAnimation = this.animationIdle;
         this.frame = 0;
         //perhaps this.hat / this.armor
     }
@@ -44,7 +248,7 @@ class Enemy {
         this.frame = 0;
         this.currentAnimation = array;
     }
-    
+
     show() {
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
     }
@@ -191,15 +395,15 @@ class Enemy {
 }
 //REWRITING AI
 class Skeleton extends Enemy {
-    constructor(x,y) {
-        super(x,y);
+    constructor(x, y) {
+        super(x, y);
     }
-    
+
     process() {
-        
+
     }
-    
-    
+
+
 }
 
 
@@ -821,15 +1025,15 @@ class BlackKnight extends Enemy {
         image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
 
     }
-    
-    attack(pattern,direction) {
+
+    attack(pattern, direction) {
         //quick slash can be comboed
         this.inAttackFor--;
-        if(this.target.position.dist(this.position) < 120) {
-            
-            this.checkCollision(160,this.height);
+        if (this.target.position.dist(this.position) < 120) {
+
+            this.checkCollision(160, this.height);
         }
-        
+
         if (this.inAttackFor == 0) {
             //second slash
             if (this.attackPattern == 1) {
@@ -838,8 +1042,8 @@ class BlackKnight extends Enemy {
                 } else {
                     this.direction = -1;
                 }
-                
-                
+
+
                 this.attackPattern = 2;
                 this.inAttackFor = 20;
             }
@@ -855,71 +1059,71 @@ class BlackKnight extends Enemy {
             if (this.inAttackFor == 0) {
                 //third slash
                 if (this.attackPattern == 1) {
+                    if (this.target.position.x > this.position.x) {
+                        this.direction = 1;
+                    } else {
+                        this.direction = -1;
+                    }
+                    this.attackPattern = 2;
+                    this.inAttackFor = 20;
+                }
+            }
+
+            if (this.attackPattern == 3) {
                 if (this.target.position.x > this.position.x) {
                     this.direction = 1;
                 } else {
                     this.direction = -1;
                 }
-                this.attackPattern = 2;
-                this.inAttackFor = 20;
-            }
-        }
 
-        if (this.attackPattern == 3) {
-            if (this.target.position.x > this.position.x) {
-                this.direction = 1;
-            } else {
-                this.direction = -1;
-            }
+                if (this.inAttackFor == 0) {
+                    //stop after 3 slashes
 
-            if (this.inAttackFor == 0) {
-                //stop after 3 slashes
-
-                this.attackPattern = 2;
-                this.inAttackFor = 20;
-            }
-        }
-
-
-
-
-        //block and reposition spam
-        if (this.attackPattern == 2) {
-            //dive
-            this.jumpSpeed = -14;
-            this.reposition(0, -this.jumpSpeed);
-            if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
-                this.attackPattern = 0;
-                this.inAttackFor = 0;
-                this.attackCooldown = 300; // after dive just stop attacking
-                this.maxX = this.target.position.x + random(500, 800); // values will remain these for a bit
-                this.minX = this.target.position.x - random(500, 800);
-            }
-        }
-        //charge attack
-        if (this.attackPattern == 3) {
-            //surface
-            //GOING UP AT THIS SPEED
-            this.jumpSpeed = 14;
-            if (this.canSurface) { // reposition
-                if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
-                    this.canSurface = false;
-                    this.inAttackFor = 150; // just enough to last for the surfacing 
+                    this.attackPattern = 2;
+                    this.inAttackFor = 20;
                 }
             }
 
-            if (this.canSurface == false) {
+
+
+
+            //block and reposition spam
+            if (this.attackPattern == 2) {
+                //dive
+                this.jumpSpeed = -14;
                 this.reposition(0, -this.jumpSpeed);
-
-                this.damage = 5;
-                this.checkCollision(this.width / 2 + this.target.width / 2, this.height / 2 + this.target.height / 2);
-                if (this.position.y + this.height / 2 <= this.floorY) {
-                    this.attackPattern = 1; // acidballs
-
-                    this.inAttackFor = 260; // 6 acid balls 4.33 seconds
+                if (this.inAttackFor === 0 || this.position.y > this.floorY + 250) {
+                    this.attackPattern = 0;
+                    this.inAttackFor = 0;
+                    this.attackCooldown = 300; // after dive just stop attacking
+                    this.maxX = this.target.position.x + random(500, 800); // values will remain these for a bit
+                    this.minX = this.target.position.x - random(500, 800);
                 }
             }
-        }
+            //charge attack
+            if (this.attackPattern == 3) {
+                //surface
+                //GOING UP AT THIS SPEED
+                this.jumpSpeed = 14;
+                if (this.canSurface) { // reposition
+                    if (dist(this.position.x, 0, this.target.position.x, 0) <= this.surfaceWhenXDistanceIs) {
+                        this.canSurface = false;
+                        this.inAttackFor = 150; // just enough to last for the surfacing 
+                    }
+                }
+
+                if (this.canSurface == false) {
+                    this.reposition(0, -this.jumpSpeed);
+
+                    this.damage = 5;
+                    this.checkCollision(this.width / 2 + this.target.width / 2, this.height / 2 + this.target.height / 2);
+                    if (this.position.y + this.height / 2 <= this.floorY) {
+                        this.attackPattern = 1; // acidballs
+
+                        this.inAttackFor = 260; // 6 acid balls 4.33 seconds
+                    }
+                }
+            }
         }
     }
 

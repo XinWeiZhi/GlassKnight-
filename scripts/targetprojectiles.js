@@ -146,7 +146,7 @@ class Beam extends TargetedProjectile {
             this.position.add(this.movementVector * this.distFrame);
             for (let e = 0; e < enemies.length; e++) {
                 if (collisionDetected(enemies[e], this.position, enemies[e].width / 2, enemies[e].height / 2)) {
-                    dealDamage(enemies[e], this.damage, e);
+                    damageEnemy(enemies[e], this.damage,e);
                     projectiles.splice(i, 1);
                 }
 
@@ -164,7 +164,7 @@ class CannonArrow extends TargetedProjectile {
     }
 
     show() {
-        fill(20);
+        fill(255);
         ellipse(this.position.x - this.width / 2, this.position.y - this.width / 2, this.width, this.height);
     }
 
@@ -182,9 +182,11 @@ class CannonArrow extends TargetedProjectile {
         } else {
             this.position.x += this.movementVector.x * this.distFrame;
             this.position.y += this.movementVector.y * this.distFrame;
-            if(targetEnemy(this.position, 40)) {
-                 dealDamage(targetEnemy(this.position, 40), this.damage);
+            for(let e = 0; e < enemies.length; e++) {
+                if(collisionDetected(enemies[e], this.position, this.width / 2, this.height / 2)) {
+                    damageEnemy(enemies[e], this.damage, e);
                 projectiles.splice(i, 1);
+                   }
             }
         }
 

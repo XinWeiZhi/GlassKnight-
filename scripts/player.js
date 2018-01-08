@@ -211,7 +211,7 @@ class Player {
             if (!this.canAttack && this.canSpell) { // so only if its a physical attack not a spell check collision
                 for (let e = 0; e < enemies.length; e++) {
                     if (collisionDetected(enemies[e], this.position, this.hitboxX, this.hitboxY)) {
-                        dealDamage(enemies[e], this.damage, e);
+                        damageEnemy(enemies[e], this.damage, e);
                         this.framesSinceAttack = 0;
                         for(let a = 0; a < allies.length; a++) {
                             allies[a].target = enemies[e];
