@@ -39,7 +39,7 @@ class Player {
 
         //stats
 
-        this.characterHp = 20;
+        this.characterHp = 25;
         this.mhp = this.characterHp + this.armor.hp;
         this.hp = this.mhp;
         this.manaRegeneration = 0;

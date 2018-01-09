@@ -195,15 +195,15 @@ function drawMap() {
         tiles = [];
         interactables = [];
         numTiles = 6
-        enemies.push(new Enemy(800, 0));
-        enemies.push(new Enemy(900, 0));
-        enemies.push(new Enemy(700, 0));
-        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Skeleton(800, 0));
+        enemies.push(new Skeleton(900, 0));
+//        enemies.push(new Enemy(700, 0));
+//        enemies.push(new Enemy(1000, 0));
         //        enemies.push(new Harpy(1200, 0));
         //        enemies.push(new Harpy(1100, 0));
         //        enemies.push(new GraveMaster(300, 30));
-        enemies.push(new Worm(300, 800));
-                enemies.push(new BlackKnight(300, 800));
+//        enemies.push(new Worm(300, 800));
+//                enemies.push(new BlackKnight(300, 800));
         //        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
@@ -291,10 +291,8 @@ function draw() {
         tiles[t].show();
     }
     for (let e = 0; e < enemies.length; e++) {
-        enemies[e].show(e);
-        enemies[e].process();
-        enemies[e].isGrounded();
-
+        enemies[e].show();
+        enemies[e].process(e);
     }
 
     for (let ability = 0; ability < player.spellSelect.length; ability++) {
@@ -519,6 +517,7 @@ function damageAlly(target,damage) {
         messages.push(new RedText(damage, target.position.x, target.position.y));
         target.hp -= damage;
         target.tenacity -= damage;
+//        target.receivedHit(damage)
     } else {
         messages.push(new RedText(damage, target.position.x, target.position.y));
         target.hp -= damage;
@@ -558,9 +557,10 @@ function targetEnemy(position, range) {
 function targetAlly(position, range) {
     let target;
     let currentTargetRange = range;
-     for(let a = 0; a < allies[a].length; a++ ) {
-            if(position.dist(allies[a].position) < currentTargetRange) {
-                let target = allies[a];
+     for(let a = 0; a < allies.length; a++ ) {
+         
+            if(position.dist(allies[a].position) < currentTargetRange ) {
+                target = allies[a];
                 currentTargetRange = position.dist(allies[a].position);
                 
             }
