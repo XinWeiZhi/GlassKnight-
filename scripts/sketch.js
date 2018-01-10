@@ -362,22 +362,22 @@ function draw() {
     //draw hud
     noStroke();
     //health
-    fill("gray")
-    rect(camX + 190, camY + 50, player.mhp * 20, 20);
-    fill("red")
-    rect(camX + 190, camY + 50, player.hp * 20, 20);
+    fill("gray");
+    rect(camX + 190, camY + 50, player.mhp * 10, 20);
+    fill("red");
+    rect(camX + 190, camY + 50, player.hp * 10, 20);
     //mana
-    fill("white")
+    fill("white");
     rect(camX + 160, camY + 100, player.mMana, 20);
-    fill("blue")
+    fill("blue");
     rect(camX + 160, camY + 100, player.mana, 20);
     //picture
-    fill(30, 50, 30, 80)
-    ellipse(camX + 160, camY + 60, 120, 120)
+    fill(30, 50, 30, 80);
+    ellipse(camX + 160, camY + 60, 120, 120);
     //exp bar
-    fill("gray")
+    fill("gray");
     rect(camX + 160, camY + 120, (player.characterTenacity + player.armor.tenacity) * 10, 20);
-    fill("green")
+    fill("green");
     rect(camX + 160, camY + 120, player.tenacity * 10, 20);
 
     if (player.target != null) {

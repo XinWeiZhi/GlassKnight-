@@ -252,6 +252,10 @@ class SummonCannon extends Summon {
 
 
     }
+    
+    knockBack() {
+        
+    }
 
 
 }

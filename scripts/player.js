@@ -67,7 +67,7 @@ class Player {
         this.experience = 0; // remove these in the future
         this.experienceToLevel = 30;
         this.level = 1;
-        
+
         this.jumpSpeed = 10; //based on char
 
         //calculation stats
@@ -75,7 +75,7 @@ class Player {
         this.realSpeed = 0;
         this.movementAccelerator = 2;
         this.floorY = 800;
-//        this.jumpCoolDown = 30;
+        //        this.jumpCoolDown = 30;
         this.direction = 1;
         this.damageMultiplier = 1;
         this.takenDamageMultiplier = 1;
@@ -183,10 +183,10 @@ class Player {
 
     }
     jump() {
-            this.jumps--;
-            this.currentJumpSpeed = this.jumpSpeed;
-            this.gravityMultiplier = 1;
-            this.stillGoingUp = true;
+        this.jumps--;
+        this.currentJumpSpeed = this.jumpSpeed;
+        this.gravityMultiplier = 1;
+        this.stillGoingUp = true;
 
     }
 
@@ -213,7 +213,7 @@ class Player {
                     if (collisionDetected(enemies[e], this.position, this.hitboxX, this.hitboxY)) {
                         damageEnemy(enemies[e], this.damage, e);
                         this.framesSinceAttack = 0;
-                        for(let a = 0; a < allies.length; a++) {
+                        for (let a = 0; a < allies.length; a++) {
                             allies[a].target = enemies[e];
                         }
                     }
@@ -236,12 +236,12 @@ class Player {
         this.canAttack = false;
         this.canMove = false;
         let direction;
-//
-//        if (mouseX + camX >= this.position.x) {
-//            this.direction = 1;
-//        } else {
-//            this.direction = -1;
-//        }
+        //
+        //        if (mouseX + camX >= this.position.x) {
+        //            this.direction = 1;
+        //        } else {
+        //            this.direction = -1;
+        //        }
 
         if (keyIsDown(87)) {
             direction = 0;
@@ -269,10 +269,10 @@ class Player {
 
         }
 
-        
+
         if (this.comboAttack == 3) {
             this.comboAttack = 0;
-        } else if(this.framesSinceAttack < 6) {
+        } else if (this.framesSinceAttack < 6) {
             this.comboAttack++;
         } else {
             this.comboAttack = 0;
@@ -352,7 +352,7 @@ class Player {
         if (this.spellSelect[3].cooldown >= 0) {
             this.spellSelect[3].cooldown--;
         }
-        
+
         if (this.itemSelect[0].cooldown >= 0) {
             this.itemSelect[0].cooldown--;
         }
@@ -383,13 +383,13 @@ class Player {
         if (this.hpRegeneration != 0) {
             this.hp += this.hpRegeneration;
         }
-
+        
 
         if (this.canProcess) {
-
+      
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
-                if(keyIsDown(32) && this.stillGoingUp) {
+                if (keyIsDown(32) && this.stillGoingUp) {
                     this.reposition(0, -this.jumpSpeed * 0.75)
                 } else {
                     this.stillGoingUp = false;
@@ -479,8 +479,8 @@ class Player {
 
 
     isGrounded() {
-        
-        if(!this.grounded) {
+
+        if (!this.grounded) {
             this.position.y += gravity * this.gravityMultiplier;
             this.gravityMultiplier++;
         }
@@ -520,6 +520,13 @@ class Player {
             }
         }
 
+
+    }
+
+    knockBack(i, direction) {
+            if (i === 1) {
+                player.position.x -= direction * -1 + 10
+            }
 
     }
 
