@@ -197,13 +197,13 @@ function drawMap() {
         numTiles = 6
         enemies.push(new Skeleton(800, 0));
         enemies.push(new Skeleton(900, 0));
-//        enemies.push(new Enemy(700, 0));
-//        enemies.push(new Enemy(1000, 0));
-        //        enemies.push(new Harpy(1200, 0));
-        //        enemies.push(new Harpy(1100, 0));
-        //        enemies.push(new GraveMaster(300, 30));
-//        enemies.push(new Worm(300, 800));
-//                enemies.push(new BlackKnight(300, 800));
+        //        enemies.push(new Enemy(700, 0));
+        //        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Harpy(1200, 0));
+        enemies.push(new Harpy(1100, 0));
+        enemies.push(new GraveMaster(600, 0));
+        //        enemies.push(new Worm(300, 800));
+        //                enemies.push(new BlackKnight(300, 800));
         //        allies.push(new Jim(300,400));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
@@ -309,7 +309,7 @@ function draw() {
 
     for (let a = 0; a < allies.length; a++) {
 
-        
+
         allies[a].animate();
         allies[a].show(a);
         allies[a].isGrounded();
@@ -381,16 +381,20 @@ function draw() {
     rect(camX + 160, camY + 120, player.tenacity * 10, 20);
 
     if (player.target != null) {
-        fill("gray");
-        rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.mhp * 6, 16);
-        fill("blue");
-        rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.hp * 6, 16);
-        if(player.target.hp<= 0) {
-        player.target = null;
+        if (!player.target.boss) {
+
+
+            fill("gray");
+            rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.mhp * 6, 16);
+            fill("blue");
+            rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.hp * 6, 16);
+            if (player.target.hp <= 0) {
+                player.target = null;
+            }
+        }
     }
-    }
-    
-    
+
+
     drawHud();
 }
 
@@ -511,26 +515,26 @@ function dealDamage(target, damage) { // , sender
 
 }
 
-function damageAlly(target,damage) {
+function damageAlly(target, damage) {
     damage = floor(damage * target.takenDamageMultiplier);
     if (target instanceof Player) {
         messages.push(new RedText(damage, target.position.x, target.position.y));
         target.hp -= damage;
         target.tenacity -= damage;
-//        target.receivedHit(damage)
+        //        target.receivedHit(damage)
     } else {
         messages.push(new RedText(damage, target.position.x, target.position.y));
         target.hp -= damage;
     }
 }
 
-function damageEnemy(target,damage,arrayPosition) {
-        damage = floor(damage * target.takenDamageMultiplier);
-        stroke("yellow");
-        messages.push(new BlueText(damage, target.position.x, target.position.y));
-        target.hp -= damage;
-        target.tenacity -= damage;
-        target.receivedHit(arrayPosition);
+function damageEnemy(target, damage, arrayPosition) {
+    damage = floor(damage * target.takenDamageMultiplier);
+    stroke("yellow");
+    messages.push(new BlueText(damage, target.position.x, target.position.y));
+    target.hp -= damage;
+    target.tenacity -= damage;
+    target.receivedHit(arrayPosition);
 }
 
 
@@ -543,27 +547,27 @@ function collisionDetected(target, from, x, y) { //target is enemies[e], from is
 function targetEnemy(position, range) {
     let target;
     let currentTargetRange = range;
-        for(let e = 0; e < enemies.length; e++ ) {
-            if(position.dist(enemies[e].position) < currentTargetRange) {
-                target = enemies[e];
-                currentTargetRange = position.dist(enemies[e].position);
-                
-            }
+    for (let e = 0; e < enemies.length; e++) {
+        if (position.dist(enemies[e].position) < currentTargetRange) {
+            target = enemies[e];
+            currentTargetRange = position.dist(enemies[e].position);
+
         }
-        return target;
-    
+    }
+    return target;
+
 }
 
 function targetAlly(position, range) {
     let target;
     let currentTargetRange = range;
-     for(let a = 0; a < allies.length; a++ ) {
-         
-            if(position.dist(allies[a].position) < currentTargetRange ) {
-                target = allies[a];
-                currentTargetRange = position.dist(allies[a].position);
-                
-            }
+    for (let a = 0; a < allies.length; a++) {
+
+        if (position.dist(allies[a].position) < currentTargetRange) {
+            target = allies[a];
+            currentTargetRange = position.dist(allies[a].position);
+
         }
-        return target;
+    }
+    return target;
 }

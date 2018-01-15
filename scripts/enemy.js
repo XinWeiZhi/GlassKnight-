@@ -30,6 +30,7 @@ class Enemy {
         this.hoverY;
         this.tenacity = 100;
         this.standoff = 1;
+        this.boss = false;
     }
 
     show() {
@@ -181,200 +182,6 @@ class Enemy {
 
 }
 
-//class Enemy {
-//    constructor(x, y) {
-//        this.name = "Skeleton";
-//        this.position = createVector(x, y);
-//        this.damage = 1;
-//        this.attackPattern;
-//        this.speed = 3;
-//        this.width = 100;
-//        this.height = 180;
-//        this.hp = 10;
-//        this.mhp = 10;
-//        this.canJump = true;
-//        this.grounded = true;
-//        this.jumpSpeed = 0;
-//        this.terminal = 80;
-//        this.gravityMultiplier = 1;
-//        this.feetY = this.height + this.height;
-//        this.floorY = 800;
-//        this.image = skeleton;
-//        this.factor = 20;
-//        this.canAttack = true;
-//        this.attackRange = 200;
-//        this.detectRange = 1400;
-//        this.inAttackFor = 0;
-//        this.target;
-//        this.hitboxX = 250;
-//        this.attackCooldown = 0;
-//        this.takenDamageMultiplier = 1;
-//        this.hoverY = 800;
-//        this.tenacity = 100;
-//        //        this.armor = new Chainmail(this)
-//        //        this.hp = 10 + this.armor.hp;
-//        //        this.animationIdle = [];
-//        //        this.animationRun = [];
-//        //        this.animationAttack1 = [];
-//        //        this.animationAttack2 = [];
-//        //        this.animationAttack3 = [];
-//        //        this.animationBlock = [];
-//        //        this.animationIdle = [];
-//        //        this.currentAnimation = this.animationIdle;
-//        this.frame = 0;
-//        //perhaps this.hat / this.armor
-//    }
-//
-//    changeAnimationTo(array) {
-//        this.frame = 0;
-//        this.currentAnimation = array;
-//    }
-//
-//    show() {
-//        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
-//    }
-//
-//    process() {
-//
-//        if (this.attackCooldown > 0) {
-//            this.attackCooldown--;
-//        }
-//
-//        if (this.grounded == false) {
-//            this.position.y += gravity * this.gravityMultiplier;
-//            if (this.gravityMultiplier <= this.terminal) {
-//                this.gravityMultiplier++;
-//            }
-//        }
-//
-//        //if using a spell or item or weapon, this.canAttack will become false
-//        if (this.canAttack) {
-//            if (player.position.x < this.position.x) {
-//                this.position.x -= this.speed;
-//                this.direction = -1;
-//            }
-//            if (player.position.x > this.position.x) {
-//                this.position.x += this.speed;
-//                this.direction = 1;
-//            }
-//
-//            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
-//                this.canAttack = false;
-//
-//                this.attackPattern = floor(random(0, 3)); //0,1,2,3 - 4 patterns
-//
-//                this.inAttackFor = (this.attackPattern + 1) * 20;
-//                this.attackCooldown += (this.attackPattern + 1) * 80;
-//            }
-//
-//
-//        }
-//        if (this.canAttack == false && this.attackPattern == 0) {
-//            //quick stab
-//            if (this.inAttackFor > 0) {
-//                this.inAttackFor--;
-//                //add attack pattern coding here
-//                //just a quick stab
-//
-//            } else {
-//                this.checkCollision(120, this.height);
-//                this.canAttack = true;
-//            }
-//        } else if (this.canAttack == false && this.attackPattern == 2) {
-//            //medium charged attack jump
-//            if (this.inAttackFor > 0) {
-//                this.inAttackFor--;
-//                //add attack pattern coding here
-//                if (this.direction == 1) {
-//                    this.position.x += 4;
-//                } else {
-//                    this.position.x -= 4;
-//                }
-//
-//                this.jumpSpeed = 15;
-//                this.position.y -= this.jumpSpeed;
-//
-//
-//            } else {
-//
-//                this.checkCollision(100, this.height);
-//
-//
-//                this.canAttack = true;
-//            }
-//        } else if (this.canAttack == false && this.attackPattern == 1) {
-//            //long distance charge
-//            if (this.inAttackFor > 0) {
-//                this.inAttackFor--;
-//                //add attack pattern coding here
-//                if (this.direction == 1) {
-//                    this.position.x += 10;
-//                } else {
-//                    this.position.x -= 10;
-//                }
-//                this.checkCollision(10);
-//            } else {
-//                this.canAttack = true;
-//            }
-//        }
-//    }
-//
-//
-//
-//    checkCollision(hitboxx, hitboxy) {
-//        this.hitboxX = hitboxx;
-//        this.hitboxY = hitboxy;
-//        this.target = player;
-//        if (this.direction == -1) {
-//            if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
-//                dealDamage(player, this.damage, 0)
-//                this.inAttackFor = 0;
-//
-//            }
-//        } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
-//            dealDamage(player, this.damage, 0)
-//            this.inAttackFor = 0;
-//        }
-//
-//    }
-//
-//
-//
-//
-//    //solid code
-//    isGrounded() {
-//        this.feetY = this.position.y + this.height / 2;
-//        if (this.floorY <= this.feetY) {
-//            this.grounded = true;
-//            this.canJump = true;
-//            this.gravityMultiplier = 1;
-//            this.jumpSpeed = 0;
-//            this.position.y = this.floorY - this.height / 2;
-//        } else {
-//            this.grounded = false;
-//        }
-//        //and if this is true, then ur feetY will equal the floorY
-//
-//        //find this.floorY
-//        for (let i = 0; i < tiles.length; i++) {
-//            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-//                this.floorY = tiles[i].y;
-//
-//                break;
-//            }
-//        }
-//    }
-//
-//    receivedHit(i) {
-//        if (this.hp <= 0) {
-//            effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
-//            enemies.splice(i, 1);
-//
-//        }
-//    }
-//
-//}
-//REWRITING AI
 class Skeleton extends Enemy {
     constructor(x, y) {
         super(x, y);
@@ -583,193 +390,6 @@ class Skeleton extends Enemy {
 
 }
 
-
-//class Harpy extends Enemy {
-//    constructor(x, y) {
-//        super(x, y);
-//        this.image = bird;
-//        this.height = 100;
-//        this.width = 180;
-//        this.speed = 1;
-//        this.grounded = false;
-//        this.isHovering = true;
-//        this.hoverY;
-//        this.speed = 4;
-//        this.terminal = 80;
-//        this.canStillDamage = true;
-//        this.hp = 30;
-//        this.spellDamage = 1;
-//        this.shockWaveSpeed = 3;
-//        //perhaps this.hat / this.armor
-//    }
-//
-//    process() {
-//        if (this.canAttack == true) {
-//            this.reposition();
-//        }
-//
-//
-//        if (this.attackCooldown > 0) {
-//            this.attackCooldown--;
-//        }
-//        if (this.hoverY < this.position.y) {
-//            if (this.gravityMultiplier <= this.terminal) {
-//                this.gravityMultiplier++;
-//            }
-//
-//            this.position.y -= gravity * this.gravityMultiplier;
-//        } else if (this.position.y <= this.hoverY) {
-//
-//            this.isHovering = true;
-//            this.gravityMultiplier = 1;
-//        }
-//
-//
-//
-//        //if using a spell or item or weapon, this.canAttack will become false
-//        if (this.canAttack) {
-//            if (player.position.x < this.position.x) {
-//                this.position.x -= this.speed;
-//                this.direction = -1;
-//            }
-//            if (player.position.x > this.position.x) {
-//                this.position.x += this.speed;
-//                this.direction = 1;
-//            }
-//
-//            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0 && this.isHovering) {
-//                this.canAttack = false;
-//
-//                this.attackPattern = floor(random(0, 2)); //0,1,2,3 - 4 patterns
-//                this.canStillDamage = true;
-//                this.jumpSpeed = 0;
-//                this.gravityMultiplier = 1;
-//
-//                if (this.attackPattern == 1) {
-//                    this.inAttackFor = 100;
-//                    this.attackCooldown = 500;
-//                } else {
-//                    this.inAttackFor = 30;
-//                    this.attackCooldown = 100;
-//                }
-//
-//
-//            }
-//
-//
-//        }
-//        if (this.canAttack == false && this.attackPattern == 0) {
-//            //hyper beam
-//            if (this.inAttackFor > 0) {
-//                this.inAttackFor--;
-//                if (this.inAttackFor % 5 == 0) {
-//                    projectiles.push(new ShockWave(this.position.x, this.position.y, player, 110, 15, this.spellDamage, this.shockWaveSpeed, 55, 7.5));
-//                }
-//
-//            } else {
-//                this.checkCollision(120, this.height);
-//                this.canAttack = true;
-//            }
-//        } else if (this.canAttack == false && this.attackPattern == 1) {
-//            //medium charged attack dive
-//            if (this.isHovering == false || this.inAttackFor > 0) {
-//                this.inAttackFor--;
-//                this.isHovering = false; // remove this line if u know how to program
-//                if (this.isHovering) {
-//                    this.inAttackFor = 0;
-//                    this.canAttack = true;
-//                    this.attackCooldown = 200;
-//                }
-//
-//                //add attack pattern coding here
-//                if (this.direction == 1) {
-//                    this.position.x += 8;
-//                } else {
-//                    this.position.x -= 8;
-//                }
-//
-//
-//                this.jumpSpeed = 25;
-//                this.position.y += this.jumpSpeed;
-//
-//                if (this.canStillDamage) {
-//                    this.checkCollision(100, this.height);
-//                }
-//
-//
-//            } else {
-//                this.canAttack = true;
-//            }
-//        }
-//    }
-//
-//
-//
-//    checkCollision(hitboxx, hitboxy) {
-//        this.hitboxX = hitboxx;
-//        this.hitboxY = hitboxy;
-//        this.target = player;
-//
-//        if (this.attackPattern == 1) {
-//            if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 130) {
-//                console.log("diveatk")
-//                this.damage = 1;
-//                dealDamage(player, this.damage);
-//                this.canStillDamage = false;
-//
-//
-//
-//            }
-//        } else {
-//            //hyper beam attack shoots line at player
-//            if (this.direction == -1) {
-//                if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
-//
-//                    this.target.hp -= this.damage;
-//                    this.target.receivedHit();
-//                }
-//            } else if (this.direction == 1) {
-//                if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
-//
-//                    this.target.hp -= this.damage;
-//                    this.target.receivedHit();
-//
-//                }
-//            }
-//        }
-//
-//
-//
-//    }
-//
-//    reposition() {
-//        if (player.canAttack && dist(player.position.x, player.position.y, this.position.x, this.position.y) <= 320) {
-//            if (player.position.x > this.position.x) {
-//                this.position.x -= 5;
-//            } else {
-//                this.position.x += 5;
-//            }
-//
-//        }
-//    }
-//
-//
-//
-//
-//    //solid code
-//    isGrounded() {
-//        this.hoverY = this.floorY - 600;
-//        //find this.floorY
-//        for (let i = 0; i < tiles.length; i++) {
-//            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-//                this.floorY = tiles[i].y;
-//                break;
-//            }
-//        }
-//    }
-//
-//}
-
 class Harpy extends Enemy {
     constructor(x, y) {
         super(x, y)
@@ -783,13 +403,13 @@ class Harpy extends Enemy {
         this.hp = 25;
         this.mhp = 25;
         this.grounded = false;
-        this.jumpSpeed = 25;
+        this.jumpSpeed = 20;
         this.currentJumpSpeed = 0;
         this.gravityMultiplier = 1;
         this.floorY;
         this.image = bird;
         this.factor = 20; // ??
-        this.attackRange = 700; // should actually vary
+        this.attackRange = 900; // should actually vary
         this.onRange = 3500; // when to start processing
         this.aggroRange = 1300; // when to start attacking 
         this.inAttackFor = 0; //max time in stance
@@ -797,7 +417,7 @@ class Harpy extends Enemy {
         this.stamina;
         this.attackCooldown; // after attacking perhaps chains into another, otherwise assume stance 0 
         this.takenDamageMultiplier = 1;
-        this.hoverY;
+        this.hoverY = -800;
         this.tenacity = 100;
         this.standoff = 1;
         this.direction = 1;
@@ -830,17 +450,230 @@ class Harpy extends Enemy {
                 this.direction = 1;
             }
 
-            this.position.add(this.speed / 5 * this.standoff, 0);
+            this.position.add(this.speed + this.direction * 3 * this.standoff, 0);
             //movement
 
         } else if (this.attackPattern === 1) {
             //shockwaves
             if (this.inAttackFor % 5 == 0) {
-                projectiles.push(new ShockWave());
+                projectiles.push(new ShockWave(this.position.x, this.position.y, this.target, 110, 15, 1, 2.5, 55, 7.5));
             }
         } else if (this.attackPattern === 2) {
             //claw attack, aim at a vector and stab
-            this.position.add(this.movementVector);
+            if (this.inAttackFor > 30) {
+                this.position.x += this.speed / 60 * this.movementVector.x * 0.75;
+                this.position.y += this.speed / 60 * this.movementVector.y * 0.75;
+                for (let a = 0; a < allies.length; a++) {
+                    if (collisionDetected(allies[a], this.position, this.width / 2, this.height / 2) && this.inAttackFor % 6 == 0) {
+                        damageAlly(allies[a], 1);
+                        allies[a].knockBack(1, this.direction);
+
+                    }
+                }
+            } else {
+                this.position.x -= this.speed / 60 * this.movementVector.x * 0.75;
+                this.position.y -= this.speed / 60 * this.movementVector.y * 0.75;
+            }
+
+
+        } else if (this.attackPattern === 3) { //todo fix this ai
+            //dive
+            this.position.add(this.speed / 2 * this.direction, this.currentJumpSpeed);
+            if (this.position.y > this.hoverY) {
+                this.inAttackFor++;
+            }
+            
+            for (let a = 0; a < allies.length; a++) {
+                    if (collisionDetected(allies[a], this.position, this.width / 2, this.height / 2)) {
+                        damageAlly(allies[a], 0.2);
+                        
+                    }
+                }
+        }
+
+        this.inAttackFor--;
+
+    }
+
+    process(e) {
+        console.log(this.grounded);
+        if (player.position.dist(this.position) < this.onRange) {
+            this.target = targetAlly(this.position, this.aggroRange); //check if anything in range else the function returns null target, to do include stealth if time
+            //things that will always be in effect
+                      this.checkIfGrounded();
+      
+            if (this.hp <= 0) {
+                enemies.splice(i, 1);
+            }
+            if (this.target != null) {
+                //ATTACK!!
+                //select attackPattern
+                if (this.inAttackFor === 0) {
+                    if (this.target.position.x < this.position.x) {
+                        this.direction = -1;
+                    } else {
+                        this.direction = 1;
+                    }
+                    //criteria for different attack patterns
+                    if (this.target.position.dist(this.position) > this.attackRange) {
+                        this.attackPattern = 0; //standoff
+                        this.inAttackFor = floor(random(40, 60));
+                        this.standoff = this.standoff * -1;
+                    } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 0) {
+                        //shockwaves
+                        this.attackPattern = 1;
+                        this.inAttackFor = floor(random(50, 80));
+
+                    } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 1) {
+                        //chain the shockwaves into a dive attack of some sort
+                        this.attackPattern = floor(random(2, 3));
+                        if (this.attackPattern === 2) {
+                            this.movementVector = createVector(this.target.position.x - this.position.x, this.target.position.y - this.position.y);
+                            this.inAttackFor = 60;              
+                        }
+                    } else if (this.attackPattern === 2 && this.position.y <= this.hoverY) {
+                        if (this.position.dist(this.target.position) > 500) {
+                            this.attackPattern = 3;
+                            this.inAttackFor = 20;
+                            this.currentJumpSpeed = this.jumpSpeed;
+                            this.position.add(this.speed / 2 * this.direction, this.currentJumpSpeed);
+                        } else {
+                            this.attackPattern = 0;
+                            this.inAttackFor = floor(random(30, 120)); //cycle cooldown
+                        }
+                    } else {
+                        this.attackPattern = 0;
+                        this.inAttackFor = floor(random(30, 120)); //cycle cooldown
+                    }
+                } else {
+                    //this is already in an attack and should finish
+                    this.attack();
+                }
+
+            } else {
+                //no target therefore should make rounds
+                this.wander();
+            }
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+    //solid code
+    checkIfGrounded() {
+        //relying not on overlapping tiles, todo finding the highest platform not above the object
+        for (let i = 0; i < tiles.length; i++) {
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+                this.hoverY = tiles[i].y - 600;
+                break;
+            }
+        }
+
+        if (this.position.y <= this.hoverY) {
+            this.grounded = true; // grounded will substitute with hovering
+            this.currentJumpSpeed = 0;
+            this.position.y = this.hoverY;
+
+        } else {
+            this.grounded = false;
+            //therefore 
+            this.currentJumpSpeed -= 0.45;
+        }
+
+
+    }
+
+}
+
+class GraveMaster extends Enemy {
+    constructor(x, y) {
+        super(x, y);
+        this.name = "Grave Master";
+        this.originPosition = createVector(x, y); // usually make rounds around there  
+        this.damage = 2;
+        this.attackPattern; //0 will always be standoff stance
+        this.speed = 5;
+        this.width = 120;
+        this.height = 180;
+        this.hp = 120;
+        this.mhp = 120;
+        this.grounded = true;
+        this.jumpSpeed = 25;
+        this.currentJumpSpeed = 0;
+        this.floorY;
+        this.image = gravewatcher;
+        this.factor = 20; // ??
+        this.attackRange = 400; // should actually vary
+        this.onRange = 3500; // when to start processing
+        this.aggroRange = 1100; // when to start attacking 
+        this.inAttackFor = 0; //max time in stance
+        this.target;
+        this.stamina;
+        this.attackCooldown; // after attacking perhaps chains into another, otherwise assume stance 0 
+        this.takenDamageMultiplier = 1;
+        this.hoverY;
+        this.tenacity = 100;
+        this.standoff = 1;
+        this.direction = 1;
+        this.boss = true;
+    }
+
+    show() {
+        image(this.image, this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+//         fill("gray");
+//            rect(camX,camY, 100000, 500)
+//            fill("blue");
+//            rect(player.target.position.x - player.target.width / 1.5, player.target.position.y - player.target.height / 2, player.target.hp * 6, 16);
+    }
+
+    wander() {
+        //move around origin location - 1000 to origin location + 1000
+        if (this.position.x <= this.originPosition.x - 1000) {
+            this.position.add(this.speed, 0)
+            this.direction = 1;
+        } else if (this.position.x >= this.originPosition.x + 1000) {
+            this.position.add(-this.speed, 0)
+            this.direction = -1;
+        } else {
+            //make the rounds 
+            this.position.add(this.speed * this.direction, 0)
+        }
+    }
+
+    attack() {
+        //example for skeleton specifically
+        if (this.attackPattern === 0) { // basic standoff, movement etc 
+            if (this.target.position.x <= this.position.x) {
+                this.direction = -1;
+            } else {
+                this.direction = 1;
+            }
+
+            this.position.add(this.speed / 2 * this.standoff + this.direction, 0);
+            //movement
+
+        } else if (this.attackPattern === 1) {
+            this.position.add(this.speed * this.direction, -3);
+            for (let a = 0; a < allies.length; a++) {
+                if (this.direction === 1) {
+                    if (allies[a].position.x < this.position.x + 90 && allies[a].position.x > this.position.x && allies[a].position.y > this.position.y - this.height / 2 && allies[a].position.y < this.position.y + this.height / 2 && this.inAttackFor === 1) {
+                        damageAlly(allies[a], 2);
+                    } else {
+                        if (allies[a].position.x > this.position.x - 90 && allies[a].position.x < this.position.x && allies[a].position.y > this.position.y - this.height / 2 && allies[a].position.y < this.position.y + this.height / 2 && this.inAttackFor === 1) {
+                            damageAlly(allies[a], 2);
+                        }
+                    }
+                }
+            }
+        } else if (this.attackPattern === 2) {
+
             this.position.add(this.speed * this.direction * 2, 0);
             for (let a = 0; a < allies.length; a++) {
                 if (collisionDetected(allies[a], this.position, this.width / 2, this.height / 2) && this.inAttackFor % 6 == 0) {
@@ -851,7 +684,6 @@ class Harpy extends Enemy {
             }
 
         } else if (this.attackPattern === 3) {
-            //dive
             this.position.add(this.speed / 2 * this.direction, -this.currentJumpSpeed);
         }
 
@@ -880,29 +712,22 @@ class Harpy extends Enemy {
                     //criteria for different attack patterns
                     if (this.target.position.dist(this.position) > this.attackRange) {
                         this.attackPattern = 0; //standoff
-                        this.inAttackFor = floor(random(40, 60));
+                        this.inAttackFor = floor(random(50, 120));
+                        
                         this.standoff = this.standoff * -1;
                     } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 0) {
-                        //shockwaves
-                        this.attackPattern = 1;
-                        this.inAttackFor = floor(random(50, 80));
-
-                    } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 1) {
-                        //chain the shockwaves into a dive attack of some sort
-                        this.attackPattern = floor(random(2,4));
-                        if(this.attackPattern === 2) {
-                            
-                        } else if(this.attackPattern === 3) {
-                            
+                        //random choice between charge or slash (1,2)
+                        this.attackPattern = floor(random(1, 3));
+                        if (this.attackPattern === 1) {
+                            this.inAttackFor = 20;
+                        } else {
+                            this.inAttackFor = 120;
                         }
-                        
-                        this.currentJumpSpeed = this.jumpSpeed;
-                        this.inAttackFor = 120;
-                    } else if (this.target.position.dist(this.position) <= this.attackRange && this.attackPattern === 1) {
-                        //return to d
+                    } else {
+                        //chain the slash or charge into a jump attack
                         this.attackPattern = 3;
                         this.currentJumpSpeed = this.jumpSpeed;
-                        this.inAttackFor = 120;
+                        this.inAttackFor = 999;
                     }
                 } else {
                     //this is already in an attack and should finish
@@ -966,185 +791,197 @@ class Harpy extends Enemy {
 
     }
 
-}
-//he will hide behind graves
-class GraveMaster extends Enemy {
-    constructor(x, y) {
-        super(x, y);
-        this.image = gravewatcher;
-        this.hp = 150;
-        this.mhp = 150;
-        this.standoff = false;
-        this.attackRange = 400;
-        //perhaps this.hat / this.armor
-    }
-
-    process() {
-
-        if (this.attackCooldown > 0) {
-            this.attackCooldown--;
-        }
-
-        if (this.grounded == false) {
-            this.position.y += gravity * this.gravityMultiplier;
-            if (this.gravityMultiplier <= this.terminal) {
-                this.gravityMultiplier++;
-            }
-        }
-
-        //if using a spell or item or weapon, this.canAttack will become false
-        if (this.canAttack) {
-            if (player.position.x < this.position.x) {
-                if (player.position.x < this.position.x - 200) {
-                    this.position.x -= this.speed;
-                } else {
-                    this.position.x -= this.speed / 8
-                }
-
-                this.direction = -1;
-            } else {
-                this.standoff = true;
-            }
-            if (player.position.x > this.position.x) {
-                if (player.position.x > this.position.x + 200) {
-                    this.position.x += this.speed;
-                } else {
-                    this.position.x += this.speed / 8
-                }
-                this.direction = 1;
-            } else {
-                this.standoff = true;
-            }
-
-
-
-            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
-                this.canAttack = false;
-
-                this.attackPattern = floor(random(0, 3)); //0,1,2, -3 patterns
-
-                this.inAttackFor = (this.attackPattern + 1) * 20;
-                this.attackCooldown += (this.attackPattern + 1) * 80;
-            }
-
+    receivedHit(i) {
+        if (this.hp <= 0) {
+            effects.push(new GlowingDust(random(player.position.x - 150, player.position.x + 150), player.position.y));
+            enemies.splice(i, 1);
 
         }
-        if (this.canAttack == false && this.attackPattern == 0) {
-            //quick stab
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                //just a quick stab
-                if (this.direction == 1) {
-                    this.position.x += 2;
-                } else {
-                    this.position.x -= 2;
-                }
 
-            } else {
-                this.damage = 0.5;
-                this.checkCollision(120, this.height);
-                this.canAttack = true;
-            }
-        } else if (this.canAttack == false && this.attackPattern == 2) {
-            //medium charged attack jump
-            if (this.inAttackFor > 0 || this.grounded == false) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                if (this.direction == 1) {
-                    this.position.x += 4;
-                } else {
-                    this.position.x -= 4;
-                }
-
-                this.jumpSpeed = 26;
-                this.position.y -= this.jumpSpeed;
-
-
-            } else {
-                ellipse(this.position.x, this.position.y, 500, 500);
-                if (this.grounded) {
-                    this.damage = 2;
-                    this.checkCollision(300);
-                }
-
-                this.canAttack = true;
-            }
-        } else if (this.canAttack == false && this.attackPattern == 1) {
-            //long distance charge
-            if (this.inAttackFor > 0) {
-                this.inAttackFor--;
-                //add attack pattern coding here
-                if (this.direction == 1) {
-                    this.position.x += 20;
-                } else {
-                    this.position.x -= 20;
-                }
-                this.damage = 0.5;
-                this.checkCollision(21);
-            } else {
-                this.canAttack = true;
-            }
-        }
-    }
-
-
-
-    checkCollision(hitboxx, hitboxy) {
-        this.hitboxX = hitboxx;
-        this.hitboxY = hitboxy;
-        this.target = player;
-
-        if (this.attackPattern == 2) {
-            if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 190) {
-                dealDamage(player, this.damage, 0)
-                this.inAttackFor = 0;
-            }
-        } else {
-            if (this.direction == -1) {
-                if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
-                    dealDamage(player, this.damage, 0)
-                    this.inAttackFor = 0;
-                }
-            } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
-                dealDamage(player, this.damage, 0)
-                this.inAttackFor = 0;
-
-
-            }
-        }
-
-
-    }
-
-
-
-
-    //solid code
-    isGrounded() {
-        this.feetY = this.position.y + this.height / 2;
-        if (this.floorY <= this.feetY) {
-            this.grounded = true;
-            this.canJump = true;
-            this.gravityMultiplier = 1;
-            this.jumpSpeed = 0;
-            this.position.y = this.floorY - this.height / 2;
-        } else {
-            this.grounded = false;
-        }
-        //and if this is true, then ur feetY will equal the floorY
-
-        //find this.floorY
-        for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-                this.floorY = tiles[i].y;
-
-                break;
-            }
-        }
+        //        if(this.tenacity <= 0) {
+        //            this.stagger();
+        //        }
     }
 
 }
+
+//class GraveMaster extends Enemy {
+//    constructor(x, y) {
+//        super(x, y);
+//        this.image = gravewatcher;
+//        this.hp = 150;
+//        this.mhp = 150;
+//        this.standoff = false;
+//        this.attackRange = 400;
+//        //perhaps this.hat / this.armor
+//    }
+//
+//    process() {
+//
+//        if (this.attackCooldown > 0) {
+//            this.attackCooldown--;
+//        }
+//
+//        if (this.grounded == false) {
+//            this.position.y += gravity * this.gravityMultiplier;
+//            if (this.gravityMultiplier <= this.terminal) {
+//                this.gravityMultiplier++;
+//            }
+//        }
+//
+//        //if using a spell or item or weapon, this.canAttack will become false
+//        if (this.canAttack) {
+//            if (player.position.x < this.position.x) {
+//                if (player.position.x < this.position.x - 200) {
+//                    this.position.x -= this.speed;
+//                } else {
+//                    this.position.x -= this.speed / 8
+//                }
+//
+//                this.direction = -1;
+//            } else {
+//                this.standoff = true;
+//            }
+//            if (player.position.x > this.position.x) {
+//                if (player.position.x > this.position.x + 200) {
+//                    this.position.x += this.speed;
+//                } else {
+//                    this.position.x += this.speed / 8
+//                }
+//                this.direction = 1;
+//            } else {
+//                this.standoff = true;
+//            }
+//
+//
+//
+//            if (this.canAttack && Math.abs(this.position.x - player.position.x) <= this.attackRange && this.attackCooldown === 0) {
+//                this.canAttack = false;
+//
+//                this.attackPattern = floor(random(0, 3)); //0,1,2, -3 patterns
+//
+//                this.inAttackFor = (this.attackPattern + 1) * 20;
+//                this.attackCooldown += (this.attackPattern + 1) * 80;
+//            }
+//
+//
+//        }
+//        if (this.canAttack == false && this.attackPattern == 0) {
+//            //quick stab
+//            if (this.inAttackFor > 0) {
+//                this.inAttackFor--;
+//                //add attack pattern coding here
+//                //just a quick stab
+//                if (this.direction == 1) {
+//                    this.position.x += 2;
+//                } else {
+//                    this.position.x -= 2;
+//                }
+//
+//            } else {
+//                this.damage = 0.5;
+//                this.checkCollision(120, this.height);
+//                this.canAttack = true;
+//            }
+//        } else if (this.canAttack == false && this.attackPattern == 2) {
+//            //medium charged attack jump
+//            if (this.inAttackFor > 0 || this.grounded == false) {
+//                this.inAttackFor--;
+//                //add attack pattern coding here
+//                if (this.direction == 1) {
+//                    this.position.x += 4;
+//                } else {
+//                    this.position.x -= 4;
+//                }
+//
+//                this.jumpSpeed = 26;
+//                this.position.y -= this.jumpSpeed;
+//
+//
+//            } else {
+//                ellipse(this.position.x, this.position.y, 500, 500);
+//                if (this.grounded) {
+//                    this.damage = 2;
+//                    this.checkCollision(300);
+//                }
+//
+//                this.canAttack = true;
+//            }
+//        } else if (this.canAttack == false && this.attackPattern == 1) {
+//            //long distance charge
+//            if (this.inAttackFor > 0) {
+//                this.inAttackFor--;
+//                //add attack pattern coding here
+//                if (this.direction == 1) {
+//                    this.position.x += 20;
+//                } else {
+//                    this.position.x -= 20;
+//                }
+//                this.damage = 0.5;
+//                this.checkCollision(21);
+//            } else {
+//                this.canAttack = true;
+//            }
+//        }
+//    }
+//
+//
+//
+//    checkCollision(hitboxx, hitboxy) {
+//        this.hitboxX = hitboxx;
+//        this.hitboxY = hitboxy;
+//        this.target = player;
+//
+//        if (this.attackPattern == 2) {
+//            if (dist(this.position.x, this.position.y, this.target.position.x, this.target.position.y) < 190) {
+//                dealDamage(player, this.damage, 0)
+//                this.inAttackFor = 0;
+//            }
+//        } else {
+//            if (this.direction == -1) {
+//                if (this.target.position.x <= this.position.x && this.target.position.x >= this.position.x - this.hitboxX) {
+//                    dealDamage(player, this.damage, 0)
+//                    this.inAttackFor = 0;
+//                }
+//            } else if (this.target.position.x >= this.position.x && this.target.position.x <= this.position.x + this.hitboxX && this.target.position.y >= this.position.y - this.height / 2 && this.target.position.y <= this.position.y + this.height / 2) {
+//                dealDamage(player, this.damage, 0)
+//                this.inAttackFor = 0;
+//
+//
+//            }
+//        }
+//
+//
+//    }
+//
+//
+//
+//
+//    //solid code
+//    isGrounded() {
+//        this.feetY = this.position.y + this.height / 2;
+//        if (this.floorY <= this.feetY) {
+//            this.grounded = true;
+//            this.canJump = true;
+//            this.gravityMultiplier = 1;
+//            this.jumpSpeed = 0;
+//            this.position.y = this.floorY - this.height / 2;
+//        } else {
+//            this.grounded = false;
+//        }
+//        //and if this is true, then ur feetY will equal the floorY
+//
+//        //find this.floorY
+//        for (let i = 0; i < tiles.length; i++) {
+//            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
+//                this.floorY = tiles[i].y;
+//
+//                break;
+//            }
+//        }
+//    }
+//
+//}
 
 class Worm extends Enemy {
     constructor(x, y) {
