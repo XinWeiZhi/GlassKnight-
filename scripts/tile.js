@@ -119,3 +119,23 @@ class GlowingDust {
     }
 
 }
+
+//class Wall {
+//    constructor(x, y, width, height) {
+//        this.position = createVector(x, y);
+//        this.speed = 3;
+//        this.width = width;
+//        this.height = height;
+//    }
+//
+//    show() {
+//       image(brick,this.position.x, this.position.y, this.width, this.height);
+//    }
+//
+//
+//
+//    //called 60fps
+//    checkCollision
+//    
+//    
+//}

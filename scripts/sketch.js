@@ -186,6 +186,8 @@ function preload() {
     hppotion = loadImage("scripts/assets/hppotion.jpg");
     cannon = loadImage("scripts/assets/cannon.jpg");
     grapeshot = loadImage("scripts/assets/grapeshot.jpg");
+    hall = loadImage("scripts/assets/hall.jpg");
+    brick = loadImage("scripts/assets/brick.jpg");
 }
 
 function drawMap() {
@@ -195,18 +197,17 @@ function drawMap() {
         tiles = [];
         interactables = [];
         numTiles = 6
-        enemies.push(new Skeleton(800, 0));
-        enemies.push(new Skeleton(900, 0));
-        //        enemies.push(new Enemy(700, 0));
-        //        enemies.push(new Enemy(1000, 0));
+        enemies.push(new Skeleton(1100, 0));
+        enemies.push(new Skeleton(1200, 0));
+        enemies.push(new Skeleton(1220, 0));
         enemies.push(new Harpy(1200, 0));
         enemies.push(new Harpy(1100, 0));
         enemies.push(new GraveMaster(600, 0));
-        //        enemies.push(new Worm(300, 800));
-        //                enemies.push(new BlackKnight(300, 800));
-        //        allies.push(new Jim(300,400));
+        enemies.push(new Worm(300, 800));
+        
+        
         for (let tileA = 0; tileA < numTiles; tileA++) {
-            tiles.push(new Grass(-400 + tileA * 1200, 700 - tileA * 50));
+            tiles.push(new Grass(-1000 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
         }
 
@@ -273,19 +274,26 @@ function setup() {
     let height = window.outerHeight;
     createCanvas(width, height);
     background(0);
-    player = new Player(0, 800);
+    player = new Player(300, 800);
     allies.push(player);
     drawMap();
 }
 
-function drawEnemies() {
-    //draw prebuilt enemies
+function updateMap() {
+    if(map === 1) {
+//         if(player.position.x > 1000) {
+//             map = 2;
+//             drawMap();
+//         }
+    }
 }
 
 function draw() {
     //slow motion counter
     background(30);
     cameraControl();
+    image(hall,-900, 000, 4100 , 2130)
+    updateMap();
     stroke(220, 160, 70);
     for (let t = 0; t < tiles.length; t++) {
         tiles[t].show();
@@ -306,6 +314,8 @@ function draw() {
         player.itemSelect[item].show(item);
 
     }
+    
+   
 
     for (let a = 0; a < allies.length; a++) {
 

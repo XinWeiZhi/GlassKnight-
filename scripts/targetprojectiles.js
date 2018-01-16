@@ -104,7 +104,7 @@ class AcidBall extends TargetedProjectile {
         }
 
         if (this.position.x >= this.target.position.x - this.target.width / 2 && this.position.x <= this.target.position.x + this.target.width / 2 && this.position.y <= this.target.position.y + this.target.height / 2 && this.position.y >= this.target.position.y - this.target.height / 2) {
-            dealDamage(this.target, this.damage);
+            damageAlly(this.target, this.damage);
             projectiles.splice(i, 1);
         }
 
