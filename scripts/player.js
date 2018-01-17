@@ -383,10 +383,10 @@ class Player {
         if (this.hpRegeneration != 0) {
             this.hp += this.hpRegeneration;
         }
-        
+
 
         if (this.canProcess) {
-      
+
             if (this.canMove && !this.rooted && !this.stunned) {
                 this.reposition(0, -this.currentJumpSpeed);
                 if (keyIsDown(32) && this.stillGoingUp) {
@@ -480,7 +480,7 @@ class Player {
 
     isGrounded() {
         fill("yellow");
-        rect(this.position.x,this.floorY,20,20);
+        rect(this.position.x, this.floorY, 20, 20);
         if (!this.grounded) {
             this.position.y += gravity * this.gravityMultiplier;
             this.gravityMultiplier++;
@@ -498,14 +498,18 @@ class Player {
 
         //find this.floorY
         for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width && this.position.y < tiles[i].y) {
-                if(tiles[i].y <= this.floorY) {
-                   this.floorY = tiles[i].y; 
+            if (tiles[i].x < this.position.x + this.width / 2 && tiles[i].x + tiles[i].width > this.position.x - this.width / 2 && this.position.y < tiles[i].y) {
+                if (tiles[i].y <= this.floorY) {
+                    this.floorY = tiles[i].y;
                 } else {
-                this.floorY = 10000;
+                    this.floorY = 10000;
+                }
             }
+
+            //            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width ) {
+            //                
+            //        }
         }
-    }
     }
 
     receivedHit(damage) {
@@ -526,9 +530,9 @@ class Player {
     }
 
     knockBack(i, direction) {
-            if (i === 1) {
-                player.position.x -= direction * -1 + 10
-            }
+        if (i === 1) {
+            player.position.x -= direction * -1 + 10
+        }
 
     }
 
