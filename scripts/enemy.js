@@ -143,11 +143,14 @@ class Enemy {
     checkIfGrounded() {
         //relying not on overlapping tiles, todo finding the highest platform not above the object
         for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-                this.floorY = tiles[i].y;
-                break;
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width && this.position.y < tiles[i].y) {
+                if(tiles[i].y <= this.floorY) {
+                   this.floorY = tiles[i].y; 
+                } else {
+                this.floorY = 10000;
             }
         }
+    }
 
         if (this.position.y + this.height / 2 > this.floorY) {
             this.grounded = true;
@@ -339,11 +342,14 @@ class Skeleton extends Enemy {
     checkIfGrounded() {
         //relying not on overlapping tiles, todo finding the highest platform not above the object
         for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-                this.floorY = tiles[i].y;
-                break;
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width && this.position.y < tiles[i].y) {
+                if(tiles[i].y <= this.floorY) {
+                   this.floorY = tiles[i].y; 
+                } else {
+                this.floorY = 10000;
             }
         }
+    }
 
         if (this.position.y + this.height / 2 > this.floorY) {
 
@@ -601,8 +607,8 @@ class GraveMaster extends Enemy {
         this.speed = 5;
         this.width = 120;
         this.height = 180;
-        this.hp = 120;
-        this.mhp = 120;
+        this.hp = 180;
+        this.mhp = 180;
         this.grounded = true;
         this.jumpSpeed = 25;
         this.currentJumpSpeed = 0;

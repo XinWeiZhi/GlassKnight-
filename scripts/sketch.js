@@ -188,6 +188,8 @@ function preload() {
     grapeshot = loadImage("scripts/assets/grapeshot.jpg");
     hall = loadImage("scripts/assets/hall.jpg");
     brick = loadImage("scripts/assets/brick.jpg");
+    bitconnect = loadImage("scripts/assets/bitconnect.jpg");
+    tower = loadImage("scripts/assets/tower.jpg");
 }
 
 function drawMap() {
@@ -200,49 +202,53 @@ function drawMap() {
         enemies.push(new Skeleton(1100, 0));
         enemies.push(new Skeleton(1200, 0));
         enemies.push(new Skeleton(1220, 0));
-        enemies.push(new Harpy(1200, 0));
-        enemies.push(new Harpy(1100, 0));
+        
         enemies.push(new GraveMaster(600, 0));
         enemies.push(new Worm(300, 800));
-        
-        
+
+
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-1000 + tileA * 1200, 700 - tileA * 50));
             tiles[tileA].width = 1200
         }
-
-        interactables.push(new Door(300, 530, 2));
+        tiles.push(new StonePlatform(500,290));
+        tiles.push(new StonePlatform(1000,190));
+        tiles.push(new StonePlatform(1900,110));
+        tiles.push(new StonePlatform(3000,110));
+        interactables.push(new Door(270, 530, 2));
 
 
     } else if (map === 2) {
         tiles = [];
         interactables = [];
 
-        numTiles = 18
-        enemies.push(new Enemy(800, 0));
-        enemies.push(new Enemy(900, 0));
-        enemies.push(new Enemy(700, 0));
-        enemies.push(new Enemy(1000, 0));
-        enemies.push(new Enemy(1200, 0));
-        enemies.push(new Enemy(1100, 0));
-        enemies.push(new Enemy(1100, 0));
+        numTiles = 37
+         enemies.push(new Worm(300, 800));
+        enemies.push(new Harpy(1200, 0));
+        enemies.push(new Harpy(1100, 0));
+       enemies.push(new Harpy(1200, 0));
+        enemies.push(new Harpy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
-            tiles.push(new Stone(-400 + tileA * 120, 700 - tileA * 35));
-            tiles[tileA].width = 120
+            tiles.push(new Stone(-400 + tileA * 180, 700 - tileA * 35));
+            tiles[tileA].width = 180;
+        }
+        
+        for (let numStone = 0; numStone < 220; numStone++) {
+            tiles.push(new StonePlatform(random(1800, 3900), random(-15030, 0)));
         }
 
-        interactables.push(new Door(300, 330, 3));
+        interactables.push(new Door(270, 330, 3));
     } else if (map === 3) {
         tiles = [];
         interactables = [];
 
         numTiles = 11
-        enemies.push(new Enemy(800, 0));
-        enemies.push(new Enemy(900, 0));
-        enemies.push(new Enemy(700, 0));
-        enemies.push(new Enemy(1000, 0));
-        enemies.push(new Enemy(1200, 0));
-        enemies.push(new Enemy(1100, 0));
+//        enemies.push(new Enemy(800, 0));
+//        enemies.push(new Enemy(900, 0));
+//        enemies.push(new Enemy(700, 0));
+//        enemies.push(new Enemy(1000, 0));
+//        enemies.push(new Enemy(1200, 0));
+//        enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Grass(-400 + tileA * 5000, 700 - tileA * 35));
             tiles[tileA].width = 5000
@@ -253,12 +259,12 @@ function drawMap() {
         interactables = [];
 
         numTiles = 11
-        enemies.push(new Enemy(800, 0));
-        enemies.push(new Enemy(900, 0));
-        enemies.push(new Enemy(700, 0));
-        enemies.push(new Enemy(1000, 0));
-        enemies.push(new Enemy(1200, 0));
-        enemies.push(new Enemy(1100, 0));
+//        enemies.push(new Enemy(800, 0));
+//        enemies.push(new Enemy(900, 0));
+//        enemies.push(new Enemy(700, 0));
+//        enemies.push(new Enemy(1000, 0));
+//        enemies.push(new Enemy(1200, 0));
+//        enemies.push(new Enemy(1100, 0));
         for (let tileA = 0; tileA < numTiles; tileA++) {
             tiles.push(new Stone(-400 + tileA * 5000, 700 - tileA * 35));
             tiles[tileA].width = 5000
@@ -280,11 +286,15 @@ function setup() {
 }
 
 function updateMap() {
-    if(map === 1) {
-//         if(player.position.x > 1000) {
-//             map = 2;
-//             drawMap();
-//         }
+    if (map === 1) {
+        image(hall, -900, 0, 4100, 2130)
+        image(bitconnect, 1800, -200, 2100, 1030)
+        //         if(player.position.x > 1000) {
+        //             map = 2;
+        //             drawMap();
+        //         }
+    } else {
+        image(tower, 1800, -15030, 2100, 15030);
     }
 }
 
@@ -292,7 +302,7 @@ function draw() {
     //slow motion counter
     background(30);
     cameraControl();
-    image(hall,-900, 000, 4100 , 2130)
+
     updateMap();
     stroke(220, 160, 70);
     for (let t = 0; t < tiles.length; t++) {
@@ -314,16 +324,16 @@ function draw() {
         player.itemSelect[item].show(item);
 
     }
-    
-   
+
+
 
     for (let a = 0; a < allies.length; a++) {
 
-
+        
         allies[a].animate();
         allies[a].show(a);
-        allies[a].isGrounded();
         allies[a].process(a);
+        allies[a].isGrounded();
 
 
 
@@ -404,7 +414,7 @@ function draw() {
         }
     }
 
-
+    
     drawHud();
 }
 

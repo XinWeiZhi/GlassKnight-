@@ -479,7 +479,8 @@ class Player {
 
 
     isGrounded() {
-
+        fill("yellow");
+        rect(this.position.x,this.floorY,20,20);
         if (!this.grounded) {
             this.position.y += gravity * this.gravityMultiplier;
             this.gravityMultiplier++;
@@ -497,13 +498,14 @@ class Player {
 
         //find this.floorY
         for (let i = 0; i < tiles.length; i++) {
-            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width) {
-                this.floorY = tiles[i].y;
-                break;
-            } else {
+            if (tiles[i].x <= this.position.x && this.position.x <= tiles[i].x + tiles[i].width && this.position.y < tiles[i].y) {
+                if(tiles[i].y <= this.floorY) {
+                   this.floorY = tiles[i].y; 
+                } else {
                 this.floorY = 10000;
             }
         }
+    }
     }
 
     receivedHit(damage) {

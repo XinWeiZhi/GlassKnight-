@@ -27,6 +27,8 @@ class ToInventory extends InterfaceButton {
 
     show() {
         fill("green")
+        this.position.x = camX + 455;
+        this.position.y = camY + 100;
         rect(this.position.x, this.position.y, this.width, this.height);
         text("inventory", this.position.x, this.position.y);
 
@@ -70,6 +72,8 @@ class ToOptions extends InterfaceButton {
     }
     
     show() {
+        this.position.x = camX + 745;
+        this.position.y = camY + 100;
         fill("red")
         rect(this.position.x, this.position.y, this.width, this.height);
         text("options", this.position.x, this.position.y);
@@ -102,6 +106,7 @@ class ToCharacter extends InterfaceButton {
         super(x, y);
     }
     show() {
+        this.position = createVector(camX + 165, camY + 100);
         fill("orange")
         rect(this.position.x, this.position.y, this.width, this.height);
         text("character", this.position.x, this.position.y);
@@ -115,6 +120,7 @@ class CloseTab extends InterfaceButton {
         this.width = this.height;
     }
     show() {
+        this.position = createVector(camX + 1000, camY + 100);
         fill("red")
         rect(this.position.x, this.position.y, this.width, this.height);
     }

@@ -28,6 +28,15 @@ class Stone extends Tile {
     }
 }
 
+class StonePlatform extends Tile {
+     constructor(x, y) {
+        super(x, y)
+        this.image = rockies;
+         this.height = 40;
+         this.width = 140;
+    }
+}
+
 class Interactable {
     constructor(x, y, img,width,height) {
         this.position = createVector(x, y);
