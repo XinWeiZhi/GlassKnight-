@@ -38,6 +38,7 @@ class AssassinCloak extends Armor {
     constructor(equipper) {
         super(equipper);
         this.hp = 0;
+        //Hi
         this.armor = 10;
         this.magicResistance = 10;
         this.damageResistance = 20;
